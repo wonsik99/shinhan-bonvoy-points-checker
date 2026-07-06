@@ -46,6 +46,23 @@ create policy merchant_feedback_insert_anon on merchant_feedback
   for insert to anon
   with check (true);
 
+-- Anonymous parse-failure reports: privacy-safe diagnostics only (headers with
+-- digits masked — no amounts, merchant names, card numbers, or file names).
+create table if not exists parse_error_reports (
+  id uuid primary key default gen_random_uuid(),
+  diagnostic text not null check (char_length(diagnostic) <= 4000),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists parse_error_reports_created_at_idx on parse_error_reports (created_at);
+
+alter table parse_error_reports enable row level security;
+
+drop policy if exists parse_error_reports_insert_anon on parse_error_reports;
+create policy parse_error_reports_insert_anon on parse_error_reports
+  for insert to anon
+  with check (true);
+
 -- security_invoker so the anon role cannot read aggregates through the view;
 -- it is meant for service-role/manual review only.
 create or replace view merchant_candidates with (security_invoker = true) as

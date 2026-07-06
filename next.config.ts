@@ -8,10 +8,17 @@ const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
   : null;
 
+// React's dev build uses eval() for debugging features; production never does.
+// Allow it only in development so the production CSP stays locked down.
+const scriptSrc =
+  process.env.NODE_ENV === "development"
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+    : "script-src 'self' 'unsafe-inline'";
+
 const csp = [
   "default-src 'self'",
   // Next.js requires inline scripts for hydration bootstrapping
-  "script-src 'self' 'unsafe-inline'",
+  scriptSrc,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",

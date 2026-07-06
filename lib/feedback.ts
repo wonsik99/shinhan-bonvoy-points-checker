@@ -71,3 +71,32 @@ export function submitFeedback(
     // Feedback persistence is best-effort; the local UI state is the source of truth.
   });
 }
+
+/**
+ * One-click anonymous parse-failure report — no login, no GitHub account.
+ * Sends only the privacy-safe diagnostic (masked headers, no transaction
+ * data). Returns whether the report was accepted so the UI can confirm.
+ */
+export async function submitParseErrorReport(
+  diagnostic: string
+): Promise<boolean> {
+  const config = getSupabaseConfig();
+  if (!config || typeof window === "undefined") {
+    return false;
+  }
+  try {
+    const res = await fetch(`${config.url}/rest/v1/parse_error_reports`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: config.anonKey,
+        Authorization: `Bearer ${config.anonKey}`,
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({ diagnostic: diagnostic.slice(0, 4000) }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}

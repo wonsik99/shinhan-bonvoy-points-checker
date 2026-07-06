@@ -3,3 +3,81 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+# Bonvoy L5 Checker — Agent Handoff
+
+신한 메리어트 본보이 카드 사용자가 포인트 적립 상세내역 엑셀을 올리면, 메리어트 계열 호텔 결제가 정상 특별적립(국내 L4 / 해외 L5)됐는지 검사해주는 웹 도구.
+
+- **Live**: https://shinhan-bonvoy-l5-checker.vercel.app (Vercel, 완전 정적 — 서버 함수 없음)
+- **Repo**: github.com/wonsik99/shinhan-bonvoy-l5-checker
+- 로컬에서 작업 이력·비공개 컨텍스트가 필요하면 `docs/_local/HANDOFF.md`를 읽을 것 (gitignore된 로컬 전용 문서).
+
+## 절대 규칙 (사용자 지시)
+
+1. **LLM 호출 금지.** 판정·계산은 전부 결정적 규칙 기반. (LLM은 먼 미래에 설명 보조로만 검토)
+2. **업로드 파일은 절대 서버로 보내지 않는다.** 파싱은 100% 브라우저에서. CSP `connect-src`가 이를 강제하며, 이 보안 스토리를 깨는 변경 금지.
+3. **`docs/_local/`은 절대 커밋 금지** (gitignore됨 — 스펙 원본, 테스트 파일, 비공개 문서 위치).
+4. **커밋·push 전에 반드시 사용자에게 한국어로 허락을 받을 것.**
+5. **커밋 메시지에 AI co-author 트레일러를 넣지 말 것** (사용자가 명시적으로 금지함).
+6. **단정 표현 금지**: "누락 의심"·"확인 필요"만 사용, "누락 확정"·"보장" 금지. 이 앱은 카드사 문의를 돕는 참고 자료다.
+7. 사용자와는 한국어로 소통한다.
+
+## 도메인 지식 (사용자=카드 소유자가 확인해준 사실)
+
+**적립 등급 코드** (`포인트종류상세` 컬럼, 1,000원당 메리어트 본보이 포인트, `round(금액/1000×N)`):
+
+| 코드 | 의미 | 적립 |
+|---|---|---|
+| L1 | 기본 적립 | 1P |
+| L2 | 해외 매출 적립 | 3P |
+| L3 | 특별 적립 업종 (항공/택시/카페 등) | 3P |
+| L4 | **국내 메리어트** 결제 | 5P |
+| L5 | **해외 메리어트** 결제 | 5P |
+
+- 기준 카드는 **메리어트 본보이™ 더 베스트 신한카드** (`rules/cardProfiles.ts`의 `activeCardProfile`).
+- **더 클래식** 카드는 메리어트 적립이 4P/1,000원으로 다름 — 아직 미지원. 클래식 명세서의 등급 코드가 확인되면 프로필 추가 + 카드 선택 UI로 확장할 것.
+
+**실제 신한 엑셀 레이아웃** (실물 파일로 검증됨):
+- 헤더 2행 + **거래 1건당 2행** 인터리브 구조. `lib/parseShinhanExcel.ts`의 `extractRecords`가 처리 (플랫 구조, 제목행 있는 변형도 지원).
+- 해외 결제는 `가맹점명`이 "VISA해외사용일시불"(채널명)이고 **실제 호텔명은 `해외가맹점명`**에 있음 → 해외가맹점명 우선.
+- 실제 포인트 컬럼은 `포인트적립금액`, 날짜는 Excel serial 숫자.
+- 이 엑셀은 앱/홈페이지에서 못 받고 **고객센터(1544-7000) 전화로만** 발급됨.
+
+## 아키텍처
+
+```
+app/page.tsx            상태 보유 (baseResults + feedbackById), 파생값 useMemo
+lib/parseShinhanExcel   File → SheetJS → extractRecords(인터리브/플랫 감지) → 진단(ShinhanParseError)
+lib/normalizeTransaction 컬럼 별칭 매핑, 금액/날짜/등급/취소 정규화, 카드번호 마스킹
+lib/classifyMerchant    known rules(영/한) → 영문 키워드 → 한글 키워드 → 호텔 유사 키워드 (전부 단어 경계 매칭)
+lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_marriott/canceled), 피드백 적용, 요약
+lib/inquiryMessage      카드사 문의 문구 생성
+lib/feedback            (선택) Supabase 익명 피드백 + 파싱 실패 원클릭 제보 — env 없으면 조용히 no-op
+rules/marriott.ts       키워드·알려진 가맹점 규칙 / rules/cardProfiles.ts 카드 프로필
+components/             FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, Disclaimer
+supabase/schema.sql     merchant_rules, merchant_feedback, parse_error_reports (전부 RLS, anon은 insert만)
+next.config.ts          CSP 헤더 (connect-src 'self' + Supabase origin 자동 추가)
+```
+
+분석 규칙 요점: 취소→canceled / 비메리어트→not_marriott / 정상등급(국내 L4·L5, 해외 L5)→ok_l5 / 확신(certain·high)+양수차이→missing_suspected / 그 외→needs_review. `effectiveIncluded` = missing_suspected(제외 안 한 것) + 사용자가 ✅포함한 needs_review. 피드백 토글 해제 시 Supabase 전송 안 함(재클릭=철회).
+
+## 검증
+
+```bash
+npm test          # vitest (72+개, 전부 통과 상태 유지할 것)
+npm run lint && npm run build
+npm run fixture   # docs/_local/sample.xlsx 생성 (실제 레이아웃 모사, gitignore)
+```
+
+fixture 기대값: 15건 / Marriott 12 / 정상 2 / 누락 의심 9 / 확인 필요 1(HOTEL 55 CHICAGO) / 예상 추가 6,305P (Hotel 55 포함 시 +420P). 실물 파일 검증 방법은 `docs/_local/HANDOFF.md` 참고. UI 변경 시 Playwright로 업로드→요약 수치→피드백 버튼→문의 문구까지 실제로 확인할 것.
+
+## 배포
+
+- `vercel --prod` (프로젝트 링크·인증 완료 상태). 배포 전 반드시 테스트+빌드+사용자 승인.
+- Supabase를 켜려면: Supabase 프로젝트 생성 → `supabase/schema.sql` 실행 → Vercel에 `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정 → 재배포. CSP connect-src는 next.config.ts가 자동 처리.
+
+## 로드맵 (사용자 확인된 방향)
+
+1. **Supabase 활성화** — 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보 활성화. 켜면 페이지에 수집 고지 한 줄 추가할 것.
+2. **더 클래식 카드 지원** — cardProfiles에 프로필 추가 + 카드 선택 UI.
+3. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.

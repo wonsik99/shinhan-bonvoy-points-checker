@@ -1,6 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
+import {
+  isFeedbackPersistenceEnabled,
+  submitParseErrorReport,
+} from "@/lib/feedback";
 
 interface FileUploadProps {
   fileName: string | null;
@@ -12,8 +16,7 @@ interface FileUploadProps {
   onReset: () => void;
 }
 
-const ISSUES_URL =
-  "https://github.com/wonsik99/shinhan-bonvoy-l5-checker/issues/new";
+type ReportState = "idle" | "sending" | "sent" | "failed";
 
 const ACCEPTED_EXTENSIONS = [".xlsx", ".xls"];
 
@@ -29,6 +32,8 @@ export default function FileUpload({
   const [isDragging, setIsDragging] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [diagnosticCopied, setDiagnosticCopied] = useState(false);
+  const [reportState, setReportState] = useState<ReportState>("idle");
+  const canSendReport = isFeedbackPersistenceEnabled();
 
   const copyDiagnostic = async () => {
     if (!errorDiagnostic) return;
@@ -39,6 +44,15 @@ export default function FileUpload({
     } catch {
       // Clipboard unavailable — the text remains visible for manual selection.
     }
+  };
+
+  const sendReport = async () => {
+    if (!errorDiagnostic || reportState === "sending" || reportState === "sent") {
+      return;
+    }
+    setReportState("sending");
+    const ok = await submitParseErrorReport(errorDiagnostic);
+    setReportState(ok ? "sent" : "failed");
   };
 
   const handleFile = (file: File | undefined) => {
@@ -153,27 +167,47 @@ export default function FileUpload({
             <div className="mt-3 border-t border-red-200 pt-3 text-red-800">
               <p>
                 신한카드 엑셀인데도 실패했다면 파일 형식이 저희가 모르는
-                변형일 수 있어요. 아래 버튼으로 <b>개인정보가 제거된 진단
-                정보</b>(컬럼명만, 숫자 마스킹)를 복사해서 제보해주시면 빠르게
-                지원을 추가하겠습니다.
+                변형일 수 있어요. 아래의 <b>개인정보가 제거된 진단 정보</b>
+                (컬럼명만, 숫자 마스킹)를 제보해주시면 빠르게 지원을
+                추가하겠습니다. 보내지는 내용은 아래에 표시된 것이 전부입니다.
               </p>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                {canSendReport && (
+                  <button
+                    type="button"
+                    onClick={sendReport}
+                    disabled={reportState === "sending" || reportState === "sent"}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-medium text-white transition ${
+                      reportState === "sent"
+                        ? "bg-emerald-600"
+                        : "bg-red-700 hover:bg-red-800"
+                    }`}
+                  >
+                    {reportState === "sent"
+                      ? "제보 완료 ✓ 감사합니다!"
+                      : reportState === "sending"
+                        ? "보내는 중…"
+                        : "📨 원클릭 제보 보내기"}
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={copyDiagnostic}
-                  className="rounded-lg bg-red-700 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-red-800"
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                    canSendReport
+                      ? "border border-red-300 text-red-700 hover:bg-red-100"
+                      : "bg-red-700 text-white hover:bg-red-800"
+                  }`}
                 >
-                  {diagnosticCopied ? "복사됨 ✓" : "제보용 진단 정보 복사"}
+                  {diagnosticCopied ? "복사됨 ✓" : "진단 정보 복사"}
                 </button>
-                <a
-                  href={ISSUES_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100"
-                >
-                  GitHub에 제보하기 ↗
-                </a>
               </div>
+              {reportState === "failed" && (
+                <p className="mt-1.5 text-xs">
+                  전송에 실패했습니다. 위의 복사 버튼으로 내용을 복사해서
+                  글/댓글로 남겨주세요.
+                </p>
+              )}
               <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded-lg bg-white/60 p-2 font-mono text-[11px] leading-relaxed text-red-900">
                 {errorDiagnostic}
               </pre>
