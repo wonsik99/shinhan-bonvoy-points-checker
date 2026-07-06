@@ -2,11 +2,20 @@ import type { NextConfig } from "next";
 
 // connect-src enforces the core privacy promise at the browser level: the page
 // cannot send network requests anywhere except its own origin, so uploaded
-// Excel data physically cannot leave the client. If Supabase feedback is
-// enabled later, append the NEXT_PUBLIC_SUPABASE_URL origin to connect-src.
-const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
-  : null;
+// Excel data physically cannot leave the client. The only exceptions are the
+// optional feedback collectors — added ONLY when their env var is set, and
+// they receive merchant/classification metadata, never file contents.
+const connectExtras: string[] = [];
+if (process.env.NEXT_PUBLIC_APPS_SCRIPT_URL) {
+  // Apps Script web apps redirect from script.google.com to googleusercontent.
+  connectExtras.push(
+    "https://script.google.com",
+    "https://script.googleusercontent.com"
+  );
+}
+if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  connectExtras.push(new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin);
+}
 
 // React's dev build uses eval() for debugging features; production never does.
 // Allow it only in development so the production CSP stays locked down.
@@ -22,7 +31,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
-  `connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ""}`,
+  `connect-src 'self'${connectExtras.length ? ` ${connectExtras.join(" ")}` : ""}`,
   "form-action 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",

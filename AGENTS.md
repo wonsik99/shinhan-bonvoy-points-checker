@@ -52,11 +52,11 @@ lib/normalizeTransaction 컬럼 별칭 매핑, 금액/날짜/등급/취소 정�
 lib/classifyMerchant    known rules(영/한) → 영문 키워드 → 한글 키워드 → 호텔 유사 키워드 (전부 단어 경계 매칭)
 lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_marriott/canceled), 피드백 적용, 요약
 lib/inquiryMessage      카드사 문의 문구 생성
-lib/feedback            (선택) Supabase 익명 피드백 + 파싱 실패 원클릭 제보 — env 없으면 조용히 no-op
+lib/feedback            (선택) 익명 피드백 + 파싱 실패 원클릭 제보 — 기본은 Google Sheets(Apps Script), env 없으면 no-op
 rules/marriott.ts       키워드·알려진 가맹점 규칙 / rules/cardProfiles.ts 카드 프로필
 components/             FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, Disclaimer
-supabase/schema.sql     merchant_rules, merchant_feedback, parse_error_reports (전부 RLS, anon은 insert만)
-next.config.ts          CSP 헤더 (connect-src 'self' + Supabase origin 자동 추가)
+google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내. 대안으로 supabase/schema.sql도 있음
+next.config.ts          CSP 헤더 (connect-src 'self' + 수집기 도메인 자동 추가: Apps Script 또는 Supabase)
 ```
 
 분석 규칙 요점: 취소→canceled / 비메리어트→not_marriott / 정상등급(국내 L4·L5, 해외 L5)→ok_l5 / 확신(certain·high)+양수차이→missing_suspected / 그 외→needs_review. `effectiveIncluded` = missing_suspected(제외 안 한 것) + 사용자가 ✅포함한 needs_review. 피드백 토글 해제 시 Supabase 전송 안 함(재클릭=철회).
@@ -74,10 +74,10 @@ fixture 기대값: 15건 / Marriott 12 / 정상 2 / 누락 의심 9 / 확인 필
 ## 배포
 
 - `vercel --prod` (프로젝트 링크·인증 완료 상태). 배포 전 반드시 테스트+빌드+사용자 승인.
-- Supabase를 켜려면: Supabase 프로젝트 생성 → `supabase/schema.sql` 실행 → Vercel에 `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정 → 재배포. CSP connect-src는 next.config.ts가 자동 처리.
+- 수집을 켜려면(기본=Google Sheets): `google-apps-script/Code.gs`를 구글 시트에 붙여 웹 앱 배포 → 그 URL을 Vercel에 `NEXT_PUBLIC_APPS_SCRIPT_URL`로 설정 → 재배포. CSP connect-src는 next.config.ts가 Google 도메인을 자동 추가. (대안: Supabase — `supabase/schema.sql` + `NEXT_PUBLIC_SUPABASE_*`.)
 
 ## 로드맵 (사용자 확인된 방향)
 
-1. **Supabase 활성화** — 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보 활성화. 켜면 페이지에 수집 고지 한 줄 추가할 것.
+1. **수집 활성화** — Google Sheets(Apps Script) 기반. 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보. 켜지면 페이지 하단 수집 고지가 자동 표시됨.
 2. **더 클래식 카드 지원** — cardProfiles에 프로필 추가 + 카드 선택 UI.
 3. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.

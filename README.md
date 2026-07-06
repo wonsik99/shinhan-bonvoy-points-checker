@@ -51,18 +51,22 @@ types/          공용 타입 정의
 supabase/       (선택) 익명 피드백 저장용 스키마
 ```
 
-## (선택) Supabase 피드백 저장
+## (선택) 익명 피드백 / 제보 수집 — Google Sheets
 
-피드백 버튼(✅/❌/모르겠음)은 기본적으로 로컬 UI 상태만 변경합니다. 아래 환경 변수를 설정하면 익명 피드백이 Supabase `merchant_feedback` 테이블에 저장됩니다. 설정하지 않아도 앱은 정상 동작합니다.
+피드백 버튼(✅/❌/모르겠음)과 파싱 실패 원클릭 제보는 기본적으로 로컬에서만 동작합니다(제보 버튼은 복사 fallback). 아래를 설정하면 익명 데이터가 **구글 시트**에 쌓입니다. 무료이고 사용자 로그인이 필요 없습니다.
+
+1. `google-apps-script/Code.gs`의 안내대로 구글 시트에 Apps Script를 붙여 **웹 앱**으로 배포 (액세스 권한: 모든 사용자).
+2. 배포 URL을 환경 변수에 설정:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_APPS_SCRIPT_URL=https://script.google.com/macros/s/AKfyc.../exec
 ```
 
-스키마는 `supabase/schema.sql`을 참고하세요. 저장되는 값은 가맹점명, 판정 결과, 사용자 액션 뿐이며 업로드한 파일이나 카드번호는 전송되지 않습니다. 세션 ID는 sessionStorage 기반이라 탭을 닫으면 사라집니다. 사용자 피드백은 즉시 규칙이 되지 않고, 집계 → 후보 → 수동 검토를 거쳐 규칙에 반영하는 것을 전제로 합니다.
+3. 재배포하면 활성화됩니다. CSP `connect-src`는 `next.config.ts`가 Google 도메인을 자동 추가합니다.
 
-스키마에는 RLS(Row Level Security)가 포함되어 있어 클라이언트에 노출되는 anon 키로는 `merchant_feedback` INSERT만 가능합니다. 조회/수정/규칙 관리는 service role로만 하세요.
+수집되는 값은 가맹점명, 판정 결과, 사용자 액션, 마스킹된 진단 텍스트 뿐이며 **업로드 파일·금액 상세·카드번호는 전송되지 않습니다.** 세션 ID는 sessionStorage 기반이라 탭을 닫으면 사라집니다. 켜지면 페이지 하단에 수집 고지가 표시됩니다. 사용자 피드백은 즉시 규칙이 되지 않고, 시트에서 집계 → 후보 → 수동 검토를 거쳐 규칙에 반영하는 것을 전제로 합니다.
+
+> 대안으로 Supabase도 지원합니다(`supabase/schema.sql`, `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`). 둘 중 하나만 설정하면 됩니다.
 
 ## 면책
 

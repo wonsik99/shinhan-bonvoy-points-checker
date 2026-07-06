@@ -9,7 +9,7 @@ import {
   summarizeResults,
 } from "@/lib/analyzeTransactions";
 import { buildInquiryMessage } from "@/lib/inquiryMessage";
-import { submitFeedback } from "@/lib/feedback";
+import { isFeedbackPersistenceEnabled, submitFeedback } from "@/lib/feedback";
 import FileUpload from "@/components/FileUpload";
 import SummaryCards from "@/components/SummaryCards";
 import MissingTransactionsTable from "@/components/MissingTransactionsTable";
@@ -48,6 +48,7 @@ export default function Home() {
   );
 
   const hasResults = baseResults.length > 0;
+  const collectionEnabled = isFeedbackPersistenceEnabled();
 
   const handleFile = async (file: File) => {
     setIsParsing(true);
@@ -198,6 +199,13 @@ export default function Home() {
             <AllTransactionsTable results={results} />
           </section>
         </div>
+      )}
+
+      {collectionEnabled && (
+        <p className="mt-10 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-xs text-neutral-500">
+          서비스 개선을 위해 가맹점명·판정 결과 등 익명 정보가 수집될 수
+          있습니다. 업로드한 파일, 금액 상세, 카드번호는 전송되지 않습니다.
+        </p>
       )}
 
       <div className="mt-12">
