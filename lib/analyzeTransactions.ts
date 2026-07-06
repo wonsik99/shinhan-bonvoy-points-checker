@@ -4,12 +4,22 @@ import type {
   UserFeedbackAction,
 } from "@/types/transaction";
 import { classifyMerchant } from "@/lib/classifyMerchant";
+import { activeCardProfile } from "@/rules/cardProfiles";
 
-/** Observed Shinhan Bonvoy accrual rate for L5 (0.5%). */
-export const L5_RATE = 0.005;
+/**
+ * Marriott special accrual: 1,000원당 5P (더 베스트 기준), applied to both
+ * domestic (L4) and overseas (L5) Marriott payments.
+ * round(amount / 1000 × 5) — numerically identical to round(amount × 0.005).
+ */
+export function expectedMarriottPoints(eligibleAmount: number): number {
+  return Math.round(
+    (eligibleAmount / 1000) * activeCardProfile.marriottPointsPer1000
+  );
+}
 
+/** Spec-named alias kept for the L5 (overseas) case. */
 export function expectedL5Points(eligibleAmount: number): number {
-  return Math.round(eligibleAmount * L5_RATE);
+  return expectedMarriottPoints(eligibleAmount);
 }
 
 /**
@@ -44,7 +54,14 @@ export function analyzeTransactions(
       };
     }
 
-    if (tx.pointType === "L5") {
+    const isDomestic = classification.region === "domestic";
+
+    // Domestic Marriott accrues as L4, overseas as L5 — both 5P/1,000원.
+    // Either grade on a matching merchant means the special accrual applied.
+    const properGrades = isDomestic
+      ? [activeCardProfile.domesticGrade, activeCardProfile.overseasGrade]
+      : [activeCardProfile.overseasGrade];
+    if (properGrades.includes(tx.pointType)) {
       return {
         ...tx,
         classification,
@@ -53,12 +70,18 @@ export function analyzeTransactions(
       };
     }
 
-    const expectedPoints = expectedL5Points(tx.eligibleAmount);
+    const expectedPointType = isDomestic ? ("L4" as const) : ("L5" as const);
+    const expectedPoints = expectedMarriottPoints(tx.eligibleAmount);
     const difference = expectedPoints - tx.actualPoints;
     const base = {
       ...tx,
-      classification,
-      expectedPointType: "L5" as const,
+      classification: isDomestic
+        ? {
+            ...classification,
+            reason: `${classification.reason} 국내 Marriott 결제는 L4(1,000원당 5P) 적립이 정상입니다.`,
+          }
+        : classification,
+      expectedPointType,
       expectedPoints,
       difference,
     };
@@ -68,9 +91,9 @@ export function analyzeTransactions(
       (classification.confidence === "certain" ||
         classification.confidence === "high");
 
-    // Confident Marriott, non-L5, positive gap → suspected missing accrual.
-    // Everything else Marriott-ish (medium/low confidence, or no positive gap)
-    // goes to the review bucket rather than being asserted as missing.
+    // Confident Marriott with a wrong grade and positive gap → suspected
+    // missing accrual. Domestic rows stay here too — the merchant match is
+    // confident even though the estimated gap uses the conservative L4 floor.
     if (isConfident && difference > 0) {
       return {
         ...base,

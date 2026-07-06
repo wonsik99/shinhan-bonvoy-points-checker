@@ -2,6 +2,8 @@ import type { MerchantClassification } from "@/types/transaction";
 import {
   hotelLikeKeywords,
   knownMerchantRules,
+  koreanKnownMerchantRules,
+  koreanMarriottKeywords,
   marriottKeywords,
 } from "@/rules/marriott";
 
@@ -51,6 +53,21 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
         normalizedName: rule.normalizedName,
         matchedPattern: rule.pattern,
         reason: rule.reason,
+        region: "overseas",
+      };
+    }
+  }
+
+  for (const rule of koreanKnownMerchantRules) {
+    if (matchesKeyword(normalized, normalizeMerchantName(rule.pattern))) {
+      return {
+        isLikelyMarriott: rule.brandGroup === "marriott",
+        confidence: rule.confidence,
+        status: rule.status,
+        normalizedName: rule.normalizedName,
+        matchedPattern: rule.pattern,
+        reason: rule.reason,
+        region: "domestic",
       };
     }
   }
@@ -63,6 +80,20 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
         status: "active",
         matchedPattern: keyword,
         reason: `가맹점명에 Marriott 계열 브랜드 키워드(${keyword})가 포함되어 있습니다.`,
+        region: "overseas",
+      };
+    }
+  }
+
+  for (const keyword of koreanMarriottKeywords) {
+    if (matchesKeyword(normalized, keyword)) {
+      return {
+        isLikelyMarriott: true,
+        confidence: "certain",
+        status: "active",
+        matchedPattern: keyword,
+        reason: `가맹점명에 국내 Marriott 계열 브랜드 키워드(${keyword})가 포함되어 있습니다.`,
+        region: "domestic",
       };
     }
   }

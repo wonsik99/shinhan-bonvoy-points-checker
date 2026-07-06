@@ -6,9 +6,14 @@ interface FileUploadProps {
   fileName: string | null;
   isParsing: boolean;
   error: string | null;
+  /** Privacy-safe report text (headers only, digits masked) for unsupported layouts. */
+  errorDiagnostic?: string | null;
   onFile: (file: File) => void;
   onReset: () => void;
 }
+
+const ISSUES_URL =
+  "https://github.com/wonsik99/shinhan-bonvoy-l5-checker/issues/new";
 
 const ACCEPTED_EXTENSIONS = [".xlsx", ".xls"];
 
@@ -16,12 +21,25 @@ export default function FileUpload({
   fileName,
   isParsing,
   error,
+  errorDiagnostic,
   onFile,
   onReset,
 }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [diagnosticCopied, setDiagnosticCopied] = useState(false);
+
+  const copyDiagnostic = async () => {
+    if (!errorDiagnostic) return;
+    try {
+      await navigator.clipboard.writeText(errorDiagnostic);
+      setDiagnosticCopied(true);
+      setTimeout(() => setDiagnosticCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable — the text remains visible for manual selection.
+    }
+  };
 
   const handleFile = (file: File | undefined) => {
     setLocalError(null);
@@ -131,6 +149,36 @@ export default function FileUpload({
         <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <p className="font-medium">파일을 분석하지 못했습니다.</p>
           <p className="mt-0.5">{displayError}</p>
+          {errorDiagnostic && (
+            <div className="mt-3 border-t border-red-200 pt-3 text-red-800">
+              <p>
+                신한카드 엑셀인데도 실패했다면 파일 형식이 저희가 모르는
+                변형일 수 있어요. 아래 버튼으로 <b>개인정보가 제거된 진단
+                정보</b>(컬럼명만, 숫자 마스킹)를 복사해서 제보해주시면 빠르게
+                지원을 추가하겠습니다.
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={copyDiagnostic}
+                  className="rounded-lg bg-red-700 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-red-800"
+                >
+                  {diagnosticCopied ? "복사됨 ✓" : "제보용 진단 정보 복사"}
+                </button>
+                <a
+                  href={ISSUES_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100"
+                >
+                  GitHub에 제보하기 ↗
+                </a>
+              </div>
+              <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded-lg bg-white/60 p-2 font-mono text-[11px] leading-relaxed text-red-900">
+                {errorDiagnostic}
+              </pre>
+            </div>
+          )}
         </div>
       )}
     </div>

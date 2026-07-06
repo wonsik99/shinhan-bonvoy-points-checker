@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { extractRecords } from "@/lib/parseShinhanExcel";
+import { buildDiagnostic, extractRecords } from "@/lib/parseShinhanExcel";
 import { normalizeRows } from "@/lib/normalizeTransaction";
 import { analyzeTransactions } from "@/lib/analyzeTransactions";
 
@@ -86,5 +86,29 @@ describe("extractRecords — flat layout", () => {
     ]);
     expect(records).toHaveLength(1);
     expect(() => normalizeRows(records)).toThrow(/가맹점명 컬럼을 찾을 수 없습니다/);
+  });
+});
+
+describe("buildDiagnostic", () => {
+  it("includes header-like rows with digits masked and excludes data rows", () => {
+    const diagnostic = buildDiagnostic(
+      INTERLEAVED_MATRIX,
+      "적립내역_홍길동.xlsx",
+      "테스트 에러"
+    );
+    expect(diagnostic).toContain("거래일자");
+    expect(diagnostic).toContain("가맹점명");
+    expect(diagnostic).toContain(".xlsx");
+    expect(diagnostic).toContain("테스트 에러");
+    // Transaction data must never leak into the report
+    expect(diagnostic).not.toContain("HOTEL CLEVELAND");
+    expect(diagnostic).not.toContain("234068");
+    expect(diagnostic).not.toContain("1234-5678");
+    expect(diagnostic).not.toContain("네이버페이");
+  });
+
+  it("says so when no header rows are found", () => {
+    const diagnostic = buildDiagnostic([["a", "b"]], "x.xls", "에러");
+    expect(diagnostic).toContain("헤더로 보이는 행을 찾지 못했습니다");
   });
 });

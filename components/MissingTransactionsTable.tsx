@@ -31,7 +31,7 @@ export default function MissingTransactionsTable({
             <th className="px-4 py-3 text-right font-medium">금액</th>
             <th className="px-4 py-3 font-medium">실제 등급</th>
             <th className="px-4 py-3 text-right font-medium">실제 포인트</th>
-            <th className="px-4 py-3 text-right font-medium">L5 예상</th>
+            <th className="px-4 py-3 text-right font-medium">정상 예상</th>
             <th className="px-4 py-3 text-right font-medium">차이</th>
             <th className="px-4 py-3 font-medium">신뢰도</th>
             <th className="px-4 py-3 font-medium">이유</th>
@@ -72,6 +72,9 @@ export default function MissingTransactionsTable({
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right tabular-nums">
                   {formatNumber(row.expectedPoints ?? 0)}P
+                  <span className="ml-1 text-xs text-neutral-400">
+                    ({row.expectedPointType ?? "L5"})
+                  </span>
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-right font-semibold tabular-nums text-red-700">
                   +{formatNumber(row.difference ?? 0)}P

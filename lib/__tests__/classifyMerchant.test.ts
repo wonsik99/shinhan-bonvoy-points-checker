@@ -80,6 +80,35 @@ describe("classifyMerchant", () => {
     expect(classifyMerchant("W HOTEL HOLLYWOOD").confidence).toBe("certain");
   });
 
+  it.each([
+    "코트야드메리어트서울남대문",
+    "제이더블유메리어트호텔",
+    "웨스틴조선서울",
+    "알로프트서울명동",
+    "(주)목시서울인사동",
+  ])("classifies domestic Korean Marriott merchants (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("certain");
+    expect(result.region).toBe("domestic");
+  });
+
+  it("classifies 조선팰리스 via domestic known rules", () => {
+    const result = classifyMerchant("조선팰리스서울강남");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+  });
+
+  it("marks overseas English matches as overseas region", () => {
+    expect(classifyMerchant("COURTYARD BY MARRIOTT").region).toBe("overseas");
+  });
+
+  it("does not flag ordinary Korean merchants", () => {
+    expect(classifyMerchant("스타벅스 강남점").confidence).toBe("none");
+    expect(classifyMerchant("네이버페이").confidence).toBe("none");
+  });
+
   it("handles empty merchant names", () => {
     const result = classifyMerchant("   ");
     expect(result.isLikelyMarriott).toBe(false);

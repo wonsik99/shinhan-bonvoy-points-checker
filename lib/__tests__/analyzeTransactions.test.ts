@@ -85,6 +85,47 @@ describe("analyzeTransactions", () => {
   });
 });
 
+describe("domestic Marriott (L4) handling", () => {
+  it("treats L4 on a domestic Marriott merchant as properly credited", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "코트야드메리어트서울남대문", pointType: "L4", actualPoints: 839 }),
+    ]);
+    expect(result.analysisStatus).toBe("ok_l5");
+  });
+
+  it("treats L5 on a domestic Marriott merchant as properly credited too", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "웨스틴조선서울", pointType: "L5", actualPoints: 1049 }),
+    ]);
+    expect(result.analysisStatus).toBe("ok_l5");
+  });
+
+  it("flags L1-credited domestic Marriott expecting L4 at 5P/1,000원", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "코트야드메리어트서울남대문", pointType: "L1", actualPoints: 210 }),
+    ]);
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049); // round(209755 / 1000 × 5)
+    expect(result.difference).toBe(1049 - 210);
+    expect(result.classification.reason).toContain("L4");
+  });
+
+  it("still expects L5 for overseas Marriott merchants", () => {
+    const [result] = analyzeTransactions([tx({})]);
+    expect(result.expectedPointType).toBe("L5");
+    expect(result.analysisStatus).toBe("missing_suspected");
+  });
+
+  it("does not treat L4 on an overseas Marriott merchant as proper", () => {
+    const [result] = analyzeTransactions([
+      tx({ pointType: "L4", actualPoints: 839 }),
+    ]);
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.difference).toBe(1049 - 839);
+  });
+});
+
 describe("applyFeedback", () => {
   it("includes review rows only after ✅ include", () => {
     const results = analyzeTransactions([

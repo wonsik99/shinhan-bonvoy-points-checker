@@ -13,12 +13,12 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
       value: `${formatNumber(summary.marriottCount)}건`,
     },
     {
-      label: "정상 L5",
+      label: "정상 적립",
       value: `${formatNumber(summary.okL5Count)}건`,
       tone: "text-emerald-700",
     },
     {
-      label: "L5 누락 의심",
+      label: "적립 누락 의심",
       value: `${formatNumber(summary.missingSuspectedCount)}건`,
       tone: "text-red-700",
     },

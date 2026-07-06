@@ -26,7 +26,7 @@ describe("buildInquiryMessage", () => {
 
     expect(message).toContain("신한 메리어트 본보이 카드 포인트 적립 관련 문의드립니다");
     expect(message).toContain(
-      "- 2026-04-17 / POSTCARD CABINS THE TH / 209,755원 / 실제 L2 / 예상 차이 420P"
+      "- 2026-04-17 / POSTCARD CABINS THE TH / 209,755원 / 실제 L2 → L5 예상 / 차이 420P"
     );
     expect(message).toContain("총 420포인트가 덜 적립된 것으로 보입니다");
   });

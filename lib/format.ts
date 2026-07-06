@@ -26,8 +26,8 @@ export const confidenceLabels: Record<Confidence, string> = {
 };
 
 export const statusLabels: Record<AnalysisStatus, string> = {
-  ok_l5: "정상 L5",
-  missing_suspected: "L5 누락 의심",
+  ok_l5: "정상 적립",
+  missing_suspected: "적립 누락 의심",
   needs_review: "확인 필요",
   not_marriott: "일반 거래",
   canceled: "취소 거래",

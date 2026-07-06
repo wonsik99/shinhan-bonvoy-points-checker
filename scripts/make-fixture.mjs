@@ -33,6 +33,9 @@ const transactions = [
   [12, 46055, 46056, "네이버페이", "", 6500, "L1", 6, "N"],
   // Canceled Marriott transaction → excluded
   [13, 46036, 46038, "VISA해외사용일시불", "SHERATON GRAND INCHEON", 410000, "L2", 1230, "Y"],
+  // Domestic Marriott: L1-credited → missing suspected (L4 = 5P/1,000원); L4 → ok
+  [14, 46150, 46152, "코트야드메리어트서울남대문", "", 300000, "L1", 300, "N"],
+  [15, 46160, 46162, "웨스틴조선서울", "", 200000, "L4", 1000, "N"],
 ];
 
 const rows = [HEADER_A, HEADER_B];

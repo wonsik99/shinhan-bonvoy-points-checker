@@ -34,12 +34,17 @@ export interface MerchantClassification {
   normalizedName?: string;
   matchedPattern?: string;
   reason: string;
+  /**
+   * Domestic (Korean-named) Marriott merchants accrue as L4 (특별적립),
+   * overseas ones as L5 — the analysis expects a different grade per region.
+   */
+  region?: "domestic" | "overseas";
 }
 
 export interface AnalysisResult extends NormalizedTransaction {
   classification: MerchantClassification;
   analysisStatus: AnalysisStatus;
-  expectedPointType?: "L5";
+  expectedPointType?: "L5" | "L4";
   expectedPoints?: number;
   difference?: number;
   userFeedback?: UserFeedbackAction;

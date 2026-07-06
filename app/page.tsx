@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { AnalysisResult, UserFeedbackAction } from "@/types/transaction";
-import { parseShinhanExcel } from "@/lib/parseShinhanExcel";
+import { parseShinhanExcel, ShinhanParseError } from "@/lib/parseShinhanExcel";
 import {
   analyzeTransactions,
   applyFeedback,
@@ -26,6 +26,7 @@ export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorDiagnostic, setErrorDiagnostic] = useState<string | null>(null);
   const [columnWarning, setColumnWarning] = useState<string | null>(null);
 
   const results = useMemo(
@@ -51,6 +52,7 @@ export default function Home() {
   const handleFile = async (file: File) => {
     setIsParsing(true);
     setError(null);
+    setErrorDiagnostic(null);
     try {
       const { transactions, columnWarning: warning } =
         await parseShinhanExcel(file);
@@ -66,6 +68,7 @@ export default function Home() {
       setError(
         e instanceof Error ? e.message : "알 수 없는 오류가 발생했습니다."
       );
+      setErrorDiagnostic(e instanceof ShinhanParseError ? e.diagnostic : null);
     } finally {
       setIsParsing(false);
     }
@@ -76,6 +79,7 @@ export default function Home() {
     setFeedbackById({});
     setFileName(null);
     setError(null);
+    setErrorDiagnostic(null);
     setColumnWarning(null);
   };
 
@@ -122,9 +126,28 @@ export default function Home() {
         fileName={fileName}
         isParsing={isParsing}
         error={error}
+        errorDiagnostic={errorDiagnostic}
         onFile={handleFile}
         onReset={handleReset}
       />
+
+      {!hasResults && (
+        <div className="mt-4 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-600">
+          <p className="font-medium text-neutral-800">
+            💡 엑셀 파일은 어디서 받나요?
+          </p>
+          <p className="mt-1">
+            신한카드 고객센터{" "}
+            <a href="tel:15447000" className="font-semibold text-blue-700">
+              1544-7000
+            </a>
+            에 전화해서 &ldquo;메리어트 본보이 카드{" "}
+            <b>포인트 적립 상세내역</b>을 엑셀 파일로 보내달라&rdquo;고
+            요청하면 이메일로 받을 수 있습니다. 앱/홈페이지에서는 제공되지
+            않는 자료입니다.
+          </p>
+        </div>
+      )}
 
       {columnWarning && (
         <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
@@ -138,9 +161,9 @@ export default function Home() {
             <SummaryCards summary={summary} />
           </section>
 
-          <section aria-label="L5 누락 의심 거래">
+          <section aria-label="적립 누락 의심 거래">
             <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              🔴 L5 누락 의심{" "}
+              🔴 적립 누락 의심{" "}
               <span className="text-neutral-400">
                 {summary.missingSuspectedCount}건
               </span>

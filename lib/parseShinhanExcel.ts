@@ -21,6 +21,70 @@ const CRITICAL_COLUMN_LABELS: Record<string, string> = {
 const MERCHANT_HEADER_LABELS = ["가맹점명", "이용가맹점명", "이용가맹점"];
 const DATE_HEADER_LABELS = ["거래일자", "거래일", "이용일자", "이용일"];
 
+/**
+ * Parse failure that carries a privacy-safe diagnostic: only header-looking
+ * rows (digit-masked), never amounts, merchant names, or card numbers.
+ * Users can paste it into a GitHub issue to report unsupported layouts.
+ */
+export class ShinhanParseError extends Error {
+  diagnostic: string;
+
+  constructor(message: string, diagnostic: string) {
+    super(message);
+    this.name = "ShinhanParseError";
+    this.diagnostic = diagnostic;
+  }
+}
+
+const HEADER_HINTS = [
+  "거래일",
+  "매입일",
+  "이용일",
+  "가맹점",
+  "포인트",
+  "금액",
+  "취소",
+  "카드번호",
+  "집계",
+  "할부",
+];
+
+/** Builds a report string from header-like rows only, with all digits masked. */
+export function buildDiagnostic(
+  matrix: unknown[][],
+  fileName: string,
+  errorMessage: string
+): string {
+  const headerRows: string[] = [];
+  const scanLimit = Math.min(matrix.length, 10);
+  for (let i = 0; i < scanLimit; i++) {
+    const cells = matrix[i].map((c) => String(c ?? "").trim());
+    const hintCount = cells.filter((c) =>
+      HEADER_HINTS.some((hint) => c.includes(hint))
+    ).length;
+    if (hintCount >= 2) {
+      const masked = cells
+        .map((c) => c.replace(/\d{2,}/g, "**").slice(0, 30))
+        .join(" | ");
+      headerRows.push(`${i + 1}행: ${masked}`);
+    }
+  }
+
+  const extension = fileName.includes(".")
+    ? fileName.slice(fileName.lastIndexOf(".")).toLowerCase()
+    : "(없음)";
+
+  return [
+    "[Bonvoy L5 Checker 파싱 실패 제보]",
+    `에러: ${errorMessage}`,
+    `파일 형식: ${extension} / 전체 행 수: ${matrix.length}`,
+    headerRows.length > 0
+      ? `헤더로 보이는 행 (숫자는 **로 마스킹됨):\n${headerRows.join("\n")}`
+      : "헤더로 보이는 행을 찾지 못했습니다.",
+    "※ 금액, 가맹점명, 카드번호 등 거래 데이터는 포함되지 않습니다.",
+  ].join("\n");
+}
+
 function rowHasLabel(row: unknown[], labels: string[]): boolean {
   return row.some((cell) => labels.includes(cleanHeaderLabel(String(cell ?? ""))));
 }
@@ -130,19 +194,29 @@ export async function parseShinhanExcel(file: File): Promise<ParseResult> {
     defval: "",
   });
 
+  const fail = (message: string): never => {
+    throw new ShinhanParseError(message, buildDiagnostic(matrix, file.name, message));
+  };
+
   if (matrix.length === 0) {
-    throw new Error("엑셀 파일에 데이터가 없습니다.");
+    fail("엑셀 파일에 데이터가 없습니다.");
   }
 
   const records = extractRecords(matrix);
   if (records.length === 0) {
-    throw new Error("엑셀 파일에 데이터가 없습니다.");
+    fail("엑셀 파일에 데이터가 없습니다.");
   }
 
-  const { transactions, missingColumns } = normalizeRows(records);
+  let normalized;
+  try {
+    normalized = normalizeRows(records);
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "컬럼을 해석하지 못했습니다.");
+  }
+  const { transactions, missingColumns } = normalized;
 
   if (transactions.length === 0) {
-    throw new Error("분석할 수 있는 거래 내역을 찾지 못했습니다.");
+    fail("분석할 수 있는 거래 내역을 찾지 못했습니다.");
   }
 
   const missingCritical = missingColumns

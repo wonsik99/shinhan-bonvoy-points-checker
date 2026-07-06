@@ -2,6 +2,11 @@ export default function Disclaimer() {
   return (
     <footer className="space-y-2 border-t border-neutral-200 pt-6 text-xs leading-relaxed text-neutral-500">
       <p>
+        이 검사기는 메리어트 본보이™ 더 베스트 신한카드의 적립 기준(국내
+        메리어트 L4, 해외 메리어트 L5, 1,000원당 5P)으로 계산합니다. 더
+        클래식 카드는 적립량이 달라 결과가 정확하지 않을 수 있습니다.
+      </p>
+      <p>
         이 결과는 카드사 문의를 돕기 위한 참고 자료입니다. 실제 적립 여부는
         카드사 내부 가맹점 업종코드, 매입 경로, 약관 기준에 따라 달라질 수
         있습니다.
