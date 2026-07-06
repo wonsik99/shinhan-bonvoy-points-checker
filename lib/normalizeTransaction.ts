@@ -5,6 +5,7 @@ type CanonicalField =
   | "transactionDate"
   | "postingDate"
   | "merchantName"
+  | "overseasMerchantName"
   | "originalAmount"
   | "eligibleAmount"
   | "pointType"
@@ -21,17 +22,18 @@ const COLUMN_ALIASES: Record<CanonicalField, string[]> = {
   transactionDate: ["거래일자", "거래일"],
   postingDate: ["매입일자", "매입일"],
   merchantName: ["가맹점명", "이용가맹점명", "이용가맹점"],
+  overseasMerchantName: ["해외가맹점명", "해외이용가맹점명"],
   originalAmount: ["원매출금액", "이용금액", "매출금액"],
   eligibleAmount: ["포인트적립대상금액", "적립대상금액"],
   pointType: ["포인트종류상세", "포인트종류"],
-  actualPoints: ["적립포인트", "포인트"],
+  actualPoints: ["적립포인트", "포인트적립금액", "포인트"],
   canceled: ["취소전표여부", "취소여부"],
   aggregationDate: ["집계작업일자", "집계일자"],
   cardNumber: ["카드번호"],
 };
 
 /** Removes zero-width characters, BOM, NBSP, and all whitespace. */
-function cleanHeader(header: string): string {
+export function cleanHeaderLabel(header: string): string {
   return header.replace(/[\u200B-\u200D\uFEFF\u00A0\s]/g, "");
 }
 
@@ -40,7 +42,7 @@ export function buildColumnMap(
 ): Partial<Record<CanonicalField, string>> {
   const cleanedToOriginal = new Map<string, string>();
   for (const header of headers) {
-    const cleaned = cleanHeader(header);
+    const cleaned = cleanHeaderLabel(header);
     if (cleaned && !cleanedToOriginal.has(cleaned)) {
       cleanedToOriginal.set(cleaned, header);
     }
@@ -52,7 +54,7 @@ export function buildColumnMap(
     string[],
   ][]) {
     for (const alias of aliases) {
-      const original = cleanedToOriginal.get(cleanHeader(alias));
+      const original = cleanedToOriginal.get(cleanHeaderLabel(alias));
       if (original !== undefined) {
         map[field] = original;
         break;
@@ -217,7 +219,11 @@ export function normalizeRows(
   const transactions: NormalizedTransaction[] = [];
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    const merchantName = String(get(row, "merchantName") ?? "").trim();
+    // Overseas payments carry the channel ("VISA해외사용일시불") in 가맹점명 and
+    // the actual hotel in 해외가맹점명 — prefer the latter when present.
+    const domesticName = String(get(row, "merchantName") ?? "").trim();
+    const overseasName = String(get(row, "overseasMerchantName") ?? "").trim();
+    const merchantName = overseasName || domesticName;
     const originalAmount = parseMoney(get(row, "originalAmount"));
     const eligibleRaw = get(row, "eligibleAmount");
     const eligibleAmount =

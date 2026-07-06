@@ -1,49 +1,50 @@
 // Generates a local-only sample Shinhan point-accrual Excel file for manual testing.
+// Mirrors the real export layout: two header rows, then two rows per transaction,
+// with overseas hotel names in 해외가맹점명 and the channel in 가맹점명.
 // Output lands in docs/_local/ which is gitignored — never commit real or fake statements.
 import * as XLSX from "xlsx";
 import * as fs from "node:fs";
 
 XLSX.set_fs(fs);
 
-const rows = [
-  // Certain Marriott, credited L2 → missing suspected
-  ["2026-04-17", "2026-04-18", "COURTYARD BY MARRIOTT", 234068, 234068, "L2", 702, "N", "2026-04-19", "1234-5678-9012-3456"],
-  ["2026-04-02", "2026-04-03", "FAIRFIELD INN ANN ARBO", 209755, 209755, "L2", 629, "N", "2026-04-04", "1234-5678-9012-3456"],
-  ["2026-03-21", "2026-03-22", "FAIRFIELD INN & SUITES", 180000, 180000, "L1", 180, "N", "2026-03-23", "1234-5678-9012-3456"],
-  ["2026-03-11", "2026-03-12", "FAIRFIELD BELLE VERNON", 150000, 150000, "L2", 450, "N", "2026-03-13", "1234-5678-9012-3456"],
-  ["2026-02-27", "2026-02-28", "TOWNEPLACE SUITES GENE", 792371, 792371, "L2", 2377, "N", "2026-03-01", "1234-5678-9012-3456"],
+const HEADER_A = ["", "거래일자", "영업상품코드", "매출전표번호", "가맹점번호", "해외가맹점번호", "원매출금액", "포인트종류상세", "취소전표여부"];
+const HEADER_B = ["", "매입일자", "할부개월", "카드번호", "가맹점명", "해외가맹점명", "포인트적립대상금액", "포인트적립금액", "집계작업일자"];
+
+const CARD = "1234-5678-9012-3456";
+
+// [seq, txDate, postDate, domesticName, overseasName, amount, pointType, points, canceled]
+const transactions = [
+  // Certain Marriott, credited L2/L1 → missing suspected
+  [1, 46123, 46126, "VISA해외사용일시불", "COURTYARD BY MARRIOTT", 234068, "L2", 702, "N"],
+  [2, 46108, 46110, "VISA해외사용일시불", "FAIRFIELD INN ANN ARBO", 209755, "L2", 629, "N"],
+  [3, 46096, 46098, "VISA해외사용일시불", "FAIRFIELD INN & SUITES", 180000, "L1", 180, "N"],
+  [4, 46086, 46088, "VISA해외사용일시불", "FAIRFIELD BELLE VERNON", 150000, "L2", 450, "N"],
+  [5, 46074, 46076, "VISA해외사용일시불", "TOWNEPLACE SUITES GENE", 792371, "L2", 2377, "N"],
   // Known merchant rules, credited L2 → missing suspected
-  ["2026-04-10", "2026-04-11", "POSTCARD CABINS THE TH", 209755, 209755, "L2", 629, "N", "2026-04-12", "1234-5678-9012-3456"],
-  ["2026-04-05", "2026-04-06", "TIAD", 320000, 320000, "L2", 960, "N", "2026-04-07", "1234-5678-9012-3456"],
-  ["2026-03-30", "2026-03-31", "HOTEL CLEVELAND", 275500, 275500, "L2", 826, "N", "2026-04-01", "1234-5678-9012-3456"],
+  [6, 46116, 46118, "VISA해외사용일시불", "POSTCARD CABINS THE TH", 209755, "L2", 629, "N"],
+  [7, 46111, 46113, "VISA해외사용일시불", "TIAD", 320000, "L2", 960, "N"],
+  [8, 46105, 46107, "VISA해외사용일시불", "HOTEL CLEVELAND", 275500, "L2", 826, "N"],
   // Properly credited L5 → ok
-  ["2026-03-05", "2026-03-06", "JW MARRIOTT SEOUL", 500000, 500000, "L5", 2500, "N", "2026-03-07", "1234-5678-9012-3456"],
+  [9, 46080, 46082, "VISA해외사용일시불", "JW MARRIOTT SEOUL", 500000, "L5", 2500, "N"],
   // Ambiguous → needs review
-  ["2026-02-14", "2026-02-15", "HOTEL 55 CHICAGO", 209755, 209755, "L2", 629, "N", "2026-02-16", "1234-5678-9012-3456"],
-  // Not Marriott
-  ["2026-02-10", "2026-02-11", "ZIPPY AUTO WASH - ELLSWO", 15000, 15000, "L1", 15, "N", "2026-02-12", "1234-5678-9012-3456"],
-  ["2026-02-08", "2026-02-09", "스타벅스 강남점", 6500, 6500, "L1", 6, "N", "2026-02-10", "1234-5678-9012-3456"],
+  [10, 46061, 46063, "VISA해외사용일시불", "HOTEL 55 CHICAGO", 209755, "L2", 629, "N"],
+  // Not Marriott (overseas + domestic)
+  [11, 46057, 46059, "VISA해외사용일시불", "ZIPPY AUTO WASH - ELLSWO", 15000, "L1", 15, "N"],
+  [12, 46055, 46056, "네이버페이", "", 6500, "L1", 6, "N"],
   // Canceled Marriott transaction → excluded
-  ["2026-01-20", "2026-01-21", "SHERATON GRAND INCHEON", 410000, 410000, "L2", 1230, "Y", "2026-01-22", "1234-5678-9012-3456"],
+  [13, 46036, 46038, "VISA해외사용일시불", "SHERATON GRAND INCHEON", 410000, "L2", 1230, "Y"],
 ];
 
-const headers = [
-  "거래일자",
-  "매입일자",
-  "가맹점명",
-  "원매출금액",
-  "포인트적립대상금액",
-  "포인트종류상세",
-  "적립포인트",
-  "취소전표여부",
-  "집계작업일자",
-  "카드번호",
-];
+const rows = [HEADER_A, HEADER_B];
+for (const [seq, txDate, postDate, domestic, overseas, amount, pointType, points, canceled] of transactions) {
+  rows.push([String(seq), txDate, "52001", `0072IV${String(seq).padStart(6, "0")}`, "001234567", overseas ? "6812345" : "", amount, pointType, canceled]);
+  rows.push(["", postDate, "0", CARD, domestic, overseas, amount, points, 46170]);
+}
 
-const sheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+const sheet = XLSX.utils.aoa_to_sheet(rows);
 const workbook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(workbook, sheet, "포인트적립상세");
+XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
 
 fs.mkdirSync("docs/_local", { recursive: true });
 XLSX.writeFile(workbook, "docs/_local/sample.xlsx");
-console.log("Wrote docs/_local/sample.xlsx with", rows.length, "rows");
+console.log("Wrote docs/_local/sample.xlsx with", transactions.length, "transactions (interleaved layout)");
