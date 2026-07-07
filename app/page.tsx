@@ -9,7 +9,7 @@ import {
   summarizeResults,
 } from "@/lib/analyzeTransactions";
 import { buildInquiryMessage } from "@/lib/inquiryMessage";
-import { isFeedbackPersistenceEnabled, submitFeedback } from "@/lib/feedback";
+import { isFeedbackPersistenceEnabled, submitJudgments } from "@/lib/feedback";
 import FileUpload from "@/components/FileUpload";
 import SummaryCards from "@/components/SummaryCards";
 import MissingTransactionsTable from "@/components/MissingTransactionsTable";
@@ -28,6 +28,10 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [errorDiagnostic, setErrorDiagnostic] = useState<string | null>(null);
   const [columnWarning, setColumnWarning] = useState<string | null>(null);
+  const [sendState, setSendState] = useState<
+    "idle" | "sending" | "sent" | "failed"
+  >("idle");
+  const [sentSnapshot, setSentSnapshot] = useState<string | null>(null);
 
   const results = useMemo(
     () => applyFeedback(baseResults, feedbackById),
@@ -50,6 +54,19 @@ export default function Home() {
   const hasResults = baseResults.length > 0;
   const collectionEnabled = isFeedbackPersistenceEnabled();
 
+  // Stable fingerprint of the user's judgments so we can tell whether the
+  // current set has already been sent (and re-enable the button if it changes).
+  const judgmentSnapshot = useMemo(
+    () =>
+      Object.keys(feedbackById)
+        .sort()
+        .map((id) => `${id}:${feedbackById[id]}`)
+        .join("|"),
+    [feedbackById]
+  );
+  const judgmentCount = Object.keys(feedbackById).length;
+  const alreadySent = sendState === "sent" && sentSnapshot === judgmentSnapshot;
+
   const handleFile = async (file: File) => {
     setIsParsing(true);
     setError(null);
@@ -61,6 +78,8 @@ export default function Home() {
       setFeedbackById({});
       setFileName(file.name);
       setColumnWarning(warning ?? null);
+      setSendState("idle");
+      setSentSnapshot(null);
     } catch (e) {
       setBaseResults([]);
       setFeedbackById({});
@@ -82,10 +101,14 @@ export default function Home() {
     setError(null);
     setErrorDiagnostic(null);
     setColumnWarning(null);
+    setSendState("idle");
+    setSentSnapshot(null);
   };
 
+  // Feedback buttons only update local state (totals + inquiry message).
+  // Nothing is sent to the collector until the user presses the explicit
+  // "help others" button below, so indecisive clicking never leaves a trail.
   const handleFeedback = (row: AnalysisResult, action: UserFeedbackAction) => {
-    const isRetraction = feedbackById[row.id] === action;
     setFeedbackById((prev) => {
       const next = { ...prev };
       if (next[row.id] === action) {
@@ -95,10 +118,22 @@ export default function Home() {
       }
       return next;
     });
-    // A second click on the same button retracts local feedback; recording it
-    // would count the undo as another affirmative vote in the aggregate.
-    if (!isRetraction) {
-      submitFeedback(row, action);
+  };
+
+  const handleSubmitJudgments = async () => {
+    if (judgmentCount === 0 || sendState === "sending") {
+      return;
+    }
+    const items = results
+      .filter((r) => feedbackById[r.id])
+      .map((r) => ({ result: r, action: feedbackById[r.id] }));
+    setSendState("sending");
+    const ok = await submitJudgments(items);
+    if (ok) {
+      setSentSnapshot(judgmentSnapshot);
+      setSendState("sent");
+    } else {
+      setSendState("failed");
     }
   };
 
@@ -195,6 +230,44 @@ export default function Home() {
             <InquiryMessage message={inquiryMessage} />
           </section>
 
+          {collectionEnabled && judgmentCount > 0 && (
+            <section aria-label="판단 제보">
+              <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-5">
+                <p className="text-sm text-neutral-700">
+                  확인해주신 판단 <b>{judgmentCount}건</b>을 익명으로
+                  보내주시면, 애매한 가맹점을 더 정확히 판별하는 데 쓰여 다른
+                  사용자에게 도움이 됩니다. 가맹점명과 판정 결과만 전송되고,
+                  업로드 파일·금액 상세·카드번호는 전송되지 않습니다.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleSubmitJudgments}
+                  disabled={sendState === "sending" || alreadySent}
+                  className={`mt-3 rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-80 ${
+                    alreadySent
+                      ? "bg-emerald-600 text-white"
+                      : "bg-blue-700 text-white hover:bg-blue-800"
+                  }`}
+                >
+                  {sendState === "sending"
+                    ? "보내는 중…"
+                    : alreadySent
+                      ? "✓ 도와주셔서 감사합니다"
+                      : sendState === "sent"
+                        ? `변경사항 다시 보내기 (${judgmentCount}건)`
+                        : sendState === "failed"
+                          ? `전송 실패 · 다시 시도 (${judgmentCount}건)`
+                          : `내 판단으로 서비스 돕기 (${judgmentCount}건)`}
+                </button>
+                {sendState === "failed" && (
+                  <p className="mt-1.5 text-xs text-red-600">
+                    전송에 실패했습니다. 잠시 후 다시 시도해주세요.
+                  </p>
+                )}
+              </div>
+            </section>
+          )}
+
           <section aria-label="전체 거래">
             <AllTransactionsTable results={results} />
           </section>
@@ -203,8 +276,9 @@ export default function Home() {
 
       {collectionEnabled && (
         <p className="mt-10 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-xs text-neutral-500">
-          서비스 개선을 위해 가맹점명·판정 결과 등 익명 정보가 수집될 수
-          있습니다. 업로드한 파일, 금액 상세, 카드번호는 전송되지 않습니다.
+          &lsquo;내 판단으로 서비스 돕기&rsquo;나 파싱 실패 제보 버튼을 누를
+          때만 가맹점명·판정 결과 등 익명 정보가 전송됩니다. 업로드한 파일, 금액
+          상세, 카드번호는 전송되지 않습니다.
         </p>
       )}
 

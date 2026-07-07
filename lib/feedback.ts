@@ -52,33 +52,45 @@ function post(payload: Record<string, unknown>): Promise<Response> {
   });
 }
 
-/**
- * Fire-and-forget anonymous feedback submission. Sends only the merchant name
- * and classification metadata — never amounts-by-date profiles, card numbers,
- * or the uploaded file. Silently no-ops when the collector is not configured
- * and never blocks or breaks the UI on failure.
- */
-export function submitFeedback(
-  result: AnalysisResult,
-  action: UserFeedbackAction
-): void {
-  if (!getEndpoint() || typeof window === "undefined") {
-    return;
-  }
+export interface Judgment {
+  result: AnalysisResult;
+  action: UserFeedbackAction;
+}
 
-  void post({
-    type: "feedback",
-    merchant_raw_name: result.merchantName,
-    normalized_merchant_name: result.classification.normalizedName ?? null,
-    user_action: action,
-    detected_status: result.analysisStatus,
-    detected_confidence: result.classification.confidence,
-    point_type: result.pointType || null,
-    expected_difference: result.difference ?? null,
-    anonymous_session_id: getAnonymousSessionId(),
-  }).catch(() => {
-    // Best-effort; the local UI state is the source of truth.
-  });
+/**
+ * Submits the user's final judgments in one explicit action (they press a
+ * "help others" button — feedback is NOT sent live on every click, so the
+ * collector only ever sees settled decisions, not indecisive intermediate
+ * states). Sends only the merchant name and classification metadata — never
+ * amounts-by-date profiles, card numbers, or the uploaded file. Returns true
+ * when the requests were dispatched, false on network failure or when the
+ * collector is disabled.
+ */
+export async function submitJudgments(items: Judgment[]): Promise<boolean> {
+  if (!getEndpoint() || typeof window === "undefined" || items.length === 0) {
+    return false;
+  }
+  const sessionId = getAnonymousSessionId();
+  try {
+    await Promise.all(
+      items.map(({ result, action }) =>
+        post({
+          type: "feedback",
+          merchant_raw_name: result.merchantName,
+          normalized_merchant_name: result.classification.normalizedName ?? null,
+          user_action: action,
+          detected_status: result.analysisStatus,
+          detected_confidence: result.classification.confidence,
+          point_type: result.pointType || null,
+          expected_difference: result.difference ?? null,
+          anonymous_session_id: sessionId,
+        })
+      )
+    );
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
