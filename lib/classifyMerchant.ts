@@ -4,13 +4,19 @@ import {
   knownMerchantRules,
   koreanKnownMerchantRules,
   koreanMarriottKeywords,
+  marriottProperties,
   marriottKeywords,
+  type MarriottProperty,
+  type MarriottPropertyAlias,
 } from "@/rules/marriott";
 
 /** Uppercases, trims, collapses spaces, and strips invisible characters. */
 export function normalizeMerchantName(name: string): string {
   return name
     .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, " ")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFC")
     .toUpperCase()
     .replace(/\s+/g, " ")
     .trim();
@@ -26,14 +32,131 @@ function matchesKeyword(normalized: string, keyword: string): boolean {
 }
 
 /**
+ * Space-insensitive substring match for Korean tokens. Korean statement names
+ * lack the A-Z collision problem, and spacing varies ("조선 팰리스" vs
+ * "조선팰리스"), so both keyword and text are compared with spaces removed.
+ */
+function matchesKorean(normalizedNoSpace: string, keyword: string): boolean {
+  return normalizedNoSpace.includes(keyword.replace(/\s+/g, ""));
+}
+
+interface CompiledPropertyAlias {
+  property: MarriottProperty;
+  alias: MarriottPropertyAlias;
+  normalized: string;
+  compact: string;
+}
+
+function aliasKey(value: string): string {
+  return normalizeMerchantName(value).replace(/\s+/g, "");
+}
+
+const propertyAliases = marriottProperties.flatMap((property) =>
+  [
+    { value: property.officialName, match: "contains" as const },
+    ...(property.localName
+      ? [{ value: property.localName, match: "contains" as const }]
+      : []),
+    ...property.aliases,
+  ].map(
+    (alias): CompiledPropertyAlias => ({
+      property,
+      alias,
+      normalized: normalizeMerchantName(alias.value),
+      compact: aliasKey(alias.value),
+    })
+  )
+);
+
+const exactPropertyAliases = new Map<string, CompiledPropertyAlias[]>();
+const containsPropertyAliasesByFirstChar = new Map<
+  string,
+  CompiledPropertyAlias[]
+>();
+
+for (const compiled of propertyAliases) {
+  if (compiled.alias.match === "exact") {
+    const matches = exactPropertyAliases.get(compiled.compact) ?? [];
+    matches.push(compiled);
+    exactPropertyAliases.set(compiled.compact, matches);
+    continue;
+  }
+
+  const firstChar = compiled.compact[0];
+  if (!firstChar) {
+    continue;
+  }
+  const matches = containsPropertyAliasesByFirstChar.get(firstChar) ?? [];
+  matches.push(compiled);
+  containsPropertyAliasesByFirstChar.set(firstChar, matches);
+}
+
+function propertyAliasToClassification(
+  compiled: CompiledPropertyAlias
+): MerchantClassification {
+  const { property, alias } = compiled;
+  const brandGroup = alias.brandGroup ?? property.brandGroup ?? "marriott";
+  const confidence = alias.confidence ?? property.confidence ?? "high";
+  const status = alias.status ?? property.status ?? "active";
+
+  return {
+    isLikelyMarriott: brandGroup === "marriott",
+    confidence,
+    status,
+    normalizedName: property.officialName,
+    matchedPattern: alias.value,
+    reason:
+      alias.reason ??
+      property.reason ??
+      `${property.officialName}은 Marriott Bonvoy 계열 호텔로 확인된 가맹점입니다.`,
+    region: property.region,
+  };
+}
+
+function matchPropertyAlias(
+  normalized: string
+): MerchantClassification | undefined {
+  const compact = normalized.replace(/\s+/g, "");
+  const exactMatches = exactPropertyAliases.get(compact);
+  if (exactMatches?.[0]) {
+    return propertyAliasToClassification(exactMatches[0]);
+  }
+
+  const checkedAliases = new Set<string>();
+  for (const char of new Set(compact)) {
+    const bucket = containsPropertyAliasesByFirstChar.get(char);
+    if (!bucket) {
+      continue;
+    }
+
+    for (const compiled of bucket) {
+      if (checkedAliases.has(compiled.compact)) {
+        continue;
+      }
+      checkedAliases.add(compiled.compact);
+
+      if (compact.includes(compiled.compact)) {
+        return propertyAliasToClassification(compiled);
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
  * Deterministic classification pipeline:
- * 1. Known merchant DB rules (curated, may be ambiguous → needs_review)
- * 2. Marriott brand keywords → certain
- * 3. Hotel-like keywords → low-confidence review candidate
- * 4. Otherwise not Marriott-related
+ * 1. Known overseas rules (curated, may be ambiguous → needs_review)
+ * 2. Korean Marriott brand keywords → certain domestic
+ * 3. Global property alias DB (exact/contains, pre-indexed)
+ * 4. English Marriott brand keywords → certain overseas
+ * 5. Country-specific Korean rules, including operator names → needs_review
+ * 6. Hotel-like keywords → low-confidence review candidate
+ * 7. Otherwise not Marriott-related
  */
 export function classifyMerchant(merchantName: string): MerchantClassification {
   const normalized = normalizeMerchantName(merchantName);
+  const normalizedNoSpace = normalized.replace(/\s+/g, "");
 
   if (!normalized) {
     return {
@@ -58,18 +181,22 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
     }
   }
 
-  for (const rule of koreanKnownMerchantRules) {
-    if (matchesKeyword(normalized, normalizeMerchantName(rule.pattern))) {
+  for (const keyword of koreanMarriottKeywords) {
+    if (matchesKorean(normalizedNoSpace, keyword)) {
       return {
-        isLikelyMarriott: rule.brandGroup === "marriott",
-        confidence: rule.confidence,
-        status: rule.status,
-        normalizedName: rule.normalizedName,
-        matchedPattern: rule.pattern,
-        reason: rule.reason,
+        isLikelyMarriott: true,
+        confidence: "certain",
+        status: "active",
+        matchedPattern: keyword,
+        reason: `가맹점명에 국내 Marriott 계열 브랜드 키워드(${keyword})가 포함되어 있습니다.`,
         region: "domestic",
       };
     }
+  }
+
+  const propertyMatch = matchPropertyAlias(normalized);
+  if (propertyMatch) {
+    return propertyMatch;
   }
 
   for (const keyword of marriottKeywords) {
@@ -85,14 +212,15 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
     }
   }
 
-  for (const keyword of koreanMarriottKeywords) {
-    if (matchesKeyword(normalized, keyword)) {
+  for (const rule of koreanKnownMerchantRules) {
+    if (matchesKorean(normalizedNoSpace, normalizeMerchantName(rule.pattern))) {
       return {
-        isLikelyMarriott: true,
-        confidence: "certain",
-        status: "active",
-        matchedPattern: keyword,
-        reason: `가맹점명에 국내 Marriott 계열 브랜드 키워드(${keyword})가 포함되어 있습니다.`,
+        isLikelyMarriott: rule.brandGroup === "marriott",
+        confidence: rule.confidence,
+        status: rule.status,
+        normalizedName: rule.normalizedName,
+        matchedPattern: rule.pattern,
+        reason: rule.reason,
         region: "domestic",
       };
     }

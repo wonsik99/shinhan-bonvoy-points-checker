@@ -49,14 +49,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 app/page.tsx            상태 보유 (baseResults + feedbackById), 파생값 useMemo
 lib/parseShinhanExcel   File → SheetJS → extractRecords(인터리브/플랫 감지) → 진단(ShinhanParseError)
 lib/normalizeTransaction 컬럼 별칭 매핑, 금액/날짜/등급/취소 정규화, 카드번호 마스킹
-lib/classifyMerchant    known rules(영/한) → 영문 키워드 → 한글 키워드 → 호텔 유사 키워드 (전부 단어 경계 매칭)
+lib/classifyMerchant    known rules → 한글 브랜드 → 호텔 alias DB(인덱스) → 영문 브랜드 → 운영사/후보 → 호텔 유사 키워드
 lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_marriott/canceled), 피드백 적용, 요약
 lib/inquiryMessage      카드사 문의 문구 생성
 lib/feedback            (선택) 익명 피드백 + 파싱 실패 원클릭 제보 — 기본은 Google Sheets(Apps Script), env 없으면 no-op
-rules/marriott.ts       키워드·알려진 가맹점 규칙 / rules/cardProfiles.ts 카드 프로필
+rules/marriott*.ts      브랜드 키워드·호텔 alias DB(한국 41 + 일본 128)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
 components/             FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, Disclaimer
-google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내. 대안으로 supabase/schema.sql도 있음
-next.config.ts          CSP 헤더 (connect-src 'self' + 수집기 도메인 자동 추가: Apps Script 또는 Supabase)
+google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내
+next.config.ts          CSP 헤더 (connect-src 'self' + Apps Script 수집기 도메인 자동 추가)
 ```
 
 분석 규칙 요점: 취소→canceled / 비메리어트→not_marriott / 정상등급(국내 L4·L5, 해외 L5)→ok_l5 / 확신(certain·high)+양수차이→missing_suspected / 그 외→needs_review. `effectiveIncluded` = missing_suspected(제외 안 한 것) + 사용자가 ✅포함한 needs_review.
@@ -78,13 +78,14 @@ fixture 기대값: 15건 / Marriott 12 / 정상 2 / 누락 의심 9 / 확인 필
 ## 배포
 
 - `vercel --prod` (프로젝트 링크·인증 완료 상태). 배포 전 반드시 테스트+빌드+사용자 승인.
-- 수집을 켜려면(기본=Google Sheets): `google-apps-script/Code.gs`를 구글 시트에 붙여 웹 앱 배포 → 그 URL을 Vercel에 `NEXT_PUBLIC_APPS_SCRIPT_URL`로 설정 → 재배포. CSP connect-src는 next.config.ts가 Google 도메인을 자동 추가. (대안: Supabase — `supabase/schema.sql` + `NEXT_PUBLIC_SUPABASE_*`.)
+- 수집을 켜려면 Google Sheets 기반으로 `google-apps-script/Code.gs`를 구글 시트에 붙여 웹 앱 배포 → 그 URL을 Vercel에 `NEXT_PUBLIC_APPS_SCRIPT_URL`로 설정 → 재배포. CSP connect-src는 next.config.ts가 Google 도메인을 자동 추가.
 
 ## 로드맵 (사용자 확인된 방향)
 
 1. **수집 활성화** — Google Sheets(Apps Script) 기반. 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보. 켜지면 페이지 하단 수집 고지가 자동 표시됨. (완료)
 2. **더 클래식 카드 지원** — cardProfiles에 프로필 추가 + 카드 선택 UI.
-3. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.
+3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties.ts`에 한국 41개 + 일본 128개 호텔을 seed로 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다.
+4. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.
 
 ### v2.0 — 가맹점 DB 큐레이션 헬퍼 (LLM, 미착수)
 
@@ -93,5 +94,5 @@ fixture 기대값: 15건 / Marriott 12 / 정상 2 / 누락 의심 9 / 확인 필
 시트에 쌓인 제보(특히 `user_designated` 가맹점: 앱이 못 잡았는데 사용자가 메리어트라고 표시한 것)를 **운영자 전용 도구**에서 LLM으로 규칙 후보를 추리는 것. 반드시 지켜야 할 제약:
 - **사용자 앱 경로엔 절대 LLM 없음** — 판정·계산은 영원히 결정적 규칙. 이건 이 앱의 프라이버시·신뢰 스토리(파일이 브라우저 밖으로 안 나감, CSP `connect-src 'self'`)의 핵심.
 - LLM은 **집계된 가맹점명(개인 거래 프로필 아님)** 만 다루는 **로컬/관리자 스크립트**로, 특정 사용자 파일에 접근하지 않음.
-- LLM은 **후보만 제안**, `rules/marriott.ts` 등록은 **사람 수동 승인**. 자동 규칙화 절대 금지(스펙 원칙 유지).
+- LLM은 **후보만 제안**, `rules/marriottProperties.ts`/`rules/marriottOverrides.ts` 등록은 **사람 수동 승인**. 자동 규칙화 절대 금지(스펙 원칙 유지).
 - 즉 "집계 → (LLM이 후보 제안) → 사람 검토 → 규칙"에서 후보 단계만 가속.

@@ -13,9 +13,6 @@ if (process.env.NEXT_PUBLIC_APPS_SCRIPT_URL) {
     "https://script.googleusercontent.com"
   );
 }
-if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  connectExtras.push(new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin);
-}
 
 // React's dev build uses eval() for debugging features; production never does.
 // Allow it only in development so the production CSP stays locked down.

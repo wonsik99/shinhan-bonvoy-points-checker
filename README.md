@@ -12,7 +12,7 @@
 
 1. `.xlsx` / `.xls` 파일을 업로드하면 SheetJS로 첫 번째 시트를 클라이언트에서 파싱합니다.
 2. 한국어 컬럼(거래일자, 가맹점명, 원매출금액, 포인트종류상세 등)을 정규화합니다.
-3. 가맹점명을 Marriott 브랜드 키워드(영문·한글) / 알려진 가맹점 규칙 / 호텔 유사 키워드로 분류합니다. 해외 결제는 `해외가맹점명` 컬럼을 우선 사용합니다.
+3. 가맹점명을 Marriott 브랜드 키워드(영문·한글) / 호텔 alias DB(한국 41개, 일본 128개 seed) / 알려진 가맹점 규칙 / 호텔 유사 키워드로 분류합니다. 해외 결제는 `해외가맹점명` 컬럼을 우선 사용합니다.
 4. Marriott 계열로 확신되는데 정상 특별적립 등급이 아닌 거래는 **적립 누락 의심**, 애매한 거래는 **확인 필요**로 분리합니다.
 5. 예상 포인트(1,000원당 5P)와 실제 적립 포인트의 차이를 계산합니다.
 
@@ -46,9 +46,8 @@ npm run fixture    # docs/_local/sample.xlsx 테스트용 엑셀 생성 (로컬 
 app/            페이지 및 레이아웃
 components/     업로드, 요약 카드, 결과 테이블, 문의 문구 등 UI
 lib/            파싱 / 정규화 / 분류 / 분석 / 문의문구 / 피드백 로직
-rules/          Marriott 키워드 및 알려진 가맹점 규칙
+rules/          Marriott 브랜드 키워드, 호텔 alias DB, 알려진 가맹점 규칙
 types/          공용 타입 정의
-supabase/       (선택) 익명 피드백 저장용 스키마
 ```
 
 ## (선택) 익명 피드백 / 제보 수집 — Google Sheets
@@ -65,8 +64,6 @@ NEXT_PUBLIC_APPS_SCRIPT_URL=https://script.google.com/macros/s/AKfyc.../exec
 3. 재배포하면 활성화됩니다. CSP `connect-src`는 `next.config.ts`가 Google 도메인을 자동 추가합니다.
 
 수집되는 값은 가맹점명, 판정 결과, 사용자 액션, 마스킹된 진단 텍스트 뿐이며 **업로드 파일·금액 상세·카드번호는 전송되지 않습니다.** 세션 ID는 sessionStorage 기반이라 탭을 닫으면 사라집니다. 켜지면 페이지 하단에 수집 고지가 표시됩니다. 사용자 피드백은 즉시 규칙이 되지 않고, 시트에서 집계 → 후보 → 수동 검토를 거쳐 규칙에 반영하는 것을 전제로 합니다.
-
-> 대안으로 Supabase도 지원합니다(`supabase/schema.sql`, `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`). 둘 중 하나만 설정하면 됩니다.
 
 ## 면책
 
