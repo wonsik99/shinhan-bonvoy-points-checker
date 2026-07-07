@@ -219,6 +219,22 @@ export async function parseShinhanExcel(file: File): Promise<ParseResult> {
     fail("분석할 수 있는 거래 내역을 찾지 못했습니다.");
   }
 
+  // With no point-type AND no accrued-points column, the core check (was this
+  // credited at L4/L5?) is impossible — this is almost always the wrong export
+  // (e.g. 카드 이용내역 instead of 포인트 적립 상세내역). Reject clearly rather
+  // than showing a page of zero-amount rows.
+  if (
+    missingColumns.includes("pointType") &&
+    missingColumns.includes("actualPoints")
+  ) {
+    fail(
+      "이 엑셀에는 포인트 적립 정보(포인트종류·적립포인트)가 없어 분석할 수 없습니다. " +
+        "신한카드 '포인트 적립 상세내역' 파일이 맞는지 확인해주세요. " +
+        "('카드 이용내역' 등 다른 명세서에는 이 정보가 없습니다. " +
+        "적립 상세내역은 고객센터 1544-7000으로 발급받을 수 있습니다.)"
+    );
+  }
+
   const missingCritical = missingColumns
     .filter((field) => field in CRITICAL_COLUMN_LABELS)
     .map((field) => CRITICAL_COLUMN_LABELS[field]);

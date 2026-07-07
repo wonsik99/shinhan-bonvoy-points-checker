@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { buildDiagnostic, extractRecords } from "@/lib/parseShinhanExcel";
+import * as XLSX from "xlsx";
+import {
+  buildDiagnostic,
+  extractRecords,
+  parseShinhanExcel,
+} from "@/lib/parseShinhanExcel";
 import { normalizeRows } from "@/lib/normalizeTransaction";
 import { analyzeTransactions } from "@/lib/analyzeTransactions";
+
+function makeFile(aoa: unknown[][]): File {
+  const sheet = XLSX.utils.aoa_to_sheet(aoa);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, sheet, "Sheet1");
+  const buf = XLSX.write(wb, { type: "array", bookType: "xlsx" });
+  return new File([buf], "test.xlsx");
+}
 
 /** Mirrors the real Shinhan 포인트 적립 상세내역 export: two header rows, two rows per transaction. */
 const INTERLEAVED_MATRIX: unknown[][] = [
@@ -86,6 +99,41 @@ describe("extractRecords — flat layout", () => {
     ]);
     expect(records).toHaveLength(1);
     expect(() => normalizeRows(records)).toThrow(/가맹점명 컬럼을 찾을 수 없습니다/);
+  });
+});
+
+describe("parseShinhanExcel wrong-file handling", () => {
+  it("rejects a Shinhan file that has merchants but no point columns (e.g. 카드 이용내역)", async () => {
+    const file = makeFile([
+      ["거래일", "카드구분", "가맹점명", "금액", "취소상태"],
+      ["2026.07.03", "신용", "COURTYARD BY MARRIOTT", "150000", ""],
+      ["2026.06.23", "신용", "FAIRFIELD INN & SUITES", "200000", ""],
+    ]);
+    await expect(parseShinhanExcel(file)).rejects.toThrow(
+      /포인트 적립 정보/
+    );
+  });
+
+  it("rejects an unrelated file with the generic merchant-column message, not usage-history wording", async () => {
+    const file = makeFile([
+      ["항목", "값"],
+      ["a", "b"],
+    ]);
+    await expect(parseShinhanExcel(file)).rejects.toThrow(
+      /가맹점명 컬럼을 찾을 수 없습니다/
+    );
+    await expect(parseShinhanExcel(file)).rejects.not.toThrow(/이용내역/);
+  });
+
+  it("still parses a valid point-accrual file", async () => {
+    const file = makeFile([
+      ["거래일자", "가맹점명", "원매출금액", "포인트종류상세", "적립포인트", "취소전표여부"],
+      ["2026-04-17", "TIAD", "320000", "L2", "960", "N"],
+    ]);
+    const result = await parseShinhanExcel(file);
+    expect(result.transactions).toHaveLength(1);
+    expect(result.transactions[0].pointType).toBe("L2");
+    expect(result.columnWarning).toBeUndefined();
   });
 });
 
