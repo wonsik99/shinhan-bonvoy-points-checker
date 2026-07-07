@@ -36,6 +36,9 @@ const transactions = [
   // Domestic Marriott: L1-credited → missing suspected (L4 = 5P/1,000원); L4 → ok
   [14, 46150, 46152, "코트야드메리어트서울남대문", "", 300000, "L1", 300, "N"],
   [15, 46160, 46162, "웨스틴조선서울", "", 200000, "L4", 1000, "N"],
+  // False negative: a real Marriott (Luxury Collection) with no brand/hotel
+  // keyword → classified not_marriott. User can flag it in the full table.
+  [16, 46165, 46167, "VISA해외사용일시불", "MYSTIQUE SANTORINI", 600000, "L2", 1800, "N"],
 ];
 
 const rows = [HEADER_A, HEADER_B];

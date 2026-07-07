@@ -49,6 +49,11 @@ export interface AnalysisResult extends NormalizedTransaction {
   difference?: number;
   userFeedback?: UserFeedbackAction;
   effectiveIncluded: boolean;
+  /**
+   * True when the user manually flagged an otherwise-unmatched (not_marriott)
+   * transaction as a Marriott property — the false-negative rescue path.
+   */
+  userDesignatedMarriott?: boolean;
 }
 
 export interface MerchantRule {

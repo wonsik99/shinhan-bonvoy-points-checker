@@ -269,7 +269,17 @@ export default function Home() {
           )}
 
           <section aria-label="전체 거래">
-            <AllTransactionsTable results={results} />
+            <p className="mb-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-600">
+              🏨 메리어트 계열 호텔에 묵으셨는데 위{" "}
+              <span className="font-medium">적립 누락 의심</span>·
+              <span className="font-medium">확인 필요</span>에 안 보이나요? 아래
+              전체 거래를 펼쳐 해당 결제를 &lsquo;메리어트로 표시&rsquo;하면
+              예상 누락과 문의 문구에 반영됩니다.
+            </p>
+            <AllTransactionsTable
+              results={results}
+              onFlagMarriott={(row) => handleFeedback(row, "include")}
+            />
           </section>
         </div>
       )}

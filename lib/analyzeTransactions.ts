@@ -114,6 +114,8 @@ export function analyzeTransactions(
  * Applies user feedback to analysis results.
  * - needs_review + ✅ include (with positive difference) → counted in totals
  * - missing_suspected + ❌ exclude → removed from totals
+ * - not_marriott + ✅ include → user-designated Marriott (false-negative rescue):
+ *   expected points are computed and it joins the totals + inquiry message.
  * Feedback never promotes a merchant to a global rule; it only affects this session.
  */
 export function applyFeedback(
@@ -126,6 +128,24 @@ export function applyFeedback(
       return result.userFeedback === undefined
         ? result
         : { ...result, userFeedback: undefined, effectiveIncluded: result.analysisStatus === "missing_suspected" };
+    }
+
+    // The user manually marked an unmatched transaction as a Marriott hotel.
+    if (result.analysisStatus === "not_marriott") {
+      if (feedback !== "include") {
+        return { ...result, userFeedback: feedback, effectiveIncluded: false };
+      }
+      const expectedPoints = expectedMarriottPoints(result.eligibleAmount);
+      const difference = expectedPoints - result.actualPoints;
+      return {
+        ...result,
+        userFeedback: feedback,
+        userDesignatedMarriott: true,
+        expectedPointType: "L5" as const,
+        expectedPoints,
+        difference,
+        effectiveIncluded: difference > 0,
+      };
     }
 
     let effectiveIncluded = result.effectiveIncluded;

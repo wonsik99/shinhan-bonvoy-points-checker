@@ -79,7 +79,11 @@ export async function submitJudgments(items: Judgment[]): Promise<boolean> {
           merchant_raw_name: result.merchantName,
           normalized_merchant_name: result.classification.normalizedName ?? null,
           user_action: action,
-          detected_status: result.analysisStatus,
+          // "user_designated" marks rows the app missed entirely but the user
+          // flagged as Marriott — the highest-value candidates for new rules.
+          detected_status: result.userDesignatedMarriott
+            ? "user_designated"
+            : result.analysisStatus,
           detected_confidence: result.classification.confidence,
           point_type: result.pointType || null,
           expected_difference: result.difference ?? null,

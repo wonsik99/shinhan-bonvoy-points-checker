@@ -157,6 +157,63 @@ describe("applyFeedback", () => {
   });
 });
 
+describe("user-designated Marriott (false-negative rescue)", () => {
+  const notMarriott = tx({
+    merchantName: "MYSTIQUE SANTORINI",
+    originalAmount: 600000,
+    eligibleAmount: 600000,
+    pointType: "L2",
+    actualPoints: 1800,
+  });
+
+  it("does nothing until the user flags it", () => {
+    const [result] = analyzeTransactions([notMarriott]);
+    expect(result.analysisStatus).toBe("not_marriott");
+    expect(result.effectiveIncluded).toBe(false);
+    expect(result.difference).toBeUndefined();
+  });
+
+  it("computes expected points and includes it once flagged ✅", () => {
+    const results = analyzeTransactions([notMarriott]);
+    const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
+    expect(flagged.userDesignatedMarriott).toBe(true);
+    expect(flagged.expectedPoints).toBe(3000); // round(600000 / 1000 × 5)
+    expect(flagged.difference).toBe(3000 - 1800);
+    expect(flagged.effectiveIncluded).toBe(true);
+    // Status stays not_marriott so the row remains flaggable in the full table.
+    expect(flagged.analysisStatus).toBe("not_marriott");
+  });
+
+  it("counts the flagged points in the summary total", () => {
+    const results = analyzeTransactions([notMarriott]);
+    const summary = summarizeResults(
+      applyFeedback(results, { [results[0].id]: "include" })
+    );
+    expect(summary.totalExpectedAdditionalPoints).toBe(1200);
+  });
+
+  it("reverts cleanly when the flag is toggled off", () => {
+    const results = analyzeTransactions([notMarriott]);
+    const [reverted] = applyFeedback(results, {});
+    expect(reverted.userDesignatedMarriott).toBeUndefined();
+    expect(reverted.effectiveIncluded).toBe(false);
+    expect(reverted.analysisStatus).toBe("not_marriott");
+  });
+
+  it("does not fabricate missing points when the row was already well-credited", () => {
+    const wellCredited = tx({
+      merchantName: "MYSTIQUE SANTORINI",
+      eligibleAmount: 600000,
+      pointType: "L5",
+      actualPoints: 3000,
+    });
+    const results = analyzeTransactions([wellCredited]);
+    const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
+    expect(flagged.difference).toBe(0);
+    expect(flagged.effectiveIncluded).toBe(false);
+  });
+});
+
 describe("summarizeResults", () => {
   it("sums expected additional points over included rows only", () => {
     const results = analyzeTransactions([

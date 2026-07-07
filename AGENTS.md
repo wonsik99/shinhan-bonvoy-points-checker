@@ -63,6 +63,8 @@ next.config.ts          CSP 헤더 (connect-src 'self' + 수집기 도메인 자
 
 **피드백 전송 모델**: ✅/❌/모르겠음 버튼은 로컬 상태(합계·문의 문구)만 바꾼다. 실제 시트 전송은 절대 버튼 클릭마다 하지 않고, 사용자가 명시적으로 "내 판단으로 서비스 돕기" 버튼을 누를 때 최종 판단만 한 번에 `submitJudgments`로 보낸다(고민 중 클릭이 노이즈로 안 남게). 파싱 실패 제보도 별도 버튼(명시적). 둘 다 collector env 없으면 no-op/복사 fallback.
 
+**False-negative 구제**: 앱이 아예 못 잡은(not_marriott) 거래를 사용자가 전체 거래 표에서 "🏨 메리어트로 표시"하면, `applyFeedback`이 예상 포인트를 계산해 `userDesignatedMarriott`로 마킹하고 합계·문의 문구에 반영(status는 not_marriott 유지 → 전체 거래 표에서 토글). 시트엔 detected_status="user_designated"로 전송돼 규칙 후보 중 최우선 신호가 됨.
+
 ## 검증
 
 ```bash
