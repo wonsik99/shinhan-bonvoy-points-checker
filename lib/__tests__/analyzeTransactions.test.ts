@@ -159,7 +159,7 @@ describe("applyFeedback", () => {
 
 describe("user-designated Marriott (false-negative rescue)", () => {
   const notMarriott = tx({
-    merchantName: "MYSTIQUE SANTORINI",
+    merchantName: "SAMMAEBONG CO LTD",
     originalAmount: 600000,
     eligibleAmount: 600000,
     pointType: "L2",
@@ -202,7 +202,7 @@ describe("user-designated Marriott (false-negative rescue)", () => {
 
   it("does not fabricate missing points when the row was already well-credited", () => {
     const wellCredited = tx({
-      merchantName: "MYSTIQUE SANTORINI",
+      merchantName: "SAMMAEBONG CO LTD",
       eligibleAmount: 600000,
       pointType: "L5",
       actualPoints: 3000,

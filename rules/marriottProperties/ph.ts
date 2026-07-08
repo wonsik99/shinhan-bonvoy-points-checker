@@ -1,25 +1,26 @@
-import { high, inferBrand, propertyId } from "./helpers";
+import { high, inferBrand } from "./helpers";
 import type { MarriottProperty } from "./types";
 
-const philippinesOfficialNames = [
-  "Fairfield by Marriott Cebu Mandaue City",
-  "Sheraton Cebu Mactan Resort",
-  "Courtyard by Marriott Iloilo",
-  "Fairfield by Marriott Cebu Mactan",
-  "The Farm at San Benito, Autograph Collection",
-  "Clark Marriott Hotel",
-  "Four Points by Sheraton Boracay",
-  "Sheraton Manila Bay",
-  "The Westin Manila",
-  "Sheraton Manila Hotel at Newport World Resorts",
-  "Manila Marriott Hotel at Newport World Resorts",
-  "AC Hotel by Marriott Manila",
-  "Four Points by Sheraton Palawan Puerto Princesa",
+// Source: Marriott destination page property codes, July 2026.
+const philippinesOfficialRows = [
+  { id: "CEBFM", officialName: "Fairfield by Marriott Cebu Mandaue City" },
+  { id: "CEBSI", officialName: "Sheraton Cebu Mactan Resort" },
+  { id: "ILOCY", officialName: "Courtyard by Marriott Iloilo" },
+  { id: "CEBFI", officialName: "Fairfield by Marriott Cebu Mactan" },
+  { id: "MNLFS", officialName: "The Farm at San Benito, Autograph Collection" },
+  { id: "CRKMC", officialName: "Clark Marriott Hotel" },
+  { id: "MPHBP", officialName: "Four Points by Sheraton Boracay" },
+  { id: "MNLSB", officialName: "Sheraton Manila Bay" },
+  { id: "MNLWP", officialName: "The Westin Manila" },
+  { id: "MNLSI", officialName: "Sheraton Manila Hotel at Newport World Resorts" },
+  { id: "MNLAP", officialName: "Manila Marriott Hotel at Newport World Resorts" },
+  { id: "MNLAC", officialName: "AC Hotel by Marriott Manila" },
+  { id: "PPSFP", officialName: "Four Points by Sheraton Palawan Puerto Princesa" },
 ];
 
 export const philippinesMarriottProperties: MarriottProperty[] =
-  philippinesOfficialNames.map((officialName) => ({
-    id: propertyId("PH", officialName),
+  philippinesOfficialRows.map(({ id, officialName }) => ({
+    id: `ph-${id.toLowerCase()}`,
     country: "PH",
     region: "overseas",
     officialName,

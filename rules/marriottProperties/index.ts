@@ -1,18 +1,11 @@
-import { australiaMarriottProperties } from "./au";
+import { americasMarriottProperties } from "./americas";
+import { asiaPacificMarriottProperties } from "./asiaPacific";
 import { buildSafeDerivedAliases } from "./helpers";
 import { chinaMarriottProperties } from "./cn";
-import { indonesiaMarriottProperties } from "./id";
-import { indiaMarriottProperties } from "./in";
-import { italyMarriottProperties } from "./it";
-import { japanMarriottProperties } from "./jp";
+import { europeMarriottProperties } from "./europe";
 import { koreaMarriottProperties } from "./kr";
-import { malaysiaMarriottProperties } from "./my";
-import { philippinesMarriottProperties } from "./ph";
-import { singaporeMarriottProperties } from "./sg";
-import { thailandMarriottProperties } from "./th";
-import { taiwanMarriottProperties } from "./tw";
+import { middleEastAfricaMarriottProperties } from "./middleEastAfrica";
 import { unitedStatesMarriottProperties } from "./us";
-import { vietnamMarriottProperties } from "./vn";
 
 export type {
   BrandGroup,
@@ -20,34 +13,20 @@ export type {
   MarriottPropertyAlias,
   MatchMode,
 } from "./types";
-export { australiaMarriottProperties } from "./au";
+export * from "./americas";
+export * from "./asiaPacific";
 export { chinaMarriottProperties } from "./cn";
-export { indonesiaMarriottProperties } from "./id";
-export { indiaMarriottProperties } from "./in";
-export { italyMarriottProperties } from "./it";
-export { japanMarriottProperties } from "./jp";
+export * from "./europe";
 export { koreaMarriottProperties } from "./kr";
-export { malaysiaMarriottProperties } from "./my";
-export { philippinesMarriottProperties } from "./ph";
-export { singaporeMarriottProperties } from "./sg";
-export { thailandMarriottProperties } from "./th";
-export { taiwanMarriottProperties } from "./tw";
+export * from "./middleEastAfrica";
 export { unitedStatesMarriottProperties } from "./us";
-export { vietnamMarriottProperties } from "./vn";
 
 const rawMarriottProperties = [
   ...koreaMarriottProperties,
-  ...japanMarriottProperties,
-  ...thailandMarriottProperties,
-  ...singaporeMarriottProperties,
-  ...vietnamMarriottProperties,
-  ...taiwanMarriottProperties,
-  ...philippinesMarriottProperties,
-  ...malaysiaMarriottProperties,
-  ...indonesiaMarriottProperties,
-  ...australiaMarriottProperties,
-  ...indiaMarriottProperties,
-  ...italyMarriottProperties,
+  ...asiaPacificMarriottProperties,
+  ...europeMarriottProperties,
+  ...americasMarriottProperties,
+  ...middleEastAfricaMarriottProperties,
   ...chinaMarriottProperties,
   ...unitedStatesMarriottProperties,
 ];

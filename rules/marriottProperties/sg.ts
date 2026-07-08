@@ -1,33 +1,34 @@
-import { high, inferBrand, propertyId } from "./helpers";
+import { high, inferBrand } from "./helpers";
 import type { MarriottProperty } from "./types";
 
-const singaporeOfficialNames = [
-  "Duxton Reserve Singapore, Autograph Collection",
-  "Maxwell Reserve Singapore, Autograph Collection",
-  "JW Marriott Hotel Singapore South Beach",
-  "Frasers House, a Luxury Collection Hotel, Singapore",
-  "Aloft by Marriott Singapore Novena",
-  "The Ritz-Carlton, Millenia Singapore",
-  "The Westin Singapore",
-  "Four Points by Sheraton Singapore, Riverview",
-  "The Vagabond Club, Singapore, a Tribute Portfolio Hotel",
-  "The Warehouse Hotel, Singapore, a Member of Design Hotels™",
-  "The Singapore EDITION",
-  "W Singapore - Sentosa Cove",
-  "Courtyard by Marriott Singapore Novena",
-  "Varel Singapore, a Tribute Portfolio Hotel",
-  "The St. Regis Singapore",
-  "The Serangoon House Little India, Singapore, a Tribute Portfolio Hotel",
-  "21 Carpenter, Singapore, a Member of Design Hotels",
-  "Genting Hotel Jurong",
-  "Sheraton Towers Singapore",
-  "Singapore Marriott Tang Plaza Hotel",
-  "The Laurus, a Luxury Collection Resort, Singapore",
+// Source: Marriott destination page property codes, July 2026.
+const singaporeOfficialRows = [
+  { id: "SINNV", officialName: "Aloft by Marriott Singapore Novena" },
+  { id: "SINSL", officialName: "The Laurus, a Luxury Collection Resort, Singapore" },
+  { id: "SINTC", officialName: "21 Carpenter, Singapore, a Member of Design Hotels" },
+  { id: "SINWH", officialName: "W Singapore - Sentosa Cove" },
+  { id: "SINDT", officialName: "Singapore Marriott Tang Plaza Hotel" },
+  { id: "SINRZ", officialName: "The Ritz-Carlton, Millenia Singapore" },
+  { id: "SINFP", officialName: "Four Points by Sheraton Singapore, Riverview" },
+  { id: "SINSI", officialName: "Sheraton Towers Singapore" },
+  { id: "SINDW", officialName: "The Warehouse Hotel, Singapore, a Member of Design Hotels™" },
+  { id: "SINTX", officialName: "Varel Singapore, a Tribute Portfolio Hotel" },
+  { id: "SINTG", officialName: "The Serangoon House Little India, Singapore, a Tribute Portfolio Hotel" },
+  { id: "SINLB", officialName: "Frasers House, a Luxury Collection Hotel, Singapore" },
+  { id: "SINCY", officialName: "Courtyard by Marriott Singapore Novena" },
+  { id: "SINJW", officialName: "JW Marriott Hotel Singapore South Beach" },
+  { id: "SINWI", officialName: "The Westin Singapore" },
+  { id: "SINXR", officialName: "The St. Regis Singapore" },
+  { id: "SINSP", officialName: "Genting Hotel Jurong" },
+  { id: "SINEB", officialName: "The Singapore EDITION" },
+  { id: "SINAM", officialName: "Maxwell Reserve Singapore, Autograph Collection" },
+  { id: "SINAD", officialName: "Duxton Reserve Singapore, Autograph Collection" },
+  { id: "SINVB", officialName: "The Vagabond Club, Singapore, a Tribute Portfolio Hotel" },
 ];
 
 export const singaporeMarriottProperties: MarriottProperty[] =
-  singaporeOfficialNames.map((officialName) => ({
-    id: propertyId("SG", officialName),
+  singaporeOfficialRows.map(({ id, officialName }) => ({
+    id: `sg-${id.toLowerCase()}`,
     country: "SG",
     region: "overseas",
     officialName,

@@ -53,7 +53,7 @@ lib/classifyMerchant    known rules → 한글 브랜드 → 호텔 alias DB(인
 lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_marriott/canceled), 피드백 적용, 요약
 lib/inquiryMessage      카드사 문의 문구 생성
 lib/feedback            (선택) 익명 피드백 + 파싱 실패 원클릭 제보 — 기본은 Google Sheets(Apps Script), env 없으면 no-op
-rules/marriott*.ts      브랜드 키워드·호텔 alias DB(14개국 7,959개 seed)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
+rules/marriott*.ts      브랜드 키워드·호텔 alias DB(143개 국가·지역 10,148개 seed)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
 components/             FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, Disclaimer
 google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내
 next.config.ts          CSP 헤더 (connect-src 'self' + Apps Script 수집기 도메인 자동 추가)
@@ -84,7 +84,7 @@ fixture 기대값: 15건 / Marriott 12 / 정상 2 / 누락 의심 9 / 확인 필
 
 1. **수집 활성화** — Google Sheets(Apps Script) 기반. 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보. 켜지면 페이지 하단 수집 고지가 자동 표시됨. (완료)
 2. **더 클래식 카드 지원** — cardProfiles에 프로필 추가 + 카드 선택 UI.
-3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties/`에 한국·일본·태국·싱가포르·베트남·대만·필리핀·말레이시아·인도네시아·호주·인도·중국·미국·이탈리아 14개국 7,959개 호텔을 seed로 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다.
+3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties/`에 Marriott 공식 hotel sitemap 기준 전세계 143개 국가·지역 10,148개 호텔을 seed로 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다. 미국 주 단위 sitemap은 `us.ts`와 중복되므로 제외하고, Antarctica sitemap의 테스트 호텔 데이터도 제외한다.
 4. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.
 
 ### v2.0 — 가맹점 DB 큐레이션 헬퍼 (LLM, 미착수)

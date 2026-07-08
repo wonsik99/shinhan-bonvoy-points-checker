@@ -1,7 +1,7 @@
 import { contains, high, inferBrand, propertyId } from "./helpers";
 import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
-// Source: Marriott Bonvoy Italy hotel sitemap (marriott.com/en-us/hotel-sitemap/italy-hotel-sitemap), July 2026.
+// Source: Marriott Bonvoy Italy hotel sitemap and destination page, July 2026.
 const italyOfficialNames = [
   "The Lake Como EDITION",
   "The Rome EDITION",
@@ -16,11 +16,14 @@ const italyOfficialNames = [
   "The St. Regis Florence",
   "The St. Regis Rome",
   "The St. Regis Venice",
+  "Bvlgari Hotel Milano",
+  "Bvlgari Hotel Roma",
   "W Florence",
   "W Sardinia - Poltu Quatu",
   "W Rome",
   "Ortea Palace Hotel, Sicily, Autograph Collection",
   "Mangia's Brucoli, Sicily, Autograph Collection",
+  "Mangia's Sardinia Resort, Autograph Collection",
   "Grotta Giusti Thermal Spa Resort Tuscany, Autograph Collection",
   "Sina Villa Medici, Autograph Collection",
   "Grand Universe Lucca, Autograph Collection",
@@ -107,10 +110,12 @@ const italyOfficialNames = [
   "Moxy Verona",
   "Le Geant, Courmayeur, Apartments by Marriott Bonvoy",
   "Residence Inn by Marriott Milano Linate",
-  "Residence Inn Naples Airport",
+  "Inn Naples Airport",
 ];
 
 const italyAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  "Bvlgari Hotel Milano": [contains("BULGARI HOTEL MILANO")],
+  "Bvlgari Hotel Roma": [contains("BULGARI HOTEL ROMA")],
   "Ortea Palace Hotel, Sicily, Autograph Collection": [
     contains("ORTEA LUXURY PALACE"),
     contains("ORTEA PALACE"),

@@ -9,6 +9,7 @@ import {
   type MarriottProperty,
   type MarriottPropertyAlias,
 } from "@/rules/marriott";
+import { defaultPropertyAliasMatch } from "@/rules/marriottProperties/helpers";
 
 /** Uppercases, trims, collapses spaces, and strips invisible characters. */
 export function normalizeMerchantName(name: string): string {
@@ -53,18 +54,21 @@ function aliasKey(value: string): string {
 
 const propertyAliases = marriottProperties.flatMap((property) =>
   [
-    { value: property.officialName, match: "contains" as const },
+    { value: property.officialName },
     ...(property.localName
-      ? [{ value: property.localName, match: "contains" as const }]
+      ? [{ value: property.localName }]
       : []),
     ...property.aliases,
   ].map(
-    (alias): CompiledPropertyAlias => ({
-      property,
-      alias,
-      normalized: normalizeMerchantName(alias.value),
-      compact: aliasKey(alias.value),
-    })
+    (alias): CompiledPropertyAlias => {
+      const match = alias.match ?? defaultPropertyAliasMatch(alias.value);
+      return {
+        property,
+        alias: { ...alias, match },
+        normalized: normalizeMerchantName(alias.value),
+        compact: aliasKey(alias.value),
+      };
+    }
   )
 );
 

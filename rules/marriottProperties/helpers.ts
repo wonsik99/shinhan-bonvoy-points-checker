@@ -1,5 +1,5 @@
 import { marriottKeywords } from "../marriottBrands";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import type { MarriottProperty, MarriottPropertyAlias, MatchMode } from "./types";
 
 export const high = {
   brandGroup: "marriott" as const,
@@ -56,6 +56,13 @@ export function compactAliasKey(value: string): string {
     .replace(/\s+/g, "");
 }
 
+export function defaultPropertyAliasMatch(value: string): MatchMode {
+  const compact = compactAliasKey(value);
+  return /^[\x00-\x7F]+$/.test(value) && compact.length < 8
+    ? "exact"
+    : "contains";
+}
+
 const marriottKeywordKeys = new Set(marriottKeywords.map(compactAliasKey));
 
 function baseName(officialName: string): string | null {
@@ -71,7 +78,9 @@ export function buildSafeDerivedAliases(
   properties: MarriottProperty[]
 ): MarriottProperty[] {
   const baseAliasCounts = new Map<string, number>();
+  const officialNameKeys = new Set<string>();
   for (const property of properties) {
+    officialNameKeys.add(compactAliasKey(property.officialName));
     const alias = baseName(property.officialName);
     if (!alias) {
       continue;
@@ -81,27 +90,34 @@ export function buildSafeDerivedAliases(
   }
 
   return properties.map((property) => {
+    const aliases = property.aliases.map((alias) =>
+      alias.match ? alias : { ...alias, match: defaultPropertyAliasMatch(alias.value) }
+    );
     const alias = baseName(property.officialName);
     if (!alias || baseAliasCounts.get(compactAliasKey(alias)) !== 1) {
-      return property;
+      return { ...property, aliases };
     }
     const aliasKey = compactAliasKey(alias);
+    if (officialNameKeys.has(aliasKey)) {
+      return { ...property, aliases };
+    }
     if (
-      property.aliases.some(
+      aliases.some(
         (existingAlias) => compactAliasKey(existingAlias.value) === aliasKey
       )
     ) {
-      return property;
+      return { ...property, aliases };
     }
 
     if (marriottKeywordKeys.has(aliasKey)) {
-      return property;
+      return { ...property, aliases };
     }
 
-    const derivedAlias = aliasKey.length < 8 ? exact(alias) : contains(alias);
+    const derivedAlias =
+      defaultPropertyAliasMatch(alias) === "exact" ? exact(alias) : contains(alias);
     return {
       ...property,
-      aliases: [...property.aliases, derivedAlias],
+      aliases: [...aliases, derivedAlias],
     };
   });
 }

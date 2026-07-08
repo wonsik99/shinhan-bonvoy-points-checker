@@ -1,22 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { classifyMerchant, normalizeMerchantName } from "@/lib/classifyMerchant";
 import {
-  australiaMarriottProperties,
+  americasMarriottProperties,
+  asiaPacificMarriottProperties,
   chinaMarriottProperties,
-  indonesiaMarriottProperties,
-  indiaMarriottProperties,
-  italyMarriottProperties,
-  japanMarriottProperties,
+  europeMarriottProperties,
   koreaMarriottProperties,
-  malaysiaMarriottProperties,
   marriottBrandCatalog,
   marriottProperties,
-  philippinesMarriottProperties,
-  singaporeMarriottProperties,
-  thailandMarriottProperties,
-  taiwanMarriottProperties,
+  middleEastAfricaMarriottProperties,
   unitedStatesMarriottProperties,
-  vietnamMarriottProperties,
 } from "@/rules/marriott";
 import type { MarriottProperty } from "@/rules/marriott";
 
@@ -48,69 +41,27 @@ const propertySeedExpectations: Array<{
     region: "domestic",
   },
   {
-    countryName: "Japan",
-    properties: japanMarriottProperties,
-    count: 128,
+    countryName: "Asia-Pacific",
+    properties: asiaPacificMarriottProperties,
+    count: 768,
     region: "overseas",
   },
   {
-    countryName: "Thailand",
-    properties: thailandMarriottProperties,
-    count: 70,
+    countryName: "Europe",
+    properties: europeMarriottProperties,
+    count: 1042,
     region: "overseas",
   },
   {
-    countryName: "Singapore",
-    properties: singaporeMarriottProperties,
-    count: 21,
+    countryName: "Americas",
+    properties: americasMarriottProperties,
+    count: 866,
     region: "overseas",
   },
   {
-    countryName: "Vietnam",
-    properties: vietnamMarriottProperties,
-    count: 32,
-    region: "overseas",
-  },
-  {
-    countryName: "Taiwan",
-    properties: taiwanMarriottProperties,
-    count: 34,
-    region: "overseas",
-  },
-  {
-    countryName: "Philippines",
-    properties: philippinesMarriottProperties,
-    count: 13,
-    region: "overseas",
-  },
-  {
-    countryName: "Malaysia",
-    properties: malaysiaMarriottProperties,
-    count: 65,
-    region: "overseas",
-  },
-  {
-    countryName: "Indonesia",
-    properties: indonesiaMarriottProperties,
-    count: 91,
-    region: "overseas",
-  },
-  {
-    countryName: "Australia",
-    properties: australiaMarriottProperties,
-    count: 35,
-    region: "overseas",
-  },
-  {
-    countryName: "India",
-    properties: indiaMarriottProperties,
-    count: 226,
-    region: "overseas",
-  },
-  {
-    countryName: "Italy",
-    properties: italyMarriottProperties,
-    count: 105,
+    countryName: "Middle East & Africa",
+    properties: middleEastAfricaMarriottProperties,
+    count: 333,
     region: "overseas",
   },
   {
@@ -309,11 +260,28 @@ describe("classifyMerchant", () => {
   it.each([
     "The Rome EDITION",
     "W Rome",
+    "Bvlgari Hotel Milano",
+    "Bulgari Hotel Roma",
     "Milan Marriott Hotel",
     "Ortea Luxury Palace Rec",
+    "Mangia's Sardinia Resort",
     "Grand Universe Lucca",
     "AC Hotel Torino",
+    "Inn Naples Airport",
   ])("catches Italy representative property aliases (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.region).toBe("overseas");
+  });
+
+  it.each([
+    "Hotel Imperial",
+    "The Dixon",
+    "Cotton House Hotel",
+    "Hôtel du Couvent",
+    "Moxy Paris Val d’Europe",
+    "JW Marriott Hotel Berlin",
+  ])("catches Europe representative property aliases (%s)", (name) => {
     const result = classifyMerchant(name);
     expect(result.isLikelyMarriott).toBe(true);
     expect(result.region).toBe("overseas");
@@ -322,10 +290,28 @@ describe("classifyMerchant", () => {
   it.each([
     "W Sydney",
     "ITC Mughal",
+    "JW Marriott Maldives Resort",
+    "Kathmandu Marriott Hotel",
+    "Courtyard by Marriott Phnom Penh",
+    "Sheraton Samoa Aggie Grey's Hotel",
+    "The St. Regis Bora Bora Resort",
     "Fairfield by Marriott Altay Fuhai",
     "TownePlace Suites by Marriott Aberdeen",
     "Residence Inn by Marriott Yuma",
   ])("catches large-country property aliases (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.region).toBe("overseas");
+  });
+
+  it.each([
+    "JW Marriott Hotel Mexico City Polanco",
+    "The St. Regis Toronto",
+    "Aloft by Marriott San Juan",
+    "JW Marriott Marquis Hotel Dubai",
+    "The St. Regis Doha",
+    "Protea Hotel Cape Town Waterfront Breakwater Lodge",
+  ])("catches worldwide expansion representative property aliases (%s)", (name) => {
     const result = classifyMerchant(name);
     expect(result.isLikelyMarriott).toBe(true);
     expect(result.region).toBe("overseas");
@@ -338,7 +324,7 @@ describe("classifyMerchant", () => {
     "FAIRFIELD BELLE VERNON",
     "TOWNEPLACE SUITES GENE",
     "RENAISSANCE OKINAWA",
-    "DELTA HOTELS TORONTO",
+    "DELTA HOTELS BY MARRIOTT",
     "CITIZENM NEW YORK",
     "PROTEA HOTEL CAPE TOWN",
     "CITY EXPRESS CANCUN",
