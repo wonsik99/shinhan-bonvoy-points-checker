@@ -1,11 +1,24 @@
 import { describe, expect, it } from "vitest";
 import { classifyMerchant, normalizeMerchantName } from "@/lib/classifyMerchant";
 import {
+  australiaMarriottProperties,
+  chinaMarriottProperties,
+  indonesiaMarriottProperties,
+  indiaMarriottProperties,
+  italyMarriottProperties,
   japanMarriottProperties,
   koreaMarriottProperties,
+  malaysiaMarriottProperties,
   marriottBrandCatalog,
   marriottProperties,
+  philippinesMarriottProperties,
+  singaporeMarriottProperties,
+  thailandMarriottProperties,
+  taiwanMarriottProperties,
+  unitedStatesMarriottProperties,
+  vietnamMarriottProperties,
 } from "@/rules/marriott";
+import type { MarriottProperty } from "@/rules/marriott";
 
 function compactAlias(value: string): string {
   return value
@@ -21,6 +34,98 @@ function isAsciiAlias(value: string): boolean {
 }
 
 const shortAsciiContainsAllowlist = new Set(["LESCAPE"]);
+
+const propertySeedExpectations: Array<{
+  countryName: string;
+  properties: MarriottProperty[];
+  count: number;
+  region: "domestic" | "overseas";
+}> = [
+  {
+    countryName: "Korea",
+    properties: koreaMarriottProperties,
+    count: 41,
+    region: "domestic",
+  },
+  {
+    countryName: "Japan",
+    properties: japanMarriottProperties,
+    count: 128,
+    region: "overseas",
+  },
+  {
+    countryName: "Thailand",
+    properties: thailandMarriottProperties,
+    count: 70,
+    region: "overseas",
+  },
+  {
+    countryName: "Singapore",
+    properties: singaporeMarriottProperties,
+    count: 21,
+    region: "overseas",
+  },
+  {
+    countryName: "Vietnam",
+    properties: vietnamMarriottProperties,
+    count: 32,
+    region: "overseas",
+  },
+  {
+    countryName: "Taiwan",
+    properties: taiwanMarriottProperties,
+    count: 34,
+    region: "overseas",
+  },
+  {
+    countryName: "Philippines",
+    properties: philippinesMarriottProperties,
+    count: 13,
+    region: "overseas",
+  },
+  {
+    countryName: "Malaysia",
+    properties: malaysiaMarriottProperties,
+    count: 65,
+    region: "overseas",
+  },
+  {
+    countryName: "Indonesia",
+    properties: indonesiaMarriottProperties,
+    count: 91,
+    region: "overseas",
+  },
+  {
+    countryName: "Australia",
+    properties: australiaMarriottProperties,
+    count: 35,
+    region: "overseas",
+  },
+  {
+    countryName: "India",
+    properties: indiaMarriottProperties,
+    count: 226,
+    region: "overseas",
+  },
+  {
+    countryName: "Italy",
+    properties: italyMarriottProperties,
+    count: 105,
+    region: "overseas",
+  },
+  {
+    countryName: "China",
+    properties: chinaMarriottProperties,
+    count: 790,
+    region: "overseas",
+  },
+  {
+    countryName: "United States",
+    properties: unitedStatesMarriottProperties,
+    count: 6308,
+    region: "overseas",
+  },
+];
 
 describe("normalizeMerchantName", () => {
   it("uppercases, trims, and collapses spaces", () => {
@@ -85,13 +190,12 @@ describe("classifyMerchant", () => {
     }
   );
 
-  it("keeps the Korea Marriott property seed at 41 hotels", () => {
-    expect(koreaMarriottProperties).toHaveLength(41);
-  });
-
-  it("keeps the Japan Marriott property seed at 128 hotels", () => {
-    expect(japanMarriottProperties).toHaveLength(128);
-  });
+  it.each(propertySeedExpectations)(
+    "keeps the $countryName Marriott property seed at $count hotels",
+    ({ properties, count }) => {
+      expect(properties).toHaveLength(count);
+    }
+  );
 
   it("does not register duplicate property aliases after normalization", () => {
     const seen = new Map<string, string>();
@@ -128,7 +232,9 @@ describe("classifyMerchant", () => {
 
   it("does not derive base aliases shared by multiple official names", () => {
     const baseAliasCounts = new Map<string, number>();
-    for (const property of [...koreaMarriottProperties, ...japanMarriottProperties]) {
+    for (const property of propertySeedExpectations.flatMap(
+      ({ properties }) => properties
+    )) {
       const baseName = property.officialName.split(",")[0]?.trim();
       if (!baseName || baseName === property.officialName) {
         continue;
@@ -148,27 +254,19 @@ describe("classifyMerchant", () => {
     }
   });
 
-  it("classifies all seeded Korea Marriott official names as Marriott-related", () => {
-    for (const property of koreaMarriottProperties) {
-      const result = classifyMerchant(property.officialName);
-      expect(
-        result.isLikelyMarriott || result.status === "needs_review",
-        property.officialName
-      ).toBe(true);
-      expect(result.region, property.officialName).toBe("domestic");
+  it.each(propertySeedExpectations)(
+    "classifies all seeded $countryName Marriott official names as Marriott-related",
+    ({ properties, region }) => {
+      for (const property of properties) {
+        const result = classifyMerchant(property.officialName);
+        expect(
+          result.isLikelyMarriott || result.status === "needs_review",
+          property.officialName
+        ).toBe(true);
+        expect(result.region, property.officialName).toBe(region);
+      }
     }
-  });
-
-  it("classifies all seeded Japan Marriott official names as overseas Marriott-related", () => {
-    for (const property of japanMarriottProperties) {
-      const result = classifyMerchant(property.officialName);
-      expect(
-        result.isLikelyMarriott || result.status === "needs_review",
-        property.officialName
-      ).toBe(true);
-      expect(result.region, property.officialName).toBe("overseas");
-    }
-  });
+  );
 
   it.each([
     "Yoruya",
@@ -178,6 +276,56 @@ describe("classifyMerchant", () => {
     "THE OSAKA STATION HOTEL",
     "Bvlgari Hotel Tokyo",
   ])("catches Japan property base aliases (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.region).toBe("overseas");
+  });
+
+  it.each([
+    "W Bangkok",
+    "Sheraton Grande Sukhumvit",
+    "The Athenee Hotel",
+    "Renaissance Phuket",
+    "JW Marriott Phuket",
+  ])("catches Thailand representative property aliases (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.region).toBe("overseas");
+  });
+
+  it.each([
+    "Genting Hotel Jurong",
+    "Legacy Mekong",
+    "Hotel Proverbs Taipei",
+    "The Farm at San Benito",
+    "The Majestic Hotel Kuala Lumpur",
+    "Mandapa",
+  ])("catches expanded Asia-Pacific property aliases (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.region).toBe("overseas");
+  });
+
+  it.each([
+    "The Rome EDITION",
+    "W Rome",
+    "Milan Marriott Hotel",
+    "Ortea Luxury Palace Rec",
+    "Grand Universe Lucca",
+    "AC Hotel Torino",
+  ])("catches Italy representative property aliases (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.region).toBe("overseas");
+  });
+
+  it.each([
+    "W Sydney",
+    "ITC Mughal",
+    "Fairfield by Marriott Altay Fuhai",
+    "TownePlace Suites by Marriott Aberdeen",
+    "Residence Inn by Marriott Yuma",
+  ])("catches large-country property aliases (%s)", (name) => {
     const result = classifyMerchant(name);
     expect(result.isLikelyMarriott).toBe(true);
     expect(result.region).toBe("overseas");

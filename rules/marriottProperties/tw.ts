@@ -1,0 +1,53 @@
+import { high, inferBrand, propertyId } from "./helpers";
+import type { MarriottProperty } from "./types";
+
+const taiwanOfficialNames = [
+  "Aloft Taipei Beitou",
+  "Courtyard by Marriott Taipei Downtown",
+  "Le Méridien Hualien Resort",
+  "Four Points by Sheraton Penghu",
+  "Gloria Manor, a Member of Design Hotels",
+  "citizenM Taipei North Gate",
+  "Courtyard by Marriott Taipei",
+  "THE AMNIS, a Luxury Collection Hotel, Kaohsiung",
+  "Aloft Taichung",
+  "Sheraton New Taipei Xinzhuang",
+  "Sheraton Taoyuan Hotel",
+  "Le Méridien Taipei",
+  "Hotel Proverbs Taipei, a Member of Design Hotels™",
+  "Four Points by Sheraton Linkou",
+  "Le Méridien Taichung",
+  "Le Méridien Taipei Banqiao",
+  "Aloft Taipei Zhongshan",
+  "Kaohsiung Marriott Hotel",
+  "Suz & Catorze Taipei, a Tribute Portfolio Hotel",
+  "Sheraton Hsinchu Hotel",
+  "Moxy Taichung",
+  "Fairfield by Marriott Taichung",
+  "Renaissance Taipei Shihlin Hotel",
+  "The Westin Yilan Resort",
+  "W Taipei",
+  "The Westin Tashee Resort, Taoyuan",
+  "Aloft Tainan Anping",
+  "Taipei Marriott Hotel",
+  "Four Points by Sheraton Yilan Jiaoxi",
+  "Yong Le Lukang, a Tribute Portfolio Hotel",
+  "Sheraton Grand Taipei Hotel",
+  "Sheraton Taitung Hotel",
+  "Four Points by Sheraton Taipei Bali",
+  "Madison Taipei, a Tribute Portfolio Hotel",
+];
+
+export const taiwanMarriottProperties: MarriottProperty[] =
+  taiwanOfficialNames.map((officialName) => ({
+    id: propertyId("TW", officialName),
+    country: "TW",
+    region: "overseas",
+    officialName,
+    brand: inferBrand(officialName),
+    brandGroup: high.brandGroup,
+    confidence: high.confidence,
+    status: high.status,
+    aliases: [],
+    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 대만 호텔입니다.`,
+  }));

@@ -1,3 +1,4 @@
+import { marriottKeywords } from "../marriottBrands";
 import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 export const high = {
@@ -55,6 +56,8 @@ export function compactAliasKey(value: string): string {
     .replace(/\s+/g, "");
 }
 
+const marriottKeywordKeys = new Set(marriottKeywords.map(compactAliasKey));
+
 function baseName(officialName: string): string | null {
   const baseName = officialName.split(",")[0]?.trim();
   if (!baseName || baseName === officialName) {
@@ -91,8 +94,11 @@ export function buildSafeDerivedAliases(
       return property;
     }
 
-    const derivedAlias =
-      aliasKey.length < 8 ? exact(alias) : contains(alias);
+    if (marriottKeywordKeys.has(aliasKey)) {
+      return property;
+    }
+
+    const derivedAlias = aliasKey.length < 8 ? exact(alias) : contains(alias);
     return {
       ...property,
       aliases: [...property.aliases, derivedAlias],
@@ -113,18 +119,35 @@ export function inferBrand(officialName: string): string {
   if (upperName.includes("FAIRFIELD")) return "Fairfield by Marriott";
   if (upperName.includes("COURTYARD")) return "Courtyard by Marriott";
   if (upperName.includes("JW MARRIOTT")) return "JW Marriott";
+  if (upperName.includes("AC HOTEL")) return "AC Hotels";
+  if (upperName.includes("ALOFT")) return "Aloft";
+  if (upperName.includes("CITY EXPRESS")) return "City Express by Marriott";
+  if (upperName.includes("DELTA HOTEL")) return "Delta Hotels by Marriott";
+  if (upperName.includes("ELEMENT")) return "Element Hotels";
+  if (upperName.includes("GAYLORD")) return "Gaylord Hotels";
+  if (upperName.includes("MOXY")) return "Moxy";
+  if (upperName.includes("PROTEA")) return "Protea Hotels";
+  if (upperName.includes("RESIDENCE INN")) return "Residence Inn";
+  if (upperName.includes("SERIES BY MARRIOTT")) return "Series by Marriott";
+  if (upperName.includes("SPRINGHILL")) return "SpringHill Suites";
+  if (upperName.includes("TOWNEPLACE")) return "TownePlace Suites";
+  if (upperName.includes("MARRIOTT EXECUTIVE APARTMENTS")) {
+    return "Marriott Executive Apartments";
+  }
+  if (
+    upperName.includes("MARRIOTT VACATION CLUB") ||
+    upperName.includes("MARRIOTT'S") ||
+    upperName.includes("MARRIOTT’S")
+  ) {
+    return "Marriott Vacation Club";
+  }
   if (upperName.includes("MARRIOTT")) return "Marriott Hotels";
   if (upperName.includes("SHERATON")) return "Sheraton";
   if (upperName.includes("WESTIN")) return "Westin";
-  if (upperName.includes("MOXY")) return "Moxy";
-  if (upperName.includes("ALOFT")) return "Aloft";
   if (upperName.includes("ST. REGIS")) return "St. Regis";
   if (upperName.includes("RENAISSANCE")) return "Renaissance";
   if (upperName.includes("EDITION")) return "Edition";
-  if (upperName.includes("AC HOTEL")) return "AC Hotels";
   if (upperName.includes("BVLGARI")) return "Bvlgari Hotels";
   if (upperName.includes("W ")) return "W Hotels";
-  if (upperName.includes("CITY EXPRESS")) return "City Express by Marriott";
-  if (upperName.includes("SERIES BY MARRIOTT")) return "Series by Marriott";
   return "Marriott Bonvoy";
 }

@@ -1,0 +1,51 @@
+import { high, inferBrand, propertyId } from "./helpers";
+import type { MarriottProperty } from "./types";
+
+const vietnamOfficialNames = [
+  "Sheraton Phu Quoc Long Beach Resort",
+  "The Westin Resort & Spa Cam Ranh",
+  "Sheraton Can Tho",
+  "Legacy Mekong, Can Tho, Autograph Collection®",
+  "Renaissance Danang Hoi An Resort & Spa",
+  "Courtyard by Marriott Danang Han River",
+  "Danang Marriott Resort & Spa, Non Nuoc Beach Villas",
+  "Sheraton Grand Danang Beach Resort & Spa",
+  "Danang Marriott Resort & Spa",
+  "Marriott Executive Apartments Danang, Han River",
+  "Four Points by Sheraton Danang",
+  "Four Points by Sheraton Ha Giang",
+  "Sheraton Hai Phong",
+  "JW Marriott Hotel Hanoi",
+  "Sheraton Hanoi West",
+  "Sheraton Hanoi Hotel",
+  "Sheraton Saigon Grand Opera Hotel",
+  "Renaissance Riverside Hotel Saigon",
+  "Fairfield by Marriott South Binh Duong",
+  "Bach Suites Saigon, a Member of Design Hotels™",
+  "Vinpearl Landmark 81, Autograph Collection",
+  "Le Méridien Saigon",
+  "JW Marriott Hotel & Suites Saigon",
+  "JW Marriott Hotel & Suites Saigon, The Apartments",
+  "Hoi An Marriott Resort & Spa",
+  "Four Points by Sheraton Nha Trang",
+  "JW Marriott Cam Ranh Bay Resort & Spa",
+  "Nha Trang Marriott Resort & Spa, Hon Tre Island",
+  "Four Points by Sheraton Lang Son",
+  "Sheraton Nha Trang Hotel & Spa",
+  "JW Marriott Phu Quoc Emerald Bay Resort & Spa",
+  "Sheraton Vinh",
+];
+
+export const vietnamMarriottProperties: MarriottProperty[] =
+  vietnamOfficialNames.map((officialName) => ({
+    id: propertyId("VN", officialName),
+    country: "VN",
+    region: "overseas",
+    officialName,
+    brand: inferBrand(officialName),
+    brandGroup: high.brandGroup,
+    confidence: high.confidence,
+    status: high.status,
+    aliases: [],
+    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 베트남 호텔입니다.`,
+  }));
