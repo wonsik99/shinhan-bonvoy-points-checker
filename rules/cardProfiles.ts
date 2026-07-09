@@ -20,6 +20,10 @@ export interface CardProfile {
   domesticGrade: string;
   /** Statement grade for overseas Marriott special accrual. */
   overseasGrade: string;
+  /** Grade seen when a domestic Marriott payment fell back to base accrual. */
+  domesticFallbackGrade: string;
+  /** Grade seen when an overseas Marriott payment fell back to overseas accrual. */
+  overseasFallbackGrade: string;
 }
 
 export const theBestProfile: CardProfile = {
@@ -28,6 +32,8 @@ export const theBestProfile: CardProfile = {
   marriottPointsPer1000: 5,
   domesticGrade: "L4",
   overseasGrade: "L5",
+  domesticFallbackGrade: "L1",
+  overseasFallbackGrade: "L2",
 };
 
 /**

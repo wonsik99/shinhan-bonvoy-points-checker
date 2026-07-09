@@ -31,9 +31,10 @@ describe("expectedL5Points", () => {
 });
 
 describe("analyzeTransactions", () => {
-  it("flags non-L5 certain Marriott rows as missing_suspected", () => {
+  it("flags L2-credited overseas Marriott expecting L5", () => {
     const [result] = analyzeTransactions([tx({})]);
     expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L5");
     expect(result.expectedPoints).toBe(1049);
     expect(result.difference).toBe(1049 - 629);
     expect(result.effectiveIncluded).toBe(true);
@@ -77,6 +78,15 @@ describe("analyzeTransactions", () => {
     expect(result.effectiveIncluded).toBe(false);
   });
 
+  it("defensively avoids auto-counting impossible overseas grade combinations", () => {
+    const [result] = analyzeTransactions([
+      tx({ pointType: "L1", actualPoints: 210 }),
+    ]);
+    expect(result.analysisStatus).toBe("needs_review");
+    expect(result.expectedPointType).toBe("L5");
+    expect(result.effectiveIncluded).toBe(false);
+  });
+
   it("treats already-L5 review candidates as ok_l5", () => {
     const [result] = analyzeTransactions([
       tx({ merchantName: "HOTEL 55 CHICAGO", pointType: "L5", actualPoints: 1049 }),
@@ -111,18 +121,28 @@ describe("domestic Marriott (L4) handling", () => {
     expect(result.classification.reason).toContain("L4");
   });
 
+  it("defensively avoids auto-counting impossible domestic grade combinations", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "코트야드메리어트서울남대문", pointType: "L2", actualPoints: 629 }),
+    ]);
+    expect(result.analysisStatus).toBe("needs_review");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.effectiveIncluded).toBe(false);
+  });
+
   it("still expects L5 for overseas Marriott merchants", () => {
     const [result] = analyzeTransactions([tx({})]);
     expect(result.expectedPointType).toBe("L5");
     expect(result.analysisStatus).toBe("missing_suspected");
   });
 
-  it("does not treat L4 on an overseas Marriott merchant as proper", () => {
+  it("keeps L4 on an overseas Marriott merchant in review", () => {
     const [result] = analyzeTransactions([
       tx({ pointType: "L4", actualPoints: 839 }),
     ]);
-    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.analysisStatus).toBe("needs_review");
     expect(result.difference).toBe(1049 - 839);
+    expect(result.effectiveIncluded).toBe(false);
   });
 });
 
@@ -177,6 +197,7 @@ describe("user-designated Marriott (false-negative rescue)", () => {
     const results = analyzeTransactions([notMarriott]);
     const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
     expect(flagged.userDesignatedMarriott).toBe(true);
+    expect(flagged.expectedPointType).toBe("L5");
     expect(flagged.expectedPoints).toBe(3000); // round(600000 / 1000 × 5)
     expect(flagged.difference).toBe(3000 - 1800);
     expect(flagged.effectiveIncluded).toBe(true);
@@ -211,6 +232,35 @@ describe("user-designated Marriott (false-negative rescue)", () => {
     const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
     expect(flagged.difference).toBe(0);
     expect(flagged.effectiveIncluded).toBe(false);
+  });
+
+  it("keeps user-designated L4 rows on the domestic expected grade", () => {
+    const domesticCredited = tx({
+      merchantName: "SAMMAEBONG CO LTD",
+      eligibleAmount: 600000,
+      pointType: "L4",
+      actualPoints: 3000,
+    });
+    const results = analyzeTransactions([domesticCredited]);
+    const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
+    expect(flagged.expectedPointType).toBe("L4");
+    expect(flagged.difference).toBe(0);
+    expect(flagged.effectiveIncluded).toBe(false);
+  });
+
+  it("uses L1 -> L4 for user-designated unmatched domestic-looking fallback rows", () => {
+    const domesticFallback = tx({
+      merchantName: "SAMMAEBONG CO LTD",
+      eligibleAmount: 600000,
+      pointType: "L1",
+      actualPoints: 600,
+    });
+    const results = analyzeTransactions([domesticFallback]);
+    const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
+    expect(flagged.expectedPointType).toBe("L4");
+    expect(flagged.expectedPoints).toBe(3000);
+    expect(flagged.difference).toBe(2400);
+    expect(flagged.effectiveIncluded).toBe(true);
   });
 });
 

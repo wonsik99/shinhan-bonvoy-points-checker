@@ -19,6 +19,28 @@
  * 업로드 파일·금액 상세·카드번호는 절대 전송되지 않습니다.
  */
 
+var MAX_TEXT_CELL_LENGTH = 4000;
+var FORMULA_PREFIX_RE = /^[\t\r\n ]*[=+\-@]/;
+
+function safeSheetText(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  var text = String(value).slice(0, MAX_TEXT_CELL_LENGTH);
+  return FORMULA_PREFIX_RE.test(text) ? "'" + text : text;
+}
+
+function removeLegacyExpectedDifferenceColumn(sheet) {
+  if (sheet.getLastRow() === 0) {
+    return;
+  }
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var legacyColumn = headers.indexOf("expected_difference");
+  if (legacyColumn >= 0) {
+    sheet.deleteColumn(legacyColumn + 1);
+  }
+}
+
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
@@ -36,29 +58,29 @@ function doPost(e) {
           "detected_status",
           "detected_confidence",
           "point_type",
-          "expected_difference",
           "session_id",
         ]);
       } else {
         sheet.appendRow(["created_at", "diagnostic"]);
       }
+    } else if (type === "feedback") {
+      removeLegacyExpectedDifferenceColumn(sheet);
     }
 
     var now = new Date();
     if (type === "feedback") {
       sheet.appendRow([
         now,
-        data.merchant_raw_name || "",
-        data.normalized_merchant_name || "",
-        data.user_action || "",
-        data.detected_status || "",
-        data.detected_confidence || "",
-        data.point_type || "",
-        data.expected_difference == null ? "" : data.expected_difference,
-        data.anonymous_session_id || "",
+        safeSheetText(data.merchant_raw_name),
+        safeSheetText(data.normalized_merchant_name),
+        safeSheetText(data.user_action),
+        safeSheetText(data.detected_status),
+        safeSheetText(data.detected_confidence),
+        safeSheetText(data.point_type),
+        safeSheetText(data.anonymous_session_id),
       ]);
     } else {
-      sheet.appendRow([now, String(data.diagnostic || "").slice(0, 4000)]);
+      sheet.appendRow([now, safeSheetText(data.diagnostic)]);
     }
 
     return ContentService.createTextOutput(

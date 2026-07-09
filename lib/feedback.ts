@@ -86,7 +86,6 @@ export async function submitJudgments(items: Judgment[]): Promise<boolean> {
             : result.analysisStatus,
           detected_confidence: result.classification.confidence,
           point_type: result.pointType || null,
-          expected_difference: result.difference ?? null,
           anonymous_session_id: sessionId,
         })
       )

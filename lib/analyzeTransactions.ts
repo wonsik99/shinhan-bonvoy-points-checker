@@ -22,6 +22,25 @@ export function expectedL5Points(eligibleAmount: number): number {
   return expectedMarriottPoints(eligibleAmount);
 }
 
+function expectedPointTypeForRegion(isDomestic: boolean): "L4" | "L5" {
+  return isDomestic
+    ? (activeCardProfile.domesticGrade as "L4")
+    : (activeCardProfile.overseasGrade as "L5");
+}
+
+function fallbackPointTypeForRegion(isDomestic: boolean): string {
+  return isDomestic
+    ? activeCardProfile.domesticFallbackGrade
+    : activeCardProfile.overseasFallbackGrade;
+}
+
+function expectedPointTypeFromObservedGrade(pointType: string): "L4" | "L5" {
+  return pointType === activeCardProfile.domesticFallbackGrade ||
+    pointType === activeCardProfile.domesticGrade
+    ? (activeCardProfile.domesticGrade as "L4")
+    : (activeCardProfile.overseasGrade as "L5");
+}
+
 /**
  * Deterministic per-transaction analysis. Feedback is applied separately via
  * applyFeedback so re-running analysis never loses user input.
@@ -70,7 +89,8 @@ export function analyzeTransactions(
       };
     }
 
-    const expectedPointType = isDomestic ? ("L4" as const) : ("L5" as const);
+    const expectedPointType = expectedPointTypeForRegion(isDomestic);
+    const fallbackPointType = fallbackPointTypeForRegion(isDomestic);
     const expectedPoints = expectedMarriottPoints(tx.eligibleAmount);
     const difference = expectedPoints - tx.actualPoints;
     const base = {
@@ -91,10 +111,10 @@ export function analyzeTransactions(
       (classification.confidence === "certain" ||
         classification.confidence === "high");
 
-    // Confident Marriott with a wrong grade and positive gap → suspected
-    // missing accrual. Domestic rows stay here too — the merchant match is
-    // confident even though the estimated gap uses the conservative L4 floor.
-    if (isConfident && difference > 0) {
+    // Shinhan's grade families are region-specific: domestic payments use
+    // L1/L4, overseas payments use L2/L5. The confirmed missing-accrual
+    // patterns are domestic Marriott L1 -> L4 and overseas Marriott L2 -> L5.
+    if (isConfident && difference > 0 && tx.pointType === fallbackPointType) {
       return {
         ...base,
         analysisStatus: "missing_suspected" as const,
@@ -141,7 +161,7 @@ export function applyFeedback(
         ...result,
         userFeedback: feedback,
         userDesignatedMarriott: true,
-        expectedPointType: "L5" as const,
+        expectedPointType: expectedPointTypeFromObservedGrade(result.pointType),
         expectedPoints,
         difference,
         effectiveIncluded: difference > 0,
