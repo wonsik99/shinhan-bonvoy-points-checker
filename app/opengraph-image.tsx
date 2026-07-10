@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Bonvoy L5 Checker — 신한 메리어트 본보이 적립 누락 검사기";
+export const alt =
+  "Bonvoy L4/L5 Checker — 신한 메리어트 본보이 특별적립 확인";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -26,13 +27,13 @@ export default function OpengraphImage() {
         <div
           style={{
             display: "flex",
-            fontSize: 84,
+            fontSize: 76,
             fontWeight: 700,
             marginTop: 20,
-            letterSpacing: "-2px",
+            letterSpacing: "0",
           }}
         >
-          Bonvoy L5 Checker
+          Bonvoy L4/L5 Checker
         </div>
         <div
           style={{
@@ -43,7 +44,7 @@ export default function OpengraphImage() {
             lineHeight: 1.4,
           }}
         >
-          메리어트 호텔 결제, 포인트 제대로 적립됐는지 30초 만에 확인
+          국내 L4 / 해외 L5 특별적립 여부를 30초 만에 확인
         </div>
         <div
           style={{

@@ -40,6 +40,17 @@ describe("analyzeTransactions", () => {
     expect(result.effectiveIncluded).toBe(true);
   });
 
+  it("auto-flags high-confidence known merchants on the L2 fallback grade", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "TIAD", pointType: "L2", actualPoints: 629 }),
+    ]);
+    expect(result.classification.confidence).toBe("high");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L5");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(420);
+  });
+
   it("marks L5 Marriott rows as ok_l5", () => {
     const [result] = analyzeTransactions([
       tx({ pointType: "L5", actualPoints: 1049 }),
@@ -144,6 +155,18 @@ describe("domestic Marriott (L4) handling", () => {
     expect(result.difference).toBe(1049 - 839);
     expect(result.effectiveIncluded).toBe(false);
   });
+
+  it("keeps an ambiguous domestic property in review with an L4 expectation", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "THE PLAZA", pointType: "L1", actualPoints: 210 }),
+    ]);
+    expect(result.classification.confidence).toBe("medium");
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("needs_review");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.difference).toBe(839);
+    expect(result.effectiveIncluded).toBe(false);
+  });
 });
 
 describe("applyFeedback", () => {
@@ -174,6 +197,30 @@ describe("applyFeedback", () => {
     const results = analyzeTransactions([tx({})]);
     const excluded = applyFeedback(results, { [results[0].id]: "exclude" });
     expect(excluded[0].effectiveIncluded).toBe(false);
+  });
+
+  it("keeps missing_suspected rows included for include or unsure feedback", () => {
+    const results = analyzeTransactions([tx({})]);
+    expect(
+      applyFeedback(results, { [results[0].id]: "include" })[0]
+        .effectiveIncluded
+    ).toBe(true);
+    expect(
+      applyFeedback(results, { [results[0].id]: "unsure" })[0]
+        .effectiveIncluded
+    ).toBe(true);
+  });
+
+  it("records exclude or unsure feedback on unmatched rows without including them", () => {
+    const results = analyzeTransactions([
+      tx({ merchantName: "SAMMAEBONG CO LTD" }),
+    ]);
+    for (const action of ["exclude", "unsure"] as const) {
+      const [updated] = applyFeedback(results, { [results[0].id]: action });
+      expect(updated.userFeedback).toBe(action);
+      expect(updated.userDesignatedMarriott).toBeUndefined();
+      expect(updated.effectiveIncluded).toBe(false);
+    }
   });
 });
 
@@ -281,5 +328,36 @@ describe("summarizeResults", () => {
       applyFeedback(results, { "b": "include" })
     );
     expect(withInclude.totalExpectedAdditionalPoints).toBe((1049 - 629) * 2);
+  });
+
+  it("counts every status and included feedback path in a mixed result set", () => {
+    const results = analyzeTransactions([
+      tx({ id: "missing" }),
+      tx({ id: "review", merchantName: "HOTEL 55 CHICAGO" }),
+      tx({ id: "ok", pointType: "L5", actualPoints: 1049 }),
+      tx({
+        id: "designated",
+        merchantName: "SAMMAEBONG CO LTD",
+        originalAmount: 600000,
+        eligibleAmount: 600000,
+        actualPoints: 1800,
+      }),
+      tx({ id: "canceled", isCanceled: true }),
+    ]);
+    const withFeedback = applyFeedback(results, {
+      review: "include",
+      designated: "include",
+    });
+
+    expect(summarizeResults(withFeedback)).toEqual({
+      totalCount: 5,
+      marriottCount: 3,
+      okL5Count: 1,
+      missingSuspectedCount: 1,
+      needsReviewCount: 1,
+      canceledCount: 1,
+      includedCount: 3,
+      totalExpectedAdditionalPoints: 2040,
+    });
   });
 });

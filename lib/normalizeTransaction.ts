@@ -19,7 +19,7 @@ type CanonicalField =
  * stripping whitespace and invisible characters; earlier aliases win.
  */
 const COLUMN_ALIASES: Record<CanonicalField, string[]> = {
-  transactionDate: ["거래일자", "거래일"],
+  transactionDate: ["거래일자", "거래일", "이용일자", "이용일"],
   postingDate: ["매입일자", "매입일"],
   merchantName: ["가맹점명", "이용가맹점명", "이용가맹점"],
   overseasMerchantName: ["해외가맹점명", "해외이용가맹점명"],
@@ -122,7 +122,7 @@ export function normalizeDate(value: unknown): string | undefined {
   }
   if (typeof value === "number") {
     // Plausible Excel serial range (1950-01-01 .. 2077-10-14)
-    if (value > 18264 && value < 65000) {
+    if (value >= 18264 && value < 65000) {
       return excelSerialToIsoDate(value);
     }
     // Compact numeric date like 20260417
@@ -153,6 +153,7 @@ export function normalizePointType(value: unknown): string {
 }
 
 const CANCELED_VALUES = new Set(["Y", "YES", "TRUE", "1", "예", "취소", "O"]);
+const NOT_CANCELED_VALUES = new Set(["N", "NO", "FALSE", "0", "아니오", "미취소", "취소아님"]);
 
 export function isCanceledValue(value: unknown): boolean {
   if (value === true) {
@@ -163,6 +164,9 @@ export function isCanceledValue(value: unknown): boolean {
   }
   const text = String(value).replace(/\s/g, "").toUpperCase();
   if (!text) {
+    return false;
+  }
+  if (NOT_CANCELED_VALUES.has(text)) {
     return false;
   }
   if (CANCELED_VALUES.has(text)) {

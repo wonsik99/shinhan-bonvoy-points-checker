@@ -37,6 +37,8 @@
 npm install
 npm run dev        # http://localhost:3000
 npm test           # vitest 단위 테스트
+npm run test:coverage # 커버리지 보고서 + 하한선 검증
+npm run test:e2e   # Playwright 브라우저 통합 테스트
 npm run build      # 프로덕션 빌드
 npm run fixture    # docs/_local/sample.xlsx 테스트용 엑셀 생성 (로컬 전용)
 ```

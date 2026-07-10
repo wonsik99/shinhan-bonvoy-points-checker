@@ -48,7 +48,7 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
         >
           <p className="text-xs font-medium text-neutral-500">{card.label}</p>
           <p
-            className={`mt-1.5 text-xl font-bold tabular-nums tracking-tight ${
+            className={`mt-1.5 text-xl font-bold tabular-nums ${
               card.tone ?? "text-neutral-900"
             }`}
           >

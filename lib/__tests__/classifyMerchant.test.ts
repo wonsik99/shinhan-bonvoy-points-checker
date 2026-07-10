@@ -163,6 +163,48 @@ describe("classifyMerchant", () => {
     }
   });
 
+  it("keeps property ids and names non-empty and unique", () => {
+    const ids = new Set<string>();
+    for (const property of marriottProperties) {
+      expect(property.id.trim()).not.toBe("");
+      expect(property.officialName.trim()).not.toBe("");
+      expect(ids.has(property.id), property.id).toBe(false);
+      ids.add(property.id);
+      for (const alias of property.aliases) {
+        expect(alias.value.trim(), property.id).not.toBe("");
+      }
+    }
+  });
+
+  it("classifies every stored property alias in its configured region", () => {
+    for (const property of marriottProperties) {
+      const values = [
+        ...(property.localName ? [property.localName] : []),
+        ...property.aliases.map((alias) => alias.value),
+      ];
+      for (const value of values) {
+        const result = classifyMerchant(value);
+        expect(
+          result.isLikelyMarriott || result.status === "needs_review",
+          `${property.id}: ${value}`
+        ).toBe(true);
+        expect(result.region, `${property.id}: ${value}`).toBe(property.region);
+      }
+    }
+  });
+
+  it("classifies every configured brand keyword", () => {
+    for (const brand of marriottBrandCatalog) {
+      for (const keyword of brand.keywords) {
+        const result = classifyMerchant(keyword);
+        expect(result.isLikelyMarriott, `${brand.officialName}: ${keyword}`).toBe(
+          true
+        );
+        expect(result.status, `${brand.officialName}: ${keyword}`).toBe("active");
+      }
+    }
+  });
+
   it("does not use overly short ASCII contains aliases", () => {
     for (const property of marriottProperties) {
       for (const alias of property.aliases) {

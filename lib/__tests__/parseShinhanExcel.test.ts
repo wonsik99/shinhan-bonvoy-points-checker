@@ -1,9 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import * as XLSX from "xlsx";
 import {
   buildDiagnostic,
   extractRecords,
   parseShinhanExcel,
+  ShinhanParseError,
 } from "@/lib/parseShinhanExcel";
 import { normalizeRows } from "@/lib/normalizeTransaction";
 import { analyzeTransactions } from "@/lib/analyzeTransactions";
@@ -69,6 +70,19 @@ describe("extractRecords — interleaved Shinhan layout", () => {
     expect(results[1].analysisStatus).toBe("not_marriott"); // 네이버페이
     expect(results[2].analysisStatus).toBe("ok_l5"); // Courtyard L5
   });
+
+  it("finds paired headers below title rows and skips empty transaction pairs", () => {
+    const records = extractRecords([
+      ["포인트 적립 상세내역"],
+      [""],
+      ...INTERLEAVED_MATRIX.slice(0, 2),
+      ["", "", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", "", ""],
+      ...INTERLEAVED_MATRIX.slice(2, 4),
+    ]);
+    expect(records).toHaveLength(1);
+    expect(records[0]["해외가맹점명"]).toBe("HOTEL CLEVELAND");
+  });
 });
 
 describe("extractRecords — flat layout", () => {
@@ -103,6 +117,48 @@ describe("extractRecords — flat layout", () => {
 });
 
 describe("parseShinhanExcel wrong-file handling", () => {
+  it("rejects unreadable files with a friendly read error", async () => {
+    const file = {
+      name: "broken.xlsx",
+      arrayBuffer: vi.fn().mockRejectedValue(new Error("broken")),
+    } as unknown as File;
+    await expect(parseShinhanExcel(file)).rejects.toThrow(
+      /엑셀 파일을 읽을 수 없습니다/
+    );
+  });
+
+  it("rejects an empty worksheet with a privacy-safe diagnostic", async () => {
+    const file = makeFile([]);
+    try {
+      await parseShinhanExcel(file);
+      throw new Error("expected parse failure");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ShinhanParseError);
+      expect((error as Error).message).toMatch(/데이터가 없습니다/);
+      expect((error as ShinhanParseError).diagnostic).toContain("전체 행 수: 0");
+      expect((error as ShinhanParseError).diagnostic).toContain(
+        "거래 데이터는 포함되지 않습니다"
+      );
+    }
+  });
+
+  it("rejects a header-only worksheet", async () => {
+    const file = makeFile([
+      ["거래일자", "가맹점명", "포인트종류상세", "적립포인트"],
+    ]);
+    await expect(parseShinhanExcel(file)).rejects.toThrow(/데이터가 없습니다/);
+  });
+
+  it("rejects rows that normalize entirely to filler", async () => {
+    const file = makeFile([
+      ["거래일자", "가맹점명", "원매출금액", "포인트종류상세", "적립포인트"],
+      ["2026-04-17", "", "", "", ""],
+    ]);
+    await expect(parseShinhanExcel(file)).rejects.toThrow(
+      /분석할 수 있는 거래 내역을 찾지 못했습니다/
+    );
+  });
+
   it("rejects a Shinhan file that has merchants but no point columns (e.g. 카드 이용내역)", async () => {
     const file = makeFile([
       ["거래일", "카드구분", "가맹점명", "금액", "취소상태"],
@@ -135,6 +191,19 @@ describe("parseShinhanExcel wrong-file handling", () => {
     expect(result.transactions[0].pointType).toBe("L2");
     expect(result.columnWarning).toBeUndefined();
   });
+
+  it("warns when one critical column is missing but still parses", async () => {
+    const file = makeFile([
+      ["거래일자", "가맹점명", "원매출금액", "포인트종류상세", "적립포인트"],
+      ["2026-04-17", "TIAD", "320000", "L2", "960"],
+    ]);
+    const result = await parseShinhanExcel(file);
+    expect(result.transactions).toHaveLength(1);
+    expect(result.totalRows).toBe(1);
+    expect(result.sheetName).toBe("Sheet1");
+    expect(result.columnWarning).toContain("취소여부");
+    expect(result.columnWarning).not.toContain("포인트종류, 적립포인트");
+  });
 });
 
 describe("buildDiagnostic", () => {
@@ -158,5 +227,19 @@ describe("buildDiagnostic", () => {
   it("says so when no header rows are found", () => {
     const diagnostic = buildDiagnostic([["a", "b"]], "x.xls", "에러");
     expect(diagnostic).toContain("헤더로 보이는 행을 찾지 못했습니다");
+  });
+
+  it("masks even single digits in header cells and scans only ten rows", () => {
+    const matrix = [
+      ["카드번호 1", "포인트 5"],
+      ...Array.from({ length: 9 }, () => ["", ""]),
+      ["카드번호 9999", "포인트 비밀 7777"],
+    ];
+    const diagnostic = buildDiagnostic(matrix, "report", "에러");
+    expect(diagnostic).toContain("카드번호 ** | 포인트 **");
+    expect(diagnostic).not.toContain("카드번호 1");
+    expect(diagnostic).not.toContain("9999");
+    expect(diagnostic).not.toContain("7777");
+    expect(diagnostic).toContain("파일 형식: (없음)");
   });
 });

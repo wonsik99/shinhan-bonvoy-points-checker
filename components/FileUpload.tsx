@@ -31,16 +31,28 @@ export default function FileUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
-  const [diagnosticCopied, setDiagnosticCopied] = useState(false);
-  const [reportState, setReportState] = useState<ReportState>("idle");
+  const [copiedDiagnostic, setCopiedDiagnostic] = useState<string | null>(null);
+  const [report, setReport] = useState<{
+    diagnostic: string | null;
+    state: ReportState;
+  }>({ diagnostic: null, state: "idle" });
+  const diagnosticCopied = copiedDiagnostic === errorDiagnostic;
+  const reportState =
+    report.diagnostic === errorDiagnostic ? report.state : "idle";
   const canSendReport = isFeedbackPersistenceEnabled();
 
   const copyDiagnostic = async () => {
     if (!errorDiagnostic) return;
     try {
       await navigator.clipboard.writeText(errorDiagnostic);
-      setDiagnosticCopied(true);
-      setTimeout(() => setDiagnosticCopied(false), 2000);
+      setCopiedDiagnostic(errorDiagnostic);
+      setTimeout(
+        () =>
+          setCopiedDiagnostic((current) =>
+            current === errorDiagnostic ? null : current
+          ),
+        2000
+      );
     } catch {
       // Clipboard unavailable — the text remains visible for manual selection.
     }
@@ -50,9 +62,12 @@ export default function FileUpload({
     if (!errorDiagnostic || reportState === "sending" || reportState === "sent") {
       return;
     }
-    setReportState("sending");
+    setReport({ diagnostic: errorDiagnostic, state: "sending" });
     const ok = await submitParseErrorReport(errorDiagnostic);
-    setReportState(ok ? "sent" : "failed");
+    setReport({
+      diagnostic: errorDiagnostic,
+      state: ok ? "sent" : "failed",
+    });
   };
 
   const handleFile = (file: File | undefined) => {
@@ -69,6 +84,7 @@ export default function FileUpload({
   };
 
   const displayError = localError ?? error;
+  const displayDiagnostic = localError ? null : errorDiagnostic;
 
   if (fileName && !displayError) {
     return (
@@ -163,7 +179,7 @@ export default function FileUpload({
         <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <p className="font-medium">파일을 분석하지 못했습니다.</p>
           <p className="mt-0.5">{displayError}</p>
-          {errorDiagnostic && (
+          {displayDiagnostic && (
             <div className="mt-3 border-t border-red-200 pt-3 text-red-800">
               <p>
                 신한카드 엑셀인데도 실패했다면 파일 형식이 저희가 모르는
@@ -209,7 +225,7 @@ export default function FileUpload({
                 </p>
               )}
               <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded-lg bg-white/60 p-2 font-mono text-[11px] leading-relaxed text-red-900">
-                {errorDiagnostic}
+                {displayDiagnostic}
               </pre>
             </div>
           )}

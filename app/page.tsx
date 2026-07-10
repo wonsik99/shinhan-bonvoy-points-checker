@@ -144,13 +144,13 @@ export default function Home() {
           <span className="text-2xl" aria-hidden>
             🏨
           </span>
-          <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
-            Bonvoy L5 Checker
+          <h1 className="text-3xl font-bold text-neutral-900">
+            Bonvoy L4/L5 Checker
           </h1>
         </div>
         <p className="mt-3 max-w-2xl text-neutral-600">
           신한카드 포인트 적립 상세내역 엑셀을 업로드하면, 메리어트 계열 호텔
-          결제가 L5로 제대로 적립되었는지 확인해드립니다.
+          결제가 국내 L4 / 해외 L5로 특별적립되었는지 확인해드립니다.
         </p>
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800">
           <span aria-hidden>🔒</span>
@@ -197,6 +197,13 @@ export default function Home() {
             <SummaryCards summary={summary} />
           </section>
 
+          <section aria-label="신한카드 문의 문구">
+            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
+              ✉️ 신한카드 문의 문구
+            </h2>
+            <InquiryMessage message={inquiryMessage} />
+          </section>
+
           <section aria-label="적립 누락 의심 거래">
             <h2 className="mb-3 text-lg font-semibold text-neutral-900">
               🔴 적립 누락 의심{" "}
@@ -223,21 +230,15 @@ export default function Home() {
             />
           </section>
 
-          <section aria-label="신한카드 문의 문구">
-            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              ✉️ 신한카드 문의 문구
-            </h2>
-            <InquiryMessage message={inquiryMessage} />
-          </section>
-
           {collectionEnabled && judgmentCount > 0 && (
             <section aria-label="판단 제보">
               <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-5">
                 <p className="text-sm text-neutral-700">
                   확인해주신 판단 <b>{judgmentCount}건</b>을 익명으로
                   보내주시면, 애매한 가맹점을 더 정확히 판별하는 데 쓰여 다른
-                  사용자에게 도움이 됩니다. 가맹점명과 판정 결과만 전송되고,
-                  업로드 파일·금액 상세·카드번호는 전송되지 않습니다.
+                  사용자에게 도움이 됩니다. 가맹점명·적립 등급·앱 판정·사용자
+                  판단과 이번 방문을 구분하는 임시 익명 ID만 전송되고, 업로드
+                  파일·금액 상세·카드번호는 전송되지 않습니다.
                 </p>
                 <button
                   type="button"
@@ -287,8 +288,8 @@ export default function Home() {
       {collectionEnabled && (
         <p className="mt-10 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-xs text-neutral-500">
           &lsquo;내 판단으로 서비스 돕기&rsquo;나 파싱 실패 제보 버튼을 누를
-          때만 가맹점명·판정 결과 등 익명 정보가 전송됩니다. 업로드한 파일, 금액
-          상세, 카드번호는 전송되지 않습니다.
+          때만 가맹점명·적립 등급·앱 판정·사용자 판단·임시 익명 ID가
+          전송됩니다. 업로드한 파일, 금액 상세, 카드번호는 전송되지 않습니다.
         </p>
       )}
 

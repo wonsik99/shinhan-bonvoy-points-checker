@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildColumnMap,
+  cleanHeaderLabel,
   isCanceledValue,
   normalizeDate,
   normalizePointType,
@@ -29,6 +30,14 @@ describe("parseMoney", () => {
     expect(parseMoney("abc")).toBe(0);
     expect(parseMoney(null)).toBe(0);
   });
+
+  it("handles finite-number and Unicode currency boundaries", () => {
+    expect(parseMoney(Number.NaN)).toBe(0);
+    expect(parseMoney(Number.POSITIVE_INFINITY)).toBe(0);
+    expect(parseMoney(undefined)).toBe(0);
+    expect(parseMoney({ amount: 1000 })).toBe(0);
+    expect(parseMoney("\u200BKRW\u00A01,234.5")).toBe(1234.5);
+  });
 });
 
 describe("normalizeDate", () => {
@@ -49,6 +58,14 @@ describe("normalizeDate", () => {
     expect(normalizeDate("")).toBeUndefined();
     expect(normalizeDate(null)).toBeUndefined();
   });
+
+  it("handles Date objects, numeric compact dates, and serial boundaries", () => {
+    expect(normalizeDate(new Date(2026, 3, 17))).toBe("2026-04-17");
+    expect(normalizeDate(20260417)).toBe("2026-04-17");
+    expect(normalizeDate(18264)).toBe("1950-01-01");
+    expect(normalizeDate(123)).toBe("123");
+    expect(normalizeDate("   ")).toBeUndefined();
+  });
 });
 
 describe("normalizePointType", () => {
@@ -61,6 +78,12 @@ describe("normalizePointType", () => {
   it("passes through unknown labels", () => {
     expect(normalizePointType("기본적립")).toBe("기본적립");
   });
+
+  it("handles absent and spaced grades", () => {
+    expect(normalizePointType(null)).toBe("");
+    expect(normalizePointType(undefined)).toBe("");
+    expect(normalizePointType(" L 5 적립 ")).toBe("L5");
+  });
 });
 
 describe("isCanceledValue", () => {
@@ -71,6 +94,26 @@ describe("isCanceledValue", () => {
     expect(isCanceledValue("N")).toBe(false);
     expect(isCanceledValue("")).toBe(false);
     expect(isCanceledValue(undefined)).toBe(false);
+  });
+
+  it.each([true, "YES", "TRUE", "1", "예", "O", " 전표 취소 "])(
+    "recognizes supported cancellation value %s",
+    (value) => {
+      expect(isCanceledValue(value)).toBe(true);
+    }
+  );
+
+  it.each([false, "NO", "FALSE", "0", "아니오", "미취소", "취소아님"])(
+    "does not misclassify non-cancellation value %s",
+    (value) => {
+      expect(isCanceledValue(value)).toBe(false);
+    }
+  );
+});
+
+describe("cleanHeaderLabel", () => {
+  it("removes every supported whitespace and invisible character", () => {
+    expect(cleanHeaderLabel("\uFEFF 거\t래\n일 자\u200B")).toBe("거래일자");
   });
 });
 
@@ -95,11 +138,16 @@ describe("buildColumnMap", () => {
   });
 
   it("falls back to alias variants", () => {
-    const map = buildColumnMap(["거래일", "이용가맹점명", "이용금액", "포인트"]);
-    expect(map.transactionDate).toBe("거래일");
+    const map = buildColumnMap(["이용일자", "이용가맹점명", "이용금액", "포인트"]);
+    expect(map.transactionDate).toBe("이용일자");
     expect(map.merchantName).toBe("이용가맹점명");
     expect(map.originalAmount).toBe("이용금액");
     expect(map.actualPoints).toBe("포인트");
+  });
+
+  it("prefers the canonical alias regardless of header order", () => {
+    const map = buildColumnMap(["거래일", "거래일자"]);
+    expect(map.transactionDate).toBe("거래일자");
   });
 });
 
@@ -137,6 +185,13 @@ describe("normalizeRows", () => {
     expect(transactions[0].eligibleAmount).toBe(209755);
   });
 
+  it("preserves an explicit zero eligible amount", () => {
+    const { transactions } = normalizeRows([
+      { ...row, 포인트적립대상금액: "0" },
+    ]);
+    expect(transactions[0].eligibleAmount).toBe(0);
+  });
+
   it("skips blank filler rows", () => {
     const { transactions } = normalizeRows([
       row,
@@ -155,5 +210,50 @@ describe("normalizeRows", () => {
     const a = normalizeRows([row]).transactions[0].id;
     const b = normalizeRows([row]).transactions[0].id;
     expect(a).toBe(b);
+  });
+
+  it("reports missing columns and preserves original indexes after fillers", () => {
+    const second = { ...row, 가맹점명: "TIAD" };
+    const { transactions, missingColumns } = normalizeRows([
+      row,
+      { 거래일자: "", 가맹점명: "", 원매출금액: "", 적립포인트: "" },
+      second,
+    ]);
+
+    expect(transactions.map((transaction) => transaction.rowIndex)).toEqual([
+      0, 2,
+    ]);
+    expect(transactions[0].raw).toBe(row);
+    expect(transactions[0].id).not.toBe(transactions[1].id);
+    expect(missingColumns).toContain("postingDate");
+    expect(missingColumns).toContain("overseasMerchantName");
+    expect(missingColumns).toContain("aggregationDate");
+  });
+
+  it("normalizes alternate dates, cancellation, blank overseas name, and absent card", () => {
+    const { transactions } = normalizeRows([
+      {
+        이용일자: 46129,
+        매입일자: 46130,
+        집계작업일자: 46131,
+        가맹점명: "TIAD",
+        해외가맹점명: "   ",
+        원매출금액: 100000,
+        포인트적립대상금액: 100000,
+        포인트종류상세: "L2",
+        적립포인트: 300,
+        취소전표여부: " YES ",
+        카드번호: "",
+      },
+    ]);
+
+    expect(transactions[0]).toMatchObject({
+      transactionDate: "2026-04-17",
+      postingDate: "2026-04-18",
+      aggregationDate: "2026-04-19",
+      merchantName: "TIAD",
+      isCanceled: true,
+      cardNumberMasked: undefined,
+    });
   });
 });

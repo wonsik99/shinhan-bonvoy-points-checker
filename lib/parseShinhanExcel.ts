@@ -64,7 +64,7 @@ export function buildDiagnostic(
     ).length;
     if (hintCount >= 2) {
       const masked = cells
-        .map((c) => c.replace(/\d{2,}/g, "**").slice(0, 30))
+        .map((c) => c.replace(/\d+/g, "**").slice(0, 30))
         .join(" | ");
       headerRows.push(`${i + 1}행: ${masked}`);
     }

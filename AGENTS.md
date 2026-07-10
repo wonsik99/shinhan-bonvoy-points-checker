@@ -68,12 +68,14 @@ next.config.ts          CSP 헤더 (connect-src 'self' + Apps Script 수집기 �
 ## 검증
 
 ```bash
-npm test          # vitest (72+개, 전부 통과 상태 유지할 것)
+npm test          # vitest (전부 통과 상태 유지할 것)
+npm run test:coverage # 핵심 로직 커버리지 + 하한선 검증
+npm run test:e2e  # Playwright 합성 XLSX 업로드·피드백·반응형 흐름
 npm run lint && npm run build
 npm run fixture   # docs/_local/sample.xlsx 생성 (실제 레이아웃 모사, gitignore)
 ```
 
-fixture 기대값: 15건 / Marriott 12 / 정상 2 / 누락 의심 9 / 확인 필요 1(HOTEL 55 CHICAGO) / 예상 추가 6,305P (Hotel 55 포함 시 +420P). 실물 파일 검증 방법은 `docs/_local/HANDOFF.md` 참고. UI 변경 시 Playwright로 업로드→요약 수치→피드백 버튼→문의 문구까지 실제로 확인할 것.
+fixture 기대값: 16건 / Marriott 12 / 정상 2 / 누락 의심 8 / 확인 필요 2(HOTEL 55 CHICAGO + 해외 L1) / 예상 추가 5,585P (Hotel 55 포함 시 +420P, SAMMAEBONG을 메리어트로 표시 시 +1,200P). 실물 파일 검증 방법은 `docs/_local/HANDOFF.md` 참고. UI 변경 시 Playwright로 업로드→요약 수치→피드백 버튼→문의 문구까지 실제로 확인할 것.
 
 ## 배포
 

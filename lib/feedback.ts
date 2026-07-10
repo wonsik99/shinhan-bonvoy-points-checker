@@ -61,10 +61,10 @@ export interface Judgment {
  * Submits the user's final judgments in one explicit action (they press a
  * "help others" button — feedback is NOT sent live on every click, so the
  * collector only ever sees settled decisions, not indecisive intermediate
- * states). Sends only the merchant name and classification metadata — never
- * amounts-by-date profiles, card numbers, or the uploaded file. Returns true
- * when the requests were dispatched, false on network failure or when the
- * collector is disabled.
+ * states). Sends only merchant/classification metadata, the point grade, and
+ * a tab-scoped anonymous session id — never amounts-by-date profiles, card
+ * numbers, or the uploaded file. Returns true when the requests were
+ * dispatched, false on network failure or when the collector is disabled.
  */
 export async function submitJudgments(items: Judgment[]): Promise<boolean> {
   if (!getEndpoint() || typeof window === "undefined" || items.length === 0) {
