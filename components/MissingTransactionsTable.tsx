@@ -31,7 +31,7 @@ function MissingFeedbackButton({
   return (
     <button
       type="button"
-      onClick={() => onFeedback(row, excluded ? "include" : "exclude")}
+      onClick={() => onFeedback(row, "exclude")}
       aria-label={
         row.merchantName +
         (excluded ? " 거래를 문의에 다시 포함" : " 거래를 문의에서 제외")

@@ -139,6 +139,9 @@ test("uploads locally and keeps feedback local until explicit submission", async
     .click();
   await expectSummaryCard(page, "예상 추가 포인트", "0P");
   await expect(page.getByText("누락 의심 거래가 있거나 확인 필요 거래를 포함하면")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "내 판단으로 서비스 돕기 (1건)" })
+  ).toBeVisible();
 
   await page
     .getByRole("button", {
@@ -146,6 +149,14 @@ test("uploads locally and keeps feedback local until explicit submission", async
     })
     .click();
   await expectSummaryCard(page, "예상 추가 포인트", "468P");
+  await expect(
+    page.getByRole("region", { name: "판단 제보" })
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", {
+      name: "COURTYARD BY MARRIOTT 거래를 문의에서 제외",
+    })
+  ).toBeVisible();
 
   const reviewGroup = page.getByRole("group", {
     name: "HOTEL 55 CHICAGO 거래 문의 반영",
@@ -160,10 +171,14 @@ test("uploads locally and keeps feedback local until explicit submission", async
   expect(mutationRequests).toHaveLength(0);
 
   await page
-    .getByRole("button", { name: "내 판단으로 서비스 돕기 (2건)" })
+    .getByRole("button", { name: "내 판단으로 서비스 돕기 (1건)" })
     .click();
-  await expect.poll(() => collectorBodies.length).toBe(2);
-  expect(mutationRequests).toEqual([COLLECTOR_URL, COLLECTOR_URL]);
+  await expect.poll(() => collectorBodies.length).toBe(1);
+  expect(mutationRequests).toEqual([COLLECTOR_URL]);
+  expect(collectorBodies[0]).toMatchObject({
+    merchant_raw_name: "HOTEL 55 CHICAGO",
+    user_action: "include",
+  });
   for (const body of collectorBodies) {
     expect(Object.keys(body).sort()).toEqual(
       [
@@ -202,7 +217,7 @@ test("uploads locally and keeps feedback local until explicit submission", async
   await expect(
     page.getByRole("region", { name: "신한카드 문의 문구" })
   ).toContainText("SAMMAEBONG CO LTD");
-  expect(collectorBodies).toHaveLength(2);
+  expect(collectorBodies).toHaveLength(1);
 
   await page
     .getByRole("button", {
