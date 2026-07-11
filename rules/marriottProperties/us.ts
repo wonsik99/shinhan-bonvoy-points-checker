@@ -1,5 +1,5 @@
-import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import { contains, high, inferBrand } from "./helpers";
+import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Marriott displays 6,329 U.S. hotel cards; 6,308 unique property codes are kept after removing pagination overlap.
 const unitedStatesOfficialRows = [
@@ -6313,6 +6313,20 @@ const unitedStatesOfficialRows = [
   { id: "YUMRI", officialName: "Residence Inn by Marriott Yuma" },
 ];
 
+const unitedStatesAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  // Statement often drops "Downtown". Keep candidate/medium so it stays in
+  // needs_review rather than auto missing_suspected.
+  "Hotel 55 Chicago Downtown": [
+    contains("HOTEL 55 CHICAGO", {
+      brandGroup: "marriott_candidate",
+      confidence: "medium",
+      status: "needs_review",
+      reason:
+        "Hotel-like merchant with prior user suspicion; needs confirmation.",
+    }),
+  ],
+};
+
 export const unitedStatesMarriottProperties: MarriottProperty[] =
   unitedStatesOfficialRows.map(({ id, officialName }) => ({
     id: `us-${id.toLowerCase()}`,
@@ -6323,6 +6337,6 @@ export const unitedStatesMarriottProperties: MarriottProperty[] =
     brandGroup: high.brandGroup,
     confidence: high.confidence,
     status: high.status,
-    aliases: [],
+    aliases: unitedStatesAliasOverrides[officialName] ?? [],
     reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 미국 호텔입니다.`,
   }));

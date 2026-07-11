@@ -48,6 +48,10 @@ describe("property alias helpers", () => {
   it("normalizes property ids and compact alias keys", () => {
     expect(propertyId("FR", "Hôtel & Spa!")).toBe("fr-hotel-and-spa");
     expect(compactAliasKey("  Le Méridien\tSeoul ")).toBe("LEMERIDIENSEOUL");
+    expect(compactAliasKey("W Dubai - The Palm")).toBe("WDUBAITHEPALM");
+    expect(compactAliasKey("W Dubai – Mina Seyahi")).toBe("WDUBAIMINASEYAHI");
+    expect(compactAliasKey("A & B Hotel")).toBe("AANDBHOTEL");
+    expect(compactAliasKey("St. Croix")).toBe("STCROIX");
 
     const longName = "A".repeat(120);
     expect(propertyId("US", longName).slice(3)).toHaveLength(80);

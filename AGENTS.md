@@ -49,7 +49,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 app/page.tsx            상태 보유 (baseResults + feedbackById), 파생값 useMemo
 lib/parseShinhanExcel   File → SheetJS → extractRecords(인터리브/플랫 감지) → 진단(ShinhanParseError)
 lib/normalizeTransaction 컬럼 별칭 매핑, 금액/날짜/등급/취소 정규화, 카드번호 마스킹
-lib/classifyMerchant    known rules → 한글 브랜드 → 호텔 alias DB(인덱스) → 영문 브랜드 → 운영사/후보 → 호텔 유사 키워드
+lib/classifyMerchant    한글 브랜드 → 호텔 alias DB(인덱스) → 영문 브랜드 → 국내 known/운영사 → 호텔 유사 키워드
 lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_marriott/canceled), 피드백 적용, 요약
 lib/inquiryMessage      카드사 문의 문구 생성
 lib/feedback            (선택) 익명 피드백 + 파싱 실패 원클릭 제보 — 기본은 Google Sheets(Apps Script), env 없으면 no-op

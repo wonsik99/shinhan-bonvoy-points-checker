@@ -40,7 +40,7 @@ describe("analyzeTransactions", () => {
     expect(result.effectiveIncluded).toBe(true);
   });
 
-  it("auto-flags high-confidence known merchants on the L2 fallback grade", () => {
+  it("auto-flags TIAD via derived exact alias on the L2 fallback grade", () => {
     const [result] = analyzeTransactions([
       tx({ merchantName: "TIAD", pointType: "L2", actualPoints: 629 }),
     ]);

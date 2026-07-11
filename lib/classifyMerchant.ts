@@ -1,7 +1,6 @@
 import type { MerchantClassification } from "@/types/transaction";
 import {
   hotelLikeKeywords,
-  knownMerchantRules,
   koreanKnownMerchantRules,
   koreanMarriottKeywords,
   marriottProperties,
@@ -48,8 +47,20 @@ interface CompiledPropertyAlias {
   compact: string;
 }
 
+/**
+ * Compact key for property-alias matching.
+ * Statements often drop hyphens/periods/& that appear in official names
+ * (e.g. "W Dubai - The Palm" vs "W DUBAI THE PALM").
+ */
+function compactMatchKeyFromNormalized(normalized: string): string {
+  return normalized
+    .replace(/&/g, " AND ")
+    .replace(/[\p{Pd}.]/gu, " ")
+    .replace(/\s+/g, "");
+}
+
 function aliasKey(value: string): string {
-  return normalizeMerchantName(value).replace(/\s+/g, "");
+  return compactMatchKeyFromNormalized(normalizeMerchantName(value));
 }
 
 const propertyAliases = marriottProperties.flatMap((property) =>
@@ -120,7 +131,7 @@ function propertyAliasToClassification(
 function matchPropertyAlias(
   normalized: string
 ): MerchantClassification | undefined {
-  const compact = normalized.replace(/\s+/g, "");
+  const compact = compactMatchKeyFromNormalized(normalized);
   const exactMatches = exactPropertyAliases.get(compact);
   if (exactMatches?.[0]) {
     return propertyAliasToClassification(exactMatches[0]);
@@ -139,7 +150,17 @@ function matchPropertyAlias(
       }
       checkedAliases.add(compiled.compact);
 
-      if (compact.includes(compiled.compact)) {
+      // Single-token short ASCII aliases (e.g. TIAD) use word boundaries so
+      // FOOTIAD does not match. Spaced short aliases (e.g. "L ESCAPE") and
+      // longer aliases keep space-insensitive compact contains for truncation.
+      const isShortAsciiToken =
+        compiled.compact.length < 8 && /^[A-Z0-9]+$/.test(compiled.compact);
+      const aliasHasSpaces = compiled.normalized.includes(" ");
+      const matched =
+        isShortAsciiToken && !aliasHasSpaces
+          ? matchesKeyword(normalized, compiled.normalized)
+          : compact.includes(compiled.compact);
+      if (matched) {
         return propertyAliasToClassification(compiled);
       }
     }
@@ -150,13 +171,12 @@ function matchPropertyAlias(
 
 /**
  * Deterministic classification pipeline:
- * 1. Known overseas rules (curated, may be ambiguous → needs_review)
- * 2. Korean Marriott brand keywords → certain domestic
- * 3. Global property alias DB (exact/contains, pre-indexed)
- * 4. English Marriott brand keywords → certain overseas
- * 5. Country-specific Korean rules, including operator names → needs_review
- * 6. Hotel-like keywords → low-confidence review candidate
- * 7. Otherwise not Marriott-related
+ * 1. Korean Marriott brand keywords → certain domestic
+ * 2. Global property alias DB (exact/contains, pre-indexed)
+ * 3. English Marriott brand keywords → certain overseas
+ * 4. Country-specific Korean rules, including operator names → needs_review
+ * 5. Hotel-like keywords → low-confidence review candidate
+ * 6. Otherwise not Marriott-related
  */
 export function classifyMerchant(merchantName: string): MerchantClassification {
   const normalized = normalizeMerchantName(merchantName);
@@ -169,20 +189,6 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
       status: "rejected",
       reason: "가맹점명이 비어 있습니다.",
     };
-  }
-
-  for (const rule of knownMerchantRules) {
-    if (matchesKeyword(normalized, normalizeMerchantName(rule.pattern))) {
-      return {
-        isLikelyMarriott: rule.brandGroup === "marriott",
-        confidence: rule.confidence,
-        status: rule.status,
-        normalizedName: rule.normalizedName,
-        matchedPattern: rule.pattern,
-        reason: rule.reason,
-        region: "overseas",
-      };
-    }
   }
 
   for (const keyword of koreanMarriottKeywords) {

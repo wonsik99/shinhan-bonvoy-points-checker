@@ -47,12 +47,16 @@ export function propertyId(country: string, officialName: string): string {
   return `${country.toLowerCase()}-${slug}`;
 }
 
+/** Match-key compact form: strip spaces and punctuation that statements often omit. */
 export function compactAliasKey(value: string): string {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .normalize("NFC")
     .toUpperCase()
+    .replace(/&/g, " AND ")
+    // hyphen / en-dash / em-dash / period — card statements often drop these
+    .replace(/[\p{Pd}.]/gu, " ")
     .replace(/\s+/g, "");
 }
 

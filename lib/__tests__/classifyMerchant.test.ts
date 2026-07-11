@@ -380,22 +380,56 @@ describe("classifyMerchant", () => {
     expect(result.status).toBe("active");
   });
 
-  it.each(["TIAD", "POSTCARD CABINS THE TH", "HOTEL CLEVELAND"])(
-    "classifies %s as high-confidence Marriott via known rules",
-    (name) => {
-      const result = classifyMerchant(name);
-      expect(result.isLikelyMarriott).toBe(true);
-      expect(result.confidence).toBe("high");
-      expect(result.status).toBe("active");
-      expect(result.normalizedName).toBeTruthy();
-    }
-  );
+  it("classifies HOTEL CLEVELAND via property alias", () => {
+    const result = classifyMerchant("HOTEL CLEVELAND");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
+    expect(result.normalizedName).toBe("Hotel Cleveland, Autograph Collection");
+  });
+
+  it("classifies TIAD via derived exact alias from jp seed", () => {
+    const result = classifyMerchant("TIAD");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.normalizedName).toBe("TIAD, Autograph Collection");
+  });
+
+  it("matches property aliases after normalizing hyphen, period, and &", () => {
+    // Official: "W Dubai - The Palm" — statement drops the hyphen
+    expect(classifyMerchant("W DUBAI THE PALM")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      normalizedName: "W Dubai - The Palm",
+    });
+    // Official uses en-dash: "W Dubai – Mina Seyahi"
+    expect(classifyMerchant("W DUBAI MINA SEYAHI")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      normalizedName: "W Dubai – Mina Seyahi",
+    });
+    // Official: "... St. Croix ..." — statement drops the period
+    expect(classifyMerchant("CARAMBOLA BEACH RESORT ST CROIX")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      normalizedName:
+        "Carambola Beach Resort St. Croix, US Virgin Islands",
+    });
+  });
+
+  it("classifies POSTCARD CABINS via Outdoor Collection brand keyword", () => {
+    const result = classifyMerchant("POSTCARD CABINS THE TH");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("certain");
+    expect(result.matchedPattern).toBe("POSTCARD CABINS");
+  });
 
   it("classifies HOTEL 55 CHICAGO as medium needs_review", () => {
     const result = classifyMerchant("HOTEL 55 CHICAGO");
     expect(result.isLikelyMarriott).toBe(false);
     expect(result.confidence).toBe("medium");
     expect(result.status).toBe("needs_review");
+    expect(result.normalizedName).toBe("Hotel 55 Chicago Downtown");
   });
 
   it("classifies ZIPPY AUTO WASH - ELLSWO as not Marriott", () => {

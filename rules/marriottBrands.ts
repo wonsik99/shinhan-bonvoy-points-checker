@@ -60,7 +60,7 @@ export const marriottBrandCatalog = [
   {
     officialName: "The Marriott Vacation Clubs",
     category: "premium",
-    keywords: ["MARRIOTT VACATION CLUB", "MARRIOTT VACATION CLUBS"],
+    keywords: ["MARRIOTT VACATION CLUB", "MARRIOTT VACATION CLUBS", "MAVC"],
   },
   {
     officialName: "Delta Hotels by Marriott",
@@ -272,6 +272,4 @@ export const koreanMarriottKeywords = [
   "럭셔리 컬렉션",
   "디자인호텔스",
   "디자인 호텔스",
-  // "에디션"은 한국에 EDITION 브랜드 호텔이 없고 '특별 에디션' 등 일반 상호와
-  // 겹쳐 오탐을 유발하므로 제외 (영문 "EDITION"은 단어 경계 매칭이라 유지).
 ];
