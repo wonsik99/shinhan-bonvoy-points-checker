@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const notoSansKr = Noto_Sans_KR({
@@ -37,7 +39,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${notoSansKr.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        {/* On Vercel these serve their script and beacons from the same origin
+            (/_vercel/insights/*, /_vercel/speed-insights/*), so the strict
+            CSP (script-src/connect-src 'self') covers them with no loosening.
+            They never receive the uploaded file — only anonymous page views. */}
+        <Analytics />
+        <SpeedInsights />
+      </body>
     </html>
   );
 }

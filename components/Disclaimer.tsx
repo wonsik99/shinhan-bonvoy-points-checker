@@ -16,6 +16,10 @@ export default function Disclaimer() {
         아닙니다.
       </p>
       <p>파일은 서버에 저장되지 않고 브라우저 안에서만 분석됩니다.</p>
+      <p>
+        서비스 개선을 위해 익명 방문·성능 통계(Vercel Analytics)를 수집하며,
+        업로드한 파일과 거래 정보는 여기에 포함되지 않습니다.
+      </p>
     </footer>
   );
 }
