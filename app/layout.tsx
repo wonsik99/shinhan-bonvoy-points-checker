@@ -41,12 +41,19 @@ export default function RootLayout({
     <html lang="ko" className={`${notoSansKr.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
-        {/* On Vercel these serve their script and beacons from the same origin
-            (/_vercel/insights/*, /_vercel/speed-insights/*), so the strict
-            CSP (script-src/connect-src 'self') covers them with no loosening.
-            They never receive the uploaded file — only anonymous page views. */}
-        <Analytics />
-        <SpeedInsights />
+        {/* Production only. On Vercel these serve their script and beacons from
+            the same origin (/_vercel/insights/*, /_vercel/speed-insights/*), so
+            the strict CSP (script-src/connect-src 'self') covers them with no
+            loosening, and they never receive the uploaded file — only anonymous
+            page views. In development they instead fetch an external debug
+            script that the strict CSP blocks, so they are omitted there (dev
+            traffic also should not land in analytics). */}
+        {process.env.NODE_ENV === "production" && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );
