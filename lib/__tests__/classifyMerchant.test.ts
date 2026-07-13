@@ -631,6 +631,24 @@ describe("classifyMerchant", () => {
     expect(result.normalizedName).toBe("Four Points by Sheraton Suwon");
   });
 
+  it("maps 에스엘지수원 to Courtyard by Marriott Suwon", () => {
+    const result = classifyMerchant("에스엘지수원");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Courtyard by Marriott Suwon");
+  });
+
+  it("maps LKL*DALIANFUMAOJIUDIAN to Four Points Dalian Donggang", () => {
+    const result = classifyMerchant("LKL*DALIANFUMAOJIUDIAN");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe(
+      "Four Points by Sheraton Dalian Donggang"
+    );
+  });
+
   it("maps CTY CP VINPEARL to Vinpearl Landmark 81 as review candidate", () => {
     const result = classifyMerchant("CTY CP VINPEARL");
     expect(result.isLikelyMarriott).toBe(false);

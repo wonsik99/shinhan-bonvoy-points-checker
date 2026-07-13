@@ -1,5 +1,5 @@
-import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import { contains, high, inferBrand } from "./helpers";
+import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const chinaOfficialRows = [
@@ -795,6 +795,13 @@ const chinaOfficialRows = [
   { id: "TNASI", officialName: "Sheraton Zibo Hotel" },
 ];
 
+const chinaAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  // Shinhan overseas statement merchant for Four Points by Sheraton Dalian Donggang
+  "Four Points by Sheraton Dalian Donggang": [
+    contains("LKL*DALIANFUMAOJIUDIAN", high),
+  ],
+};
+
 export const chinaMarriottProperties: MarriottProperty[] =
   chinaOfficialRows.map(({ id, officialName }) => ({
     id: `cn-${id.toLowerCase()}`,
@@ -805,6 +812,6 @@ export const chinaMarriottProperties: MarriottProperty[] =
     brandGroup: high.brandGroup,
     confidence: high.confidence,
     status: high.status,
-    aliases: [],
+    aliases: chinaAliasOverrides[officialName] ?? [],
     reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 중국 호텔입니다.`,
   }));

@@ -201,6 +201,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("COURTYARD MARRIOTT SUWON"),
     contains("COURTYARD BY MARRIOTT SUWON"),
     contains("코트야드메리어트수원"),
+    // Shinhan statement merchant for Courtyard by Marriott Suwon
+    contains("에스엘지수원"),
   ]),
   korea("kr-four-points-suwon", "Four Points by Sheraton Suwon", "Four Points by Sheraton", [
     contains("FOUR POINTS SHERATON SUWON"),

@@ -191,6 +191,35 @@ describe("submitJudgments", () => {
     });
   });
 
+  it("submits an unmapped grade-confirmed merchant as ok_l5 metadata", async () => {
+    vi.stubEnv("NEXT_PUBLIC_APPS_SCRIPT_URL", ENDPOINT);
+    installBrowser("sid-existing");
+    const fetchMock = installFetch();
+
+    const gradeConfirmed = result({
+      merchantName: "OPAQUE MERCHANT CO LTD",
+      pointType: "L4",
+      analysisStatus: "ok_l5",
+      gradeConfirmedMarriott: true,
+      classification: {
+        isLikelyMarriott: false,
+        confidence: "none",
+        status: "rejected",
+        reason: "test",
+      },
+    });
+    await submitJudgments([{ result: gradeConfirmed, action: "include" }]);
+
+    expect(requestBody(fetchMock)).toMatchObject({
+      merchant_raw_name: "OPAQUE MERCHANT CO LTD",
+      normalized_merchant_name: null,
+      user_action: "include",
+      detected_status: "ok_l5",
+      detected_confidence: "none",
+      point_type: "L4",
+    });
+  });
+
   it("falls back to an anonymous id when session storage is unavailable", async () => {
     vi.stubEnv("NEXT_PUBLIC_APPS_SCRIPT_URL", ENDPOINT);
     vi.stubGlobal("window", {

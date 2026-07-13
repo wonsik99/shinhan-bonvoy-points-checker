@@ -136,8 +136,8 @@ export default function Home() {
     window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
   };
 
-  // Feedback changes only local totals and the inquiry message. Nothing leaves
-  // the browser until the explicit service-help button is pressed.
+  // Judgments and alias candidates stay local until the explicit service-help
+  // button is pressed. Only inquiry judgments can change totals/message text.
   const handleFeedback = (row: AnalysisResult, action: UserFeedbackAction) => {
     setCopied(false);
     setFeedbackById((previous) => {
@@ -337,6 +337,8 @@ export default function Home() {
                 <OkAccrualTransactions
                   rows={okRows}
                   earnedPoints={summary.okAccruedPoints}
+                  collectionEnabled={collectionEnabled}
+                  onAliasFeedback={(row) => handleFeedback(row, "include")}
                 />
               </section>
 
@@ -352,8 +354,8 @@ export default function Home() {
                   role="note"
                   className="rounded-xl border border-hairline bg-white px-4 py-3 text-xs leading-5 text-muted"
                 >
-                  판단 {judgmentCount}건 · 문의 보내기 전에 익명으로 보낼 수
-                  있어요
+                  서비스 개선 제보 {judgmentCount}건 · 문의 보내기 전에
+                  익명으로 보낼 수 있어요
                 </p>
               )}
             </div>
@@ -420,8 +422,8 @@ export default function Home() {
                       서비스 돕기
                     </p>
                     <p className="mt-2 text-sm leading-6 text-ink-soft">
-                      확인하신 판단 <b>{judgmentCount}건</b>을 익명으로
-                      보내주시면 애매한 가맹점 판별 개선에 도움이 됩니다.
+                      확인하신 판단과 DB 미등록 가맹점명 <b>{judgmentCount}건</b>을
+                      익명으로 보내주시면 가맹점 판별 개선에 도움이 됩니다.
                       명시적으로 아래 버튼을 누르기 전에는 아무것도 전송되지
                       않습니다.
                     </p>
