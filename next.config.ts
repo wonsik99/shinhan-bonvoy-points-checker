@@ -5,7 +5,8 @@ import type { NextConfig } from "next";
 // Excel data physically cannot leave the client. The only exceptions are the
 // optional feedback collectors — added ONLY when their env var is set, and
 // they receive merchant/classification metadata, never file contents.
-const connectExtras: string[] = [];
+// Also allow Vercel Analytics to send analytics data.
+const connectExtras: string[] = ["https://vitals.vercel-analytics.com"];
 if (process.env.NEXT_PUBLIC_APPS_SCRIPT_URL) {
   // Apps Script web apps redirect from script.google.com to googleusercontent.
   connectExtras.push(
@@ -16,10 +17,11 @@ if (process.env.NEXT_PUBLIC_APPS_SCRIPT_URL) {
 
 // React's dev build uses eval() for debugging features; production never does.
 // Allow it only in development so the production CSP stays locked down.
+// Also allow Vercel Analytics script to load from cdn.vercel-insights.com
 const scriptSrc =
   process.env.NODE_ENV === "development"
-    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-    : "script-src 'self' 'unsafe-inline'";
+    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.vercel-insights.com"
+    : "script-src 'self' 'unsafe-inline' https://cdn.vercel-insights.com";
 
 const csp = [
   "default-src 'self'",

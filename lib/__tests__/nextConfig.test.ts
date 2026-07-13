@@ -34,6 +34,8 @@ describe("security headers", () => {
     const csp = headerValue(headers, "Content-Security-Policy");
 
     expect(csp).toContain("connect-src 'self'");
+    // Vercel Analytics domain is always allowed
+    expect(csp).toContain("https://vitals.vercel-analytics.com");
     expect(csp).not.toContain("script.google.com");
     expect(csp).not.toContain("googleusercontent.com");
     expect(csp).not.toContain("'unsafe-eval'");
@@ -52,16 +54,19 @@ describe("security headers", () => {
     );
     const csp = headerValue(headers, "Content-Security-Policy");
 
-    expect(csp).toContain(
-      "connect-src 'self' https://script.google.com https://script.googleusercontent.com"
-    );
+    // Vercel Analytics domain is always present
+    expect(csp).toContain("https://vitals.vercel-analytics.com");
+    // Apps Script domains are added when collection is enabled
+    expect(csp).toContain("https://script.google.com");
+    expect(csp).toContain("https://script.googleusercontent.com");
     expect(csp).not.toContain("evil.example");
   });
 
   it("allows eval only in the development script policy", async () => {
     const headers = await loadResponseHeaders("development");
-    expect(headerValue(headers, "Content-Security-Policy")).toContain(
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-    );
+    const csp = headerValue(headers, "Content-Security-Policy");
+    expect(csp).toContain("script-src 'self' 'unsafe-inline' 'unsafe-eval'");
+    // Vercel Analytics script domain is also allowed
+    expect(csp).toContain("https://cdn.vercel-insights.com");
   });
 });
