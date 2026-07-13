@@ -1,5 +1,5 @@
-import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import { contains, high, inferBrand } from "./helpers";
+import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const japanOfficialRows = [
@@ -133,6 +133,13 @@ const japanOfficialRows = [
   { id: "CTSFN", officialName: "Fairfield by Marriott Hokkaido Naganuma" },
 ];
 
+const japanAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  // Truncated/glued Shinhan overseas statement name (word-boundary MARRIOTT misses this)
+  "Courtyard by Marriott Sapporo": [
+    contains("CYMARRIOTTSAPPOR", high),
+  ],
+};
+
 export const japanMarriottProperties: MarriottProperty[] =
   japanOfficialRows.map(({ id, officialName }) => ({
     id: `jp-${id.toLowerCase()}`,
@@ -143,6 +150,6 @@ export const japanMarriottProperties: MarriottProperty[] =
     brandGroup: high.brandGroup,
     confidence: high.confidence,
     status: high.status,
-    aliases: [],
+    aliases: japanAliasOverrides[officialName] ?? [],
     reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 일본 호텔입니다.`,
   }));

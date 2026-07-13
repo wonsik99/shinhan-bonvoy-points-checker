@@ -39,7 +39,8 @@ type Transaction = [
 
 const TRANSACTIONS: Transaction[] = [
   [1, "VISA해외사용일시불", "COURTYARD BY MARRIOTT", 234068, "L2", 702, "N"],
-  [2, "VISA해외사용일시불", "HOTEL 55 CHICAGO", 209755, "L2", 629, "N"],
+  // Keep a low-confidence hotel-like name for the needs_review include flow.
+  [2, "VISA해외사용일시불", "ISTANBUL BOUTIQUE HOTEL", 209755, "L2", 629, "N"],
   [3, "VISA해외사용일시불", "SAMMAEBONG CO LTD", 600000, "L2", 1800, "N"],
   [4, "VISA해외사용일시불", "JW MARRIOTT SEOUL", 500000, "L5", 2500, "N"],
   [5, "VISA해외사용일시불", "SHERATON GRAND", 410000, "L2", 1230, "Y"],
@@ -174,7 +175,7 @@ test("uploads locally and keeps feedback local until explicit submission", async
   ).toBeVisible();
 
   const reviewGroup = page.getByRole("group", {
-    name: "HOTEL 55 CHICAGO 거래 문의 반영",
+    name: "ISTANBUL BOUTIQUE HOTEL 거래 문의 반영",
   });
   await reviewGroup.getByRole("button", { name: "문의에 포함" }).click();
   await expectSummaryCard(page, "예상 추가 포인트", "888P");
@@ -214,7 +215,7 @@ test("uploads locally and keeps feedback local until explicit submission", async
   ).toContainText("COURTYARD BY MARRIOTT");
   await expect(
     page.getByRole("region", { name: "신한카드 문의 문구" })
-  ).toContainText("HOTEL 55 CHICAGO");
+  ).toContainText("ISTANBUL BOUTIQUE HOTEL");
 
   const sendRegion = page.getByRole("region", { name: "문의 보내기 채널" });
   await expect(sendRegion.getByRole("link", { name: /1:1 문의/ })).toBeVisible();
@@ -232,7 +233,7 @@ test("uploads locally and keeps feedback local until explicit submission", async
   await expect.poll(() => collectorBodies.length).toBe(1);
   expect(mutationRequests).toEqual([COLLECTOR_URL]);
   expect(collectorBodies[0]).toMatchObject({
-    merchant_raw_name: "HOTEL 55 CHICAGO",
+    merchant_raw_name: "ISTANBUL BOUTIQUE HOTEL",
     user_action: "include",
   });
   for (const body of collectorBodies) {

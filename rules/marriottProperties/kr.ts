@@ -78,6 +78,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     exact("THE PLAZA", { ...candidate, reason: needsReviewReason }),
     contains("더플라자서울"),
     contains("더플라자", { ...candidate, reason: needsReviewReason }),
+    // Shinhan statement merchant for THE PLAZA Seoul
+    contains("한화호텔앤드리조트"),
   ]),
   korea("kr-jw-marriott-dongdaemun-square-seoul", "JW Marriott Dongdaemun Square Seoul", "JW Marriott", [
     contains("JW MARRIOTT DONGDAEMUN"),
@@ -92,6 +94,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("FOUR POINTS SHERATON SEOUL GANGNAM"),
     contains("FOUR POINTS SEOUL GANGNAM"),
     contains("포포인츠서울강남"),
+    // Shinhan statement merchant for Four Points Seoul Gangnam
+    contains("서우제이앤디"),
   ]),
   korea("kr-jw-marriott-hotel-seoul", "JW Marriott Hotel Seoul", "JW Marriott", [
     contains("JW MARRIOTT HOTEL SEOUL"),
@@ -101,11 +105,15 @@ export const koreaMarriottProperties: MarriottProperty[] = [
   korea("kr-aloft-seoul-gangnam", "Aloft Seoul Gangnam", "Aloft", [
     contains("ALOFT SEOUL GANGNAM"),
     contains("알로프트서울강남"),
+    // Shinhan statement merchant for Aloft Seoul Gangnam
+    contains("대신투자개발"),
   ]),
   korea("kr-ac-hotel-seoul-gangnam", "AC Hotel Seoul Gangnam", "AC Hotels", [
     contains("AC HOTEL SEOUL GANGNAM"),
     contains("AC호텔서울강남"),
     contains("에이씨호텔서울강남"),
+    // Shinhan statement merchant for AC Hotel Seoul Gangnam
+    contains("희앤썬"),
   ]),
   korea("kr-josun-palace-seoul-gangnam", "Josun Palace, a Luxury Collection Hotel, Seoul Gangnam", "The Luxury Collection", [
     contains("JOSUN PALACE"),
@@ -119,6 +127,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
       exact("RYSE", { ...candidate, reason: needsReviewReason }),
       contains("RYSE HOTEL", { ...candidate, reason: needsReviewReason }),
       contains("라이즈", { ...candidate, reason: needsReviewReason }),
+      // Shinhan statement merchant for RYSE Autograph Collection
+      contains("아주호텔서교", high),
     ],
     {
       brandGroup: candidate.brandGroup,
@@ -131,6 +141,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("WESTIN SEOUL PARNAS"),
     contains("웨스틴서울파르나스"),
     contains("웨스틴파르나스"),
+    // Operator group also runs IHG/자체 브랜드 — bare name needs review
+    contains("파르나스", { ...candidate, reason: needsReviewReason }),
   ]),
   korea("kr-yeouido-park-centre-seoul", "Yeouido Park Centre, Seoul - Marriott Executive Apartments", "Marriott Executive Apartments", [
     contains("YEOUIDO PARK CENTRE"),
@@ -198,21 +210,13 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("쉐라톤그랜드인천"),
     contains("셰라톤그랜드인천"),
   ]),
-  korea(
-    "kr-nest-hotel-incheon",
-    "Nest Hotel, a Member of Design Hotels",
-    "Design Hotels",
-    [
-      contains("NEST HOTEL", { ...candidate, reason: needsReviewReason }),
-      contains("네스트호텔", { ...candidate, reason: needsReviewReason }),
-    ],
-    {
-      brandGroup: candidate.brandGroup,
-      confidence: candidate.confidence,
-      status: candidate.status,
-      reason: needsReviewReason,
-    }
-  ),
+  korea("kr-nest-hotel-incheon", "Nest Hotel, a Member of Design Hotels", "Design Hotels", [
+    contains("NEST HOTEL"),
+    contains("네스트호텔"),
+    // Short forms only — keep review so "네스트" alone is not auto-included.
+    exact("NEST", { ...candidate, reason: needsReviewReason }),
+    contains("네스트", { ...candidate, reason: needsReviewReason }),
+  ]),
   korea("kr-courtyard-pyeongtaek", "Courtyard by Marriott Pyeongtaek", "Courtyard by Marriott", [
     contains("COURTYARD MARRIOTT PYEONGTAEK"),
     contains("COURTYARD BY MARRIOTT PYEONGTAEK"),
@@ -231,13 +235,18 @@ export const koreaMarriottProperties: MarriottProperty[] = [
   korea("kr-fairfield-busan-songdo-beach", "Fairfield by Marriott Busan Songdo Beach", "Fairfield by Marriott", [
     contains("FAIRFIELD MARRIOTT BUSAN SONGDO"),
     contains("FAIRFIELD BY MARRIOTT BUSAN SONGDO"),
+    contains("페어필드 바이 메리어트 부산 송도"),
     contains("페어필드메리어트부산송도"),
     contains("페어필드부산송도"),
+    // Shinhan statement merchant for Fairfield Busan Songdo Beach
+    contains("케이알에스"),
   ]),
   korea("kr-jw-marriott-jeju", "JW Marriott Jeju Resort & Spa", "JW Marriott", [
     contains("JW MARRIOTT JEJU"),
     contains("JW 메리어트 제주"),
     contains("제이더블유메리어트제주"),
+    // Shinhan statement merchant for JW Marriott Jeju
+    contains("삼매봉개발"),
   ]),
   korea("kr-sheraton-jeju", "Sheraton Jeju Hotel", "Sheraton", [
     contains("SHERATON JEJU"),
@@ -249,6 +258,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("SHINHWA WORLD MARRIOTT"),
     contains("제주신화월드메리어트"),
     contains("신화월드메리어트"),
+    // Shinhan statement merchant for Jeju Shinhwa World Marriott
+    contains("람정제주개발"),
   ]),
   korea("kr-daegu-marriott", "Daegu Marriott Hotel", "Marriott Hotels", [
     contains("DAEGU MARRIOTT"),

@@ -6314,16 +6314,13 @@ const unitedStatesOfficialRows = [
 ];
 
 const unitedStatesAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  // Statement often drops "Downtown". Keep candidate/medium so it stays in
-  // needs_review rather than auto missing_suspected.
+  // Statement often drops "Downtown".
   "Hotel 55 Chicago Downtown": [
-    contains("HOTEL 55 CHICAGO", {
-      brandGroup: "marriott_candidate",
-      confidence: "medium",
-      status: "needs_review",
-      reason:
-        "Hotel-like merchant with prior user suspicion; needs confirmation.",
-    }),
+    contains("HOTEL 55 CHICAGO", high),
+  ],
+  // Shinhan overseas statement merchant for Sky Rock Sedona
+  "Sky Rock Sedona, a Tribute Portfolio Hotel": [
+    contains("SKY ROCK INN OF SEDONA", high),
   ],
 };
 

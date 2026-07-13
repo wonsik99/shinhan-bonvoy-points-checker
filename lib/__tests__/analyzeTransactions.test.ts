@@ -74,7 +74,7 @@ describe("analyzeTransactions", () => {
 
   it("sends medium-confidence merchants to needs_review, not missing", () => {
     const [result] = analyzeTransactions([
-      tx({ merchantName: "HOTEL 55 CHICAGO" }),
+      tx({ merchantName: "THE PLAZA", pointType: "L1", actualPoints: 210 }),
     ]);
     expect(result.analysisStatus).toBe("needs_review");
     expect(result.effectiveIncluded).toBe(false);
@@ -98,11 +98,21 @@ describe("analyzeTransactions", () => {
     expect(result.effectiveIncluded).toBe(false);
   });
 
-  it("treats already-L5 review candidates as ok_l5", () => {
+  it("treats already-L5 Hotel 55 as ok_l5", () => {
     const [result] = analyzeTransactions([
       tx({ merchantName: "HOTEL 55 CHICAGO", pointType: "L5", actualPoints: 1049 }),
     ]);
     expect(result.analysisStatus).toBe("ok_l5");
+  });
+
+  it("auto-flags HOTEL 55 CHICAGO as missing_suspected on L2", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "HOTEL 55 CHICAGO" }),
+    ]);
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.effectiveIncluded).toBe(true);
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(420);
   });
 });
 
@@ -172,7 +182,7 @@ describe("domestic Marriott (L4) handling", () => {
 describe("applyFeedback", () => {
   it("includes review rows only after ✅ include", () => {
     const results = analyzeTransactions([
-      tx({ merchantName: "HOTEL 55 CHICAGO" }),
+      tx({ merchantName: "THE PLAZA", pointType: "L1", actualPoints: 210 }),
     ]);
     const included = applyFeedback(results, { [results[0].id]: "include" });
     expect(included[0].effectiveIncluded).toBe(true);
@@ -187,7 +197,7 @@ describe("applyFeedback", () => {
 
   it("does not include review rows with non-positive difference even when included", () => {
     const results = analyzeTransactions([
-      tx({ merchantName: "HOTEL 55 CHICAGO", actualPoints: 2000 }),
+      tx({ merchantName: "THE PLAZA", pointType: "L1", actualPoints: 2000 }),
     ]);
     const included = applyFeedback(results, { [results[0].id]: "include" });
     expect(included[0].effectiveIncluded).toBe(false);
@@ -315,7 +325,12 @@ describe("summarizeResults", () => {
   it("sums expected additional points over included rows only", () => {
     const results = analyzeTransactions([
       tx({ id: "a" }), // missing, diff 420
-      tx({ id: "b", merchantName: "HOTEL 55 CHICAGO" }), // review, not included
+      tx({
+        id: "b",
+        merchantName: "THE PLAZA",
+        pointType: "L1",
+        actualPoints: 210,
+      }), // review, not included
       tx({ id: "c", merchantName: "ZIPPY AUTO WASH" }),
     ]);
     const summary = summarizeResults(results);
@@ -325,15 +340,22 @@ describe("summarizeResults", () => {
     expect(summary.totalExpectedAdditionalPoints).toBe(1049 - 629);
 
     const withInclude = summarizeResults(
-      applyFeedback(results, { "b": "include" })
+      applyFeedback(results, { b: "include" })
     );
-    expect(withInclude.totalExpectedAdditionalPoints).toBe((1049 - 629) * 2);
+    expect(withInclude.totalExpectedAdditionalPoints).toBe(
+      1049 - 629 + (1049 - 210)
+    );
   });
 
   it("counts every status and included feedback path in a mixed result set", () => {
     const results = analyzeTransactions([
       tx({ id: "missing" }),
-      tx({ id: "review", merchantName: "HOTEL 55 CHICAGO" }),
+      tx({
+        id: "review",
+        merchantName: "THE PLAZA",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
       tx({ id: "ok", pointType: "L5", actualPoints: 1049 }),
       tx({
         id: "designated",
@@ -357,7 +379,7 @@ describe("summarizeResults", () => {
       needsReviewCount: 1,
       canceledCount: 1,
       includedCount: 3,
-      totalExpectedAdditionalPoints: 2040,
+      totalExpectedAdditionalPoints: 2040 + (1049 - 210) - 420,
     });
   });
 });

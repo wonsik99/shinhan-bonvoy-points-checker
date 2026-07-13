@@ -1,8 +1,12 @@
-import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import { candidate, contains, high, inferBrand, needsReviewReason } from "./helpers";
+import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Source: Marriott Vietnam destination page property codes, July 2026.
-const vietnamOfficialRows = [
+const vietnamOfficialRows: {
+  id: string;
+  officialName: string;
+  aliases?: MarriottPropertyAlias[];
+}[] = [
   { id: "DADFP", officialName: "Four Points by Sheraton Danang" },
   { id: "DADCY", officialName: "Courtyard by Marriott Danang Han River" },
   { id: "DADER", officialName: "Marriott Executive Apartments Danang, Han River" },
@@ -34,11 +38,16 @@ const vietnamOfficialRows = [
   { id: "CXRNP", officialName: "Four Points by Sheraton Nha Trang" },
   { id: "SGNBR", officialName: "Renaissance Riverside Hotel Saigon" },
   { id: "SGNFI", officialName: "Fairfield by Marriott South Binh Duong" },
-  { id: "SGNAK", officialName: "Vinpearl Landmark 81, Autograph Collection" },
+  {
+    id: "SGNAK",
+    officialName: "Vinpearl Landmark 81, Autograph Collection",
+    // Operator group also runs non-Marriott Vinpearl hotels — needs review
+    aliases: [contains("CTY CP VINPEARL", { ...candidate, reason: needsReviewReason })],
+  },
 ];
 
 export const vietnamMarriottProperties: MarriottProperty[] =
-  vietnamOfficialRows.map(({ id, officialName }) => ({
+  vietnamOfficialRows.map(({ id, officialName, aliases = [] }) => ({
     id: `vn-${id.toLowerCase()}`,
     country: "VN",
     region: "overseas",
@@ -47,6 +56,6 @@ export const vietnamMarriottProperties: MarriottProperty[] =
     brandGroup: high.brandGroup,
     confidence: high.confidence,
     status: high.status,
-    aliases: [],
+    aliases,
     reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 베트남 호텔입니다.`,
   }));

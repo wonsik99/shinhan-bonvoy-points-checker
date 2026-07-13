@@ -424,12 +424,44 @@ describe("classifyMerchant", () => {
     expect(result.matchedPattern).toBe("POSTCARD CABINS");
   });
 
-  it("classifies HOTEL 55 CHICAGO as medium needs_review", () => {
+  it("classifies HOTEL 55 CHICAGO as high-confidence Marriott", () => {
     const result = classifyMerchant("HOTEL 55 CHICAGO");
-    expect(result.isLikelyMarriott).toBe(false);
-    expect(result.confidence).toBe("medium");
-    expect(result.status).toBe("needs_review");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
     expect(result.normalizedName).toBe("Hotel 55 Chicago Downtown");
+  });
+
+  it("classifies SKY ROCK INN OF SEDONA as high-confidence Marriott", () => {
+    const result = classifyMerchant("SKY ROCK INN OF SEDONA");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe(
+      "Sky Rock Sedona, a Tribute Portfolio Hotel"
+    );
+  });
+
+  it.each(["DECAMONDO HOTEL", "HOTEL DE CAMONDO"])(
+    "maps %s to DeCamondo Galata as high-confidence Marriott",
+    (name) => {
+      const result = classifyMerchant(name);
+      expect(result.isLikelyMarriott).toBe(true);
+      expect(result.confidence).toBe("high");
+      expect(result.region).toBe("overseas");
+      expect(result.normalizedName).toBe(
+        "DeCamondo Galata, a Tribute Portfolio Hotel"
+      );
+    }
+  );
+
+  it("maps CYMARRIOTTSAPPOR to Courtyard Sapporo as high-confidence Marriott", () => {
+    const result = classifyMerchant("CYMARRIOTTSAPPOR");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe("Courtyard by Marriott Sapporo");
   });
 
   it("classifies ZIPPY AUTO WASH - ELLSWO as not Marriott", () => {
@@ -526,15 +558,100 @@ describe("classifyMerchant", () => {
     expect(result.region).toBe("domestic");
   });
 
+  it("maps 삼매봉개발 to JW Marriott Jeju", () => {
+    const result = classifyMerchant("삼매봉개발 주식회사");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("JW Marriott Jeju Resort & Spa");
+  });
+
+  it("maps 람정제주개발 to Jeju Shinhwa World Marriott", () => {
+    const result = classifyMerchant("람정제주개발 주식회사");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Jeju Shinhwa World Marriott Resort");
+  });
+
+  it("maps 대신투자개발 to Aloft Seoul Gangnam", () => {
+    const result = classifyMerchant("대신투자개발 주식회사");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Aloft Seoul Gangnam");
+  });
+
+  it("maps 아주호텔서교 to RYSE Autograph Collection", () => {
+    const result = classifyMerchant("(주)아주호텔서교");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("RYSE, Autograph Collection");
+  });
+
+  it("maps 한화호텔앤드리조트 to THE PLAZA Seoul", () => {
+    const result = classifyMerchant("한화호텔앤드리조트(주)");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("THE PLAZA Seoul, Autograph Collection");
+  });
+
+  it("maps 케이알에스 to Fairfield Busan Songdo Beach", () => {
+    const result = classifyMerchant("케이알에스");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe(
+      "Fairfield by Marriott Busan Songdo Beach"
+    );
+  });
+
+  it("maps 서우제이앤디 to Four Points Seoul Gangnam", () => {
+    const result = classifyMerchant("서우제이앤디");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe(
+      "Four Points by Sheraton Seoul, Gangnam"
+    );
+  });
+
+  it("maps CTY CP VINPEARL to Vinpearl Landmark 81 as review candidate", () => {
+    const result = classifyMerchant("CTY CP VINPEARL");
+    expect(result.isLikelyMarriott).toBe(false);
+    expect(result.confidence).toBe("medium");
+    expect(result.status).toBe("needs_review");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe(
+      "Vinpearl Landmark 81, Autograph Collection"
+    );
+  });
+
   it("does NOT treat 그랜드 조선 as Marriott (독립 브랜드)", () => {
     expect(classifyMerchant("그랜드 조선 부산").isLikelyMarriott).toBe(false);
     expect(classifyMerchant("그랜드 조선 제주").confidence).toBe("none");
   });
 
-  it("surfaces Nest Hotel (Design Hotels member) for review", () => {
-    const result = classifyMerchant("네스트호텔 인천");
-    expect(result.status).toBe("needs_review");
-    expect(result.region).toBe("domestic");
+  it("classifies Nest Hotel full names as high-confidence Marriott", () => {
+    for (const name of ["네스트호텔", "네스트호텔 인천", "NEST HOTEL INCHEON"]) {
+      const result = classifyMerchant(name);
+      expect(result.isLikelyMarriott).toBe(true);
+      expect(result.confidence).toBe("high");
+      expect(result.status).toBe("active");
+      expect(result.region).toBe("domestic");
+    }
+  });
+
+  it("keeps bare Nest short forms in review", () => {
+    for (const name of ["네스트", "NEST"]) {
+      const result = classifyMerchant(name);
+      expect(result.isLikelyMarriott).toBe(false);
+      expect(result.confidence).toBe("medium");
+      expect(result.status).toBe("needs_review");
+      expect(result.region).toBe("domestic");
+    }
   });
 
   it.each([
@@ -545,13 +662,15 @@ describe("classifyMerchant", () => {
     "THE PLAZA SEOUL",
     "더플라자서울",
     "더 링크 서울",
+    "NEST HOTEL INCHEON",
+    "네스트호텔",
   ])("catches short Korea property aliases (%s)", (name) => {
     const result = classifyMerchant(name);
     expect(result.isLikelyMarriott).toBe(true);
     expect(result.region).toBe("domestic");
   });
 
-  it.each(["THE PLAZA", "THE LINK", "NEST HOTEL INCHEON"])(
+  it.each(["THE PLAZA", "THE LINK", "네스트", "NEST", "파르나스"])(
     "keeps ambiguous short property aliases in review (%s)",
     (name) => {
       const result = classifyMerchant(name);

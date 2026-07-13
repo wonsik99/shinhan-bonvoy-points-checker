@@ -4,11 +4,11 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-# Bonvoy L5 Checker — Agent Handoff
+# Bonvoy L4/L5 Checker — Agent Handoff
 
 신한 메리어트 본보이 카드 사용자가 포인트 적립 상세내역 엑셀을 올리면, 메리어트 계열 호텔 결제가 정상 특별적립(국내 L4 / 해외 L5)됐는지 검사해주는 웹 도구.
 
-- **Live**: https://shinhan-bonvoy-l5-checker.vercel.app (Vercel, 완전 정적 — 서버 함수 없음)
+- **Live**: https://shinhan-bonvoy-points-checker.vercel.app (Vercel, 완전 정적 — 서버 함수 없음)
 - **Repo**: github.com/wonsik99/shinhan-bonvoy-points-checker
 - 로컬에서 작업 이력·비공개 컨텍스트가 필요하면 `docs/_local/HANDOFF.md`를 읽을 것 (gitignore된 로컬 전용 문서).
 
@@ -76,7 +76,7 @@ npm run lint && npm run build
 npm run fixture   # docs/_local/sample.xlsx 생성 (실제 레이아웃 모사, gitignore)
 ```
 
-fixture 기대값: 16건 / Marriott 12 / 정상 2 / 누락 의심 8 / 확인 필요 2(HOTEL 55 CHICAGO + 해외 L1) / 예상 추가 5,585P (Hotel 55 포함 시 +420P, SAMMAEBONG을 메리어트로 표시 시 +1,200P). 실물 파일 검증 방법은 `docs/_local/HANDOFF.md` 참고. UI 변경 시 Playwright로 업로드→요약 수치→피드백 버튼→문의 문구까지 실제로 확인할 것.
+fixture 기대값: 16건 / Marriott 13 / 정상 2 / 누락 의심 9 / 확인 필요 1(해외 L1) / 예상 추가 6,005P (SAMMAEBONG을 메리어트로 표시 시 +1,200P). 실물 파일 검증 방법은 `docs/_local/HANDOFF.md` 참고. UI 변경 시 Playwright로 업로드→요약 수치→피드백 버튼→문의 문구까지 실제로 확인할 것.
 
 ## 배포
 

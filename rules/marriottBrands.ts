@@ -266,6 +266,7 @@ export const koreanMarriottKeywords = [
   "세인트레지스",
   "르메르디앙",
   "르 메르디앙",
+  "메르디앙",
   "오토그래프",
   "트리뷰트",
   "럭셔리컬렉션",

@@ -1,5 +1,5 @@
-import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import { contains, high, inferBrand } from "./helpers";
+import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const turkiyeMarriottOfficialRows = [
@@ -69,16 +69,22 @@ const turkiyeMarriottOfficialRows = [
   { id: "AYTRI", officialName: "Residence Inn by Marriott Antalya" },
   { id: "ISTRI", officialName: "Residence Inn by Marriott Istanbul Atasehir" },
   { id: "TZXRI", officialName: "Residence Inn by Marriott Trabzon" },
-] as const;
+];
 
-export const turkiyeMarriottProperties: MarriottProperty[] = turkiyeMarriottOfficialRows.map(
-  ({ id, officialName }) => ({
+const turkiyeAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  // Shinhan overseas statement names for DeCamondo Galata
+  "DeCamondo Galata, a Tribute Portfolio Hotel": [
+    contains("DECAMONDO HOTEL", high)
+  ],
+};
+
+export const turkiyeMarriottProperties: MarriottProperty[] =
+  turkiyeMarriottOfficialRows.map(({ id, officialName }) => ({
     id,
     country: "TR",
     region: "overseas",
     officialName,
     brand: inferBrand(officialName),
     ...high,
-    aliases: [],
-  })
-);
+    aliases: turkiyeAliasOverrides[officialName] ?? [],
+  }));
