@@ -375,11 +375,39 @@ describe("summarizeResults", () => {
       totalCount: 5,
       marriottCount: 3,
       okL5Count: 1,
+      okAccruedPoints: 1049,
       missingSuspectedCount: 1,
       needsReviewCount: 1,
       canceledCount: 1,
       includedCount: 3,
       totalExpectedAdditionalPoints: 2040 + (1049 - 210) - 420,
     });
+  });
+
+  it("sums already-credited points over ok_l5 rows only", () => {
+    const results = analyzeTransactions([
+      tx({ id: "ok-overseas", pointType: "L5", actualPoints: 2500 }),
+      tx({
+        id: "ok-domestic",
+        merchantName: "웨스틴조선서울",
+        pointType: "L4",
+        actualPoints: 1000,
+      }),
+      tx({ id: "missing", pointType: "L2", actualPoints: 629 }), // not ok
+      tx({ id: "canceled", isCanceled: true, actualPoints: 9999 }), // excluded
+    ]);
+    const summary = summarizeResults(results);
+
+    expect(summary.okL5Count).toBe(2);
+    // Only the two ok_l5 rows contribute; missing/canceled are ignored.
+    expect(summary.okAccruedPoints).toBe(3500);
+  });
+
+  it("reports zero accrued points when there are no ok_l5 rows", () => {
+    const summary = summarizeResults(
+      analyzeTransactions([tx({ id: "missing", pointType: "L2" })])
+    );
+    expect(summary.okL5Count).toBe(0);
+    expect(summary.okAccruedPoints).toBe(0);
   });
 });

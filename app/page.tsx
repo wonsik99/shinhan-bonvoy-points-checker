@@ -14,6 +14,7 @@ import { isFeedbackPersistenceEnabled, submitJudgments } from "@/lib/feedback";
 import FileUpload from "@/components/FileUpload";
 import SummaryCards from "@/components/SummaryCards";
 import MissingTransactionsTable from "@/components/MissingTransactionsTable";
+import OkAccrualTransactions from "@/components/OkAccrualTransactions";
 import ReviewTransactionsTable from "@/components/ReviewTransactionsTable";
 import AllTransactionsTable from "@/components/AllTransactionsTable";
 import InquiryMessage from "@/components/InquiryMessage";
@@ -53,6 +54,10 @@ export default function Home() {
   );
   const reviewRows = useMemo(
     () => results.filter((row) => row.analysisStatus === "needs_review"),
+    [results]
+  );
+  const okRows = useMemo(
+    () => results.filter((row) => row.analysisStatus === "ok_l5"),
     [results]
   );
   const inquiryMessage = useMemo(
@@ -325,6 +330,13 @@ export default function Home() {
                 <MissingTransactionsTable
                   rows={missingRows}
                   onFeedback={handleFeedback}
+                />
+              </section>
+
+              <section aria-label="정상 적립 거래">
+                <OkAccrualTransactions
+                  rows={okRows}
+                  earnedPoints={summary.okAccruedPoints}
                 />
               </section>
 

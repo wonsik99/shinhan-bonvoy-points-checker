@@ -183,6 +183,8 @@ export interface AnalysisSummary {
   totalCount: number;
   marriottCount: number;
   okL5Count: number;
+  /** Points already correctly credited on ok_l5 Marriott payments. */
+  okAccruedPoints: number;
   missingSuspectedCount: number;
   needsReviewCount: number;
   canceledCount: number;
@@ -197,6 +199,9 @@ export function summarizeResults(results: AnalysisResult[]): AnalysisSummary {
     marriottCount: results.filter((r) => r.classification.isLikelyMarriott)
       .length,
     okL5Count: results.filter((r) => r.analysisStatus === "ok_l5").length,
+    okAccruedPoints: results
+      .filter((r) => r.analysisStatus === "ok_l5")
+      .reduce((sum, r) => sum + Math.max(0, r.actualPoints), 0),
     missingSuspectedCount: results.filter(
       (r) => r.analysisStatus === "missing_suspected"
     ).length,
