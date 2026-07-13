@@ -172,13 +172,15 @@ export default function Home() {
   const goNext = () => {
     if (currentStep === 1 && hasResults) moveToStep(2);
     else if (currentStep === 2) moveToStep(3);
-    else if (currentStep === 3 && copied) handleReset();
+    // Step 3's footer CTA is copy-only (never destructive). Starting over lives
+    // in the labeled "다른 파일 업로드" button so a stray footer tap — e.g. right
+    // after a channel link flipped `copied` — can never wipe the analysis.
     else if (currentStep === 3) void copyInquiryMessage();
   };
 
   const nextDisabled =
     (currentStep === 1 && !hasResults) ||
-    (currentStep === 3 && !copied && !inquiryMessage);
+    (currentStep === 3 && !inquiryMessage);
   const nextLabel =
     currentStep === 1
       ? hasResults
@@ -187,7 +189,7 @@ export default function Home() {
       : currentStep === 2
         ? "문의 문구 만들기"
         : copied
-          ? "새 파일 검사"
+          ? "문구 다시 복사"
           : "문구 복사";
   const footerStatus =
     currentStep === 1
