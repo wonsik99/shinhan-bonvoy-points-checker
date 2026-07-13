@@ -615,6 +615,22 @@ describe("classifyMerchant", () => {
     );
   });
 
+  it("maps 프라임아이티 to AC Hotel Seoul Geumjeong", () => {
+    const result = classifyMerchant("주식회사 프라임아이티");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("AC Hotel Seoul Geumjeong");
+  });
+
+  it("maps 성문더플레이스 to Four Points by Sheraton Suwon", () => {
+    const result = classifyMerchant("유한회사 성문더플레이스");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Four Points by Sheraton Suwon");
+  });
+
   it("maps CTY CP VINPEARL to Vinpearl Landmark 81 as review candidate", () => {
     const result = classifyMerchant("CTY CP VINPEARL");
     expect(result.isLikelyMarriott).toBe(false);
