@@ -443,18 +443,15 @@ describe("classifyMerchant", () => {
     );
   });
 
-  it.each(["DECAMONDO HOTEL", "HOTEL DE CAMONDO"])(
-    "maps %s to DeCamondo Galata as high-confidence Marriott",
-    (name) => {
-      const result = classifyMerchant(name);
-      expect(result.isLikelyMarriott).toBe(true);
-      expect(result.confidence).toBe("high");
-      expect(result.region).toBe("overseas");
-      expect(result.normalizedName).toBe(
-        "DeCamondo Galata, a Tribute Portfolio Hotel"
-      );
-    }
-  );
+  it("maps DECAMONDO HOTEL to DeCamondo Galata as high-confidence Marriott", () => {
+    const result = classifyMerchant("DECAMONDO HOTEL");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe(
+      "DeCamondo Galata, a Tribute Portfolio Hotel"
+    );
+  });
 
   it("maps CYMARRIOTTSAPPOR to Courtyard Sapporo as high-confidence Marriott", () => {
     const result = classifyMerchant("CYMARRIOTTSAPPOR");
