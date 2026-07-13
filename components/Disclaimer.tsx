@@ -1,6 +1,6 @@
 export default function Disclaimer() {
   return (
-    <footer className="space-y-2 border-t border-neutral-200 pt-6 text-xs leading-relaxed text-neutral-500">
+    <footer className="space-y-2 border-t border-hairline pt-6 text-xs leading-5 text-muted">
       <p>
         이 검사기는 메리어트 본보이™ 더 베스트 신한카드의 적립 기준(국내
         메리어트 L4, 해외 메리어트 L5, 1,000원당 5P)으로 계산합니다. 더

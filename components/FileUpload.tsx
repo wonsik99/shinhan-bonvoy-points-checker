@@ -36,6 +36,7 @@ export default function FileUpload({
     diagnostic: string | null;
     state: ReportState;
   }>({ diagnostic: null, state: "idle" });
+
   const diagnosticCopied = copiedDiagnostic === errorDiagnostic;
   const reportState =
     report.diagnostic === errorDiagnostic ? report.state : "idle";
@@ -72,9 +73,8 @@ export default function FileUpload({
 
   const handleFile = (file: File | undefined) => {
     setLocalError(null);
-    if (!file) {
-      return;
-    }
+    if (!file) return;
+
     const lower = file.name.toLowerCase();
     if (!ACCEPTED_EXTENSIONS.some((ext) => lower.endsWith(ext))) {
       setLocalError("xlsx 또는 xls 형식의 엑셀 파일만 업로드할 수 있습니다.");
@@ -88,28 +88,21 @@ export default function FileUpload({
 
   if (fileName && !displayError) {
     return (
-      <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-lg">
-              📄
-            </span>
-            <div>
-              <p className="font-medium text-neutral-900">{fileName}</p>
-              <p className="text-sm text-neutral-500">
-                {isParsing ? "분석 중…" : "분석이 완료되었습니다."}
-              </p>
-            </div>
+      <div className="rounded-[18px] border border-hairline bg-white p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="break-words font-semibold text-ink">{fileName}</p>
+            <p className="mt-1 text-sm text-muted" role="status">
+              {isParsing ? "브라우저 안에서 분석 중…" : "분석이 완료되었습니다."}
+            </p>
           </div>
           <button
             type="button"
             onClick={() => {
-              if (inputRef.current) {
-                inputRef.current.value = "";
-              }
+              if (inputRef.current) inputRef.current.value = "";
               onReset();
             }}
-            className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+            className="min-h-11 rounded-full border border-line px-5 text-sm font-medium text-ink-soft transition hover:border-ember hover:text-ember"
           >
             다른 파일 업로드
           </button>
@@ -124,107 +117,103 @@ export default function FileUpload({
         role="button"
         tabIndex={0}
         aria-label="엑셀 파일 업로드"
-        onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
+        aria-busy={isParsing}
+        onClick={() => !isParsing && inputRef.current?.click()}
+        onKeyDown={(event) => {
+          if (!isParsing && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
             inputRef.current?.click();
           }
         }}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragging(true);
+        onDragOver={(event) => {
+          event.preventDefault();
+          if (!isParsing) setIsDragging(true);
         }}
         onDragLeave={() => setIsDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
+        onDrop={(event) => {
+          event.preventDefault();
           setIsDragging(false);
-          handleFile(e.dataTransfer.files[0]);
+          if (!isParsing) handleFile(event.dataTransfer.files[0]);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-12 text-center transition ${
-          isDragging
-            ? "border-blue-500 bg-blue-50"
-            : "border-neutral-300 bg-white hover:border-blue-400 hover:bg-blue-50/40"
+        className={`flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-[18px] border-2 border-dashed bg-white px-6 py-10 text-center transition ${
+          isDragging || isParsing
+            ? "border-ember bg-ember-faint"
+            : "border-line-strong hover:border-ember hover:bg-ember-faint"
         }`}
       >
-        <span className="text-3xl" aria-hidden>
-          📊
-        </span>
-        <div>
-          <p className="font-medium text-neutral-900">
-            신한카드 포인트 적립 상세내역 엑셀 파일을 여기에 끌어다 놓으세요
-          </p>
-          <p className="mt-1 text-sm text-neutral-500">
-            또는 클릭해서 파일 선택 (.xlsx, .xls)
-          </p>
-        </div>
+        <p className="text-lg font-semibold text-ink">
+          {isParsing
+            ? "브라우저 안에서 분석 중…"
+            : "여기에 파일을 끌어다 놓으세요"}
+        </p>
+        <p className="mt-2 text-sm text-muted">
+          {isParsing
+            ? "파일과 거래 내용은 서버로 전송되지 않습니다."
+            : "또는 눌러서 선택 · .xlsx, .xls"}
+        </p>
         {isParsing && (
-          <p className="text-sm font-medium text-blue-600">분석 중…</p>
+          <div className="mt-5 h-1 w-52 overflow-hidden rounded-full bg-hairline" role="status">
+            <div className="h-full w-2/3 animate-pulse rounded-full bg-ember" />
+          </div>
         )}
       </div>
+
       <input
         ref={inputRef}
         type="file"
         accept=".xlsx,.xls"
         className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          // Clear so selecting the same file again (e.g. retry after a parse
-          // error) still fires a change event.
-          e.target.value = "";
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = "";
           handleFile(file);
         }}
       />
+
       {displayError && (
-        <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          <p className="font-medium">파일을 분석하지 못했습니다.</p>
-          <p className="mt-0.5">{displayError}</p>
+        <div role="alert" className="mt-3 rounded-[18px] border border-ember bg-white px-5 py-4 text-sm text-ink-soft">
+          <p className="font-semibold text-ember">
+            파일을 분석하지 못했습니다.
+          </p>
+          <p className="mt-1 leading-6">{displayError}</p>
           {displayDiagnostic && (
-            <div className="mt-3 border-t border-red-200 pt-3 text-red-800">
-              <p>
-                신한카드 엑셀인데도 실패했다면 파일 형식이 저희가 모르는
-                변형일 수 있어요. 아래의 <b>개인정보가 제거된 진단 정보</b>
-                (컬럼명만, 숫자 마스킹)를 제보해주시면 빠르게 지원을
-                추가하겠습니다. 보내지는 내용은 아래에 표시된 것이 전부입니다.
+            <div className="mt-4 border-t border-hairline pt-4">
+              <p className="leading-6">
+                신한카드 엑셀인데도 실패했다면 파일 형식이 아직 지원되지 않을
+                수 있어요. 아래의 <b>개인정보가 제거된 진단 정보</b>만 제보할 수
+                있습니다.
               </p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {canSendReport && (
                   <button
                     type="button"
                     onClick={sendReport}
                     disabled={reportState === "sending" || reportState === "sent"}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-medium text-white transition ${
-                      reportState === "sent"
-                        ? "bg-emerald-600"
-                        : "bg-red-700 hover:bg-red-800"
+                    className={`min-h-11 rounded-full px-4 text-xs font-semibold text-white transition disabled:opacity-70 ${
+                      reportState === "sent" ? "bg-emerald-700" : "bg-ember"
                     }`}
                   >
                     {reportState === "sent"
                       ? "제보 완료 ✓ 감사합니다!"
                       : reportState === "sending"
                         ? "보내는 중…"
-                        : "📨 원클릭 제보 보내기"}
+                        : "원클릭 제보 보내기"}
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={copyDiagnostic}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                    canSendReport
-                      ? "border border-red-300 text-red-700 hover:bg-red-100"
-                      : "bg-red-700 text-white hover:bg-red-800"
-                  }`}
+                  className="min-h-11 rounded-full border border-line px-4 text-xs font-semibold text-ink-soft"
                 >
                   {diagnosticCopied ? "복사됨 ✓" : "진단 정보 복사"}
                 </button>
               </div>
               {reportState === "failed" && (
-                <p className="mt-1.5 text-xs">
-                  전송에 실패했습니다. 위의 복사 버튼으로 내용을 복사해서
-                  글/댓글로 남겨주세요.
+                <p className="mt-2 text-xs text-ember">
+                  전송에 실패했습니다. 진단 정보를 복사해서 남겨주세요.
                 </p>
               )}
-              <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded-lg bg-white/60 p-2 font-mono text-[11px] leading-relaxed text-red-900">
+              <pre className="mt-3 max-h-40 overflow-auto whitespace-pre-wrap rounded-lg bg-canvas p-3 font-mono text-[11px] leading-relaxed text-ink-soft">
                 {displayDiagnostic}
               </pre>
             </div>

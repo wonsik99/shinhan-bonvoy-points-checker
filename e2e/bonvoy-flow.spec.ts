@@ -121,14 +121,17 @@ test("uploads locally and keeps feedback local until explicit submission", async
   await upload(page);
 
   await expectSummaryCard(page, "전체 거래", "5건");
-  await expectSummaryCard(page, "Marriott 계열 추정", "3건");
+  await expectSummaryCard(page, "Marriott 추정", "3건");
   await expectSummaryCard(page, "정상 적립", "1건");
   await expectSummaryCard(page, "적립 누락 의심", "1건");
   await expectSummaryCard(page, "확인 필요", "1건");
   await expectSummaryCard(page, "예상 추가 포인트", "468P");
   await expect(
+    page.getByRole("button", { name: "결과 확인·판정 단계로 이동" })
+  ).toHaveAttribute("aria-current", "step");
+  await expect(
     page.getByRole("region", { name: "신한카드 문의 문구" })
-  ).toContainText("COURTYARD BY MARRIOTT");
+  ).toHaveCount(0);
   expect(collectorBodies).toHaveLength(0);
   expect(mutationRequests).toHaveLength(0);
 
@@ -138,10 +141,25 @@ test("uploads locally and keeps feedback local until explicit submission", async
     })
     .click();
   await expectSummaryCard(page, "예상 추가 포인트", "0P");
-  await expect(page.getByText("누락 의심 거래가 있거나 확인 필요 거래를 포함하면")).toBeVisible();
+  // Full judgment-submission card lives on step 3; step 2 only shows a thin reminder.
+  await expect(page.getByRole("region", { name: "판단 제보" })).toHaveCount(0);
+  await expect(
+    page.getByText("판단 1건 · 문의 보내기 전에 익명으로 보낼 수 있어요")
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "문의 보내기 단계로 이동" }).click();
+  await expect(
+    page.getByRole("heading", { name: "문의에 담을 항목이 없어요" })
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "문구 복사" })).toBeDisabled();
+  await expect(
+    page.getByRole("region", { name: "문의 보내기 채널" })
+  ).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "내 판단으로 서비스 돕기 (1건)" })
   ).toBeVisible();
+  expect(collectorBodies).toHaveLength(0);
+  await page.getByRole("button", { name: "이전" }).click();
 
   await page
     .getByRole("button", {
@@ -149,9 +167,6 @@ test("uploads locally and keeps feedback local until explicit submission", async
     })
     .click();
   await expectSummaryCard(page, "예상 추가 포인트", "468P");
-  await expect(
-    page.getByRole("region", { name: "판단 제보" })
-  ).toHaveCount(0);
   await expect(
     page.getByRole("button", {
       name: "COURTYARD BY MARRIOTT 거래를 문의에서 제외",
@@ -163,13 +178,54 @@ test("uploads locally and keeps feedback local until explicit submission", async
   });
   await reviewGroup.getByRole("button", { name: "문의에 포함" }).click();
   await expectSummaryCard(page, "예상 추가 포인트", "888P");
-  await expect(
-    page.getByRole("region", { name: "신한카드 문의 문구" })
-  ).toContainText("HOTEL 55 CHICAGO");
-  await expect(page.getByText(/임시 익명 ID만 전송되고/)).toBeVisible();
   expect(collectorBodies).toHaveLength(0);
   expect(mutationRequests).toHaveLength(0);
 
+  const allTransactionsToggle = page.getByRole("button", {
+    name: "미분류 거래 1건 펼치기",
+  });
+  await expect(allTransactionsToggle).toHaveAttribute("aria-expanded", "false");
+  await allTransactionsToggle.click();
+  await expect(
+    page.locator('[aria-controls="all-transactions-content"]')
+  ).toHaveAttribute("aria-expanded", "true");
+
+  await page
+    .getByRole("button", {
+      name: "SAMMAEBONG CO LTD 거래를 메리어트로 표시",
+    })
+    .click();
+  await expectSummaryCard(page, "예상 추가 포인트", "2,088P");
+  expect(collectorBodies).toHaveLength(0);
+
+  await page
+    .getByRole("button", {
+      name: "SAMMAEBONG CO LTD 거래의 메리어트 표시 해제",
+    })
+    .click();
+  await expectSummaryCard(page, "예상 추가 포인트", "888P");
+
+  await page.getByRole("button", { name: "문의 문구 만들기" }).click();
+  await expect(
+    page.getByRole("button", { name: "문의 보내기 단계로 이동" })
+  ).toHaveAttribute("aria-current", "step");
+  await expect(
+    page.getByRole("region", { name: "신한카드 문의 문구" })
+  ).toContainText("COURTYARD BY MARRIOTT");
+  await expect(
+    page.getByRole("region", { name: "신한카드 문의 문구" })
+  ).toContainText("HOTEL 55 CHICAGO");
+
+  const sendRegion = page.getByRole("region", { name: "문의 보내기 채널" });
+  await expect(sendRegion.getByRole("link", { name: /1:1 문의/ })).toBeVisible();
+  await expect(
+    sendRegion.getByRole("link", { name: /1544-7000/ })
+  ).toBeVisible();
+  await expect(
+    sendRegion.getByRole("button", { name: "다른 앱으로 공유" })
+  ).toBeVisible();
+
+  await expect(page.getByText(/임시 익명 ID만/)).toBeVisible();
   await page
     .getByRole("button", { name: "내 판단으로 서비스 돕기 (1건)" })
     .click();
@@ -198,32 +254,11 @@ test("uploads locally and keeps feedback local until explicit submission", async
     expect(serialized).not.toContain("3456");
     expect(serialized).not.toContain("sample.xlsx");
   }
-
-  const allTransactionsToggle = page.getByRole("button", {
-    name: "전체 거래 5건 펼치기",
-  });
-  await expect(allTransactionsToggle).toHaveAttribute("aria-expanded", "false");
-  await allTransactionsToggle.click();
   await expect(
-    page.locator('[aria-controls="all-transactions-content"]')
-  ).toHaveAttribute("aria-expanded", "true");
+    page.getByRole("button", { name: "도와주셔서 감사합니다" })
+  ).toBeDisabled();
 
-  await page
-    .getByRole("button", {
-      name: "SAMMAEBONG CO LTD 거래를 메리어트로 표시",
-    })
-    .click();
-  await expectSummaryCard(page, "예상 추가 포인트", "2,088P");
-  await expect(
-    page.getByRole("region", { name: "신한카드 문의 문구" })
-  ).toContainText("SAMMAEBONG CO LTD");
-  expect(collectorBodies).toHaveLength(1);
-
-  await page
-    .getByRole("button", {
-      name: "SAMMAEBONG CO LTD 거래의 메리어트 표시 해제",
-    })
-    .click();
+  await page.getByRole("button", { name: "이전" }).click();
   await expectSummaryCard(page, "예상 추가 포인트", "888P");
 
   await page.getByRole("button", { name: "다른 파일 업로드" }).click();
@@ -254,14 +289,24 @@ test("renders responsive cards without horizontal overflow", async ({ page }) =>
     )
   ).toBe(true);
 
-  const toggle = page.getByRole("button", { name: "전체 거래 5건 펼치기" });
+  const toggle = page.getByRole("button", { name: "미분류 거래 1건 펼치기" });
   await expect(toggle).toHaveAttribute("aria-controls", "all-transactions-content");
   await toggle.click();
   await expect(
     page
       .getByRole("region", { name: "전체 거래" })
       .locator("article:visible")
-  ).toHaveCount(5);
+  ).toHaveCount(1);
+  await expect(
+    page
+      .getByRole("region", { name: "전체 거래" })
+      .getByText("COURTYARD BY MARRIOTT", { exact: true })
+  ).toHaveCount(0);
+  await expect(
+    page
+      .getByRole("region", { name: "전체 거래" })
+      .getByText("JW MARRIOTT SEOUL", { exact: true })
+  ).toHaveCount(0);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
@@ -284,7 +329,7 @@ test("resets parse-report state for each new diagnostic", async ({ page }) => {
     ])
   );
   await expect(page.getByText("파일을 분석하지 못했습니다.")).toBeVisible();
-  await page.getByRole("button", { name: "📨 원클릭 제보 보내기" }).click();
+  await page.getByRole("button", { name: "원클릭 제보 보내기" }).click();
   await expect(page.getByRole("button", { name: /제보 완료/ })).toBeVisible();
   await expect.poll(() => reports.length).toBe(1);
 
@@ -303,9 +348,9 @@ test("resets parse-report state for each new diagnostic", async ({ page }) => {
     ])
   );
   await expect(
-    page.getByRole("button", { name: "📨 원클릭 제보 보내기" })
+    page.getByRole("button", { name: "원클릭 제보 보내기" })
   ).toBeVisible();
-  await page.getByRole("button", { name: "📨 원클릭 제보 보내기" }).click();
+  await page.getByRole("button", { name: "원클릭 제보 보내기" }).click();
   await expect.poll(() => reports.length).toBe(2);
   expect(reports[0].diagnostic).not.toBe(reports[1].diagnostic);
 });

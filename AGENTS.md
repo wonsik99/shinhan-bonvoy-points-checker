@@ -9,7 +9,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 신한 메리어트 본보이 카드 사용자가 포인트 적립 상세내역 엑셀을 올리면, 메리어트 계열 호텔 결제가 정상 특별적립(국내 L4 / 해외 L5)됐는지 검사해주는 웹 도구.
 
 - **Live**: https://shinhan-bonvoy-l5-checker.vercel.app (Vercel, 완전 정적 — 서버 함수 없음)
-- **Repo**: github.com/wonsik99/shinhan-bonvoy-l5-checker
+- **Repo**: github.com/wonsik99/shinhan-bonvoy-points-checker
 - 로컬에서 작업 이력·비공개 컨텍스트가 필요하면 `docs/_local/HANDOFF.md`를 읽을 것 (gitignore된 로컬 전용 문서).
 
 ## 절대 규칙 (사용자 지시)
@@ -54,7 +54,8 @@ lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_m
 lib/inquiryMessage      카드사 문의 문구 생성
 lib/feedback            (선택) 익명 피드백 + 파싱 실패 원클릭 제보 — 기본은 Google Sheets(Apps Script), env 없으면 no-op
 rules/marriott*.ts      브랜드 키워드·호텔 alias DB(143개 국가·지역 10,148개 seed)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
-components/             FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, Disclaimer
+components/             GuidedProgress(3단계 레일·모바일 진행바), FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, InquirySend(전화/1:1문의/OS공유 채널 연결 — 네트워크 전송 없음), Disclaimer
+app/globals.css         디자인 색 토큰(@theme: ember/ink/muted/hairline 등) — 색은 반드시 토큰 클래스(text-ember 등)로 사용, hex 하드코딩 금지(OG 이미지 제외)
 google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내
 next.config.ts          CSP 헤더 (connect-src 'self' + Apps Script 수집기 도메인 자동 추가)
 ```

@@ -9,6 +9,7 @@ import {
   summarizeResults,
 } from "@/lib/analyzeTransactions";
 import { buildInquiryMessage } from "@/lib/inquiryMessage";
+import { formatNumber } from "@/lib/format";
 import { isFeedbackPersistenceEnabled, submitJudgments } from "@/lib/feedback";
 import FileUpload from "@/components/FileUpload";
 import SummaryCards from "@/components/SummaryCards";
@@ -16,9 +17,16 @@ import MissingTransactionsTable from "@/components/MissingTransactionsTable";
 import ReviewTransactionsTable from "@/components/ReviewTransactionsTable";
 import AllTransactionsTable from "@/components/AllTransactionsTable";
 import InquiryMessage from "@/components/InquiryMessage";
+import InquirySend from "@/components/InquirySend";
 import Disclaimer from "@/components/Disclaimer";
+import {
+  GuidedProgress,
+  MobileProgress,
+  type GuidedStep,
+} from "@/components/GuidedProgress";
 
 export default function Home() {
+  const [currentStep, setCurrentStep] = useState<GuidedStep>(1);
   const [baseResults, setBaseResults] = useState<AnalysisResult[]>([]);
   const [feedbackById, setFeedbackById] = useState<
     Record<string, UserFeedbackAction>
@@ -28,6 +36,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [errorDiagnostic, setErrorDiagnostic] = useState<string | null>(null);
   const [columnWarning, setColumnWarning] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [sendState, setSendState] = useState<
     "idle" | "sending" | "sent" | "failed"
   >("idle");
@@ -39,23 +48,23 @@ export default function Home() {
   );
   const summary = useMemo(() => summarizeResults(results), [results]);
   const missingRows = useMemo(
-    () => results.filter((r) => r.analysisStatus === "missing_suspected"),
+    () => results.filter((row) => row.analysisStatus === "missing_suspected"),
     [results]
   );
   const reviewRows = useMemo(
-    () => results.filter((r) => r.analysisStatus === "needs_review"),
+    () => results.filter((row) => row.analysisStatus === "needs_review"),
     [results]
   );
   const inquiryMessage = useMemo(
-    () => buildInquiryMessage(results.filter((r) => r.effectiveIncluded)),
+    () => buildInquiryMessage(results.filter((row) => row.effectiveIncluded)),
     [results]
   );
 
   const hasResults = baseResults.length > 0;
   const collectionEnabled = isFeedbackPersistenceEnabled();
+  const judgedReviewCount = reviewRows.filter((row) => row.userFeedback).length;
+  const pendingReviewCount = Math.max(0, reviewRows.length - judgedReviewCount);
 
-  // Stable fingerprint of the user's judgments so we can tell whether the
-  // current set has already been sent (and re-enable the button if it changes).
   const judgmentSnapshot = useMemo(
     () =>
       Object.keys(feedbackById)
@@ -67,10 +76,17 @@ export default function Home() {
   const judgmentCount = Object.keys(feedbackById).length;
   const alreadySent = sendState === "sent" && sentSnapshot === judgmentSnapshot;
 
+  const moveToStep = (step: GuidedStep) => {
+    if (step > 1 && !hasResults) return;
+    setCurrentStep(step);
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  };
+
   const handleFile = async (file: File) => {
     setIsParsing(true);
     setError(null);
     setErrorDiagnostic(null);
+    setCopied(false);
     try {
       const { transactions, columnWarning: warning } =
         await parseShinhanExcel(file);
@@ -80,53 +96,59 @@ export default function Home() {
       setColumnWarning(warning ?? null);
       setSendState("idle");
       setSentSnapshot(null);
-    } catch (e) {
+      setCurrentStep(2);
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
+    } catch (caught) {
       setBaseResults([]);
       setFeedbackById({});
       setFileName(null);
       setColumnWarning(null);
+      setCurrentStep(1);
       setError(
-        e instanceof Error ? e.message : "알 수 없는 오류가 발생했습니다."
+        caught instanceof Error
+          ? caught.message
+          : "알 수 없는 오류가 발생했습니다."
       );
-      setErrorDiagnostic(e instanceof ShinhanParseError ? e.diagnostic : null);
+      setErrorDiagnostic(
+        caught instanceof ShinhanParseError ? caught.diagnostic : null
+      );
     } finally {
       setIsParsing(false);
     }
   };
 
   const handleReset = () => {
+    setCurrentStep(1);
     setBaseResults([]);
     setFeedbackById({});
     setFileName(null);
     setError(null);
     setErrorDiagnostic(null);
     setColumnWarning(null);
+    setCopied(false);
     setSendState("idle");
     setSentSnapshot(null);
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
   };
 
-  // Feedback buttons only update local state (totals + inquiry message).
-  // Nothing is sent to the collector until the user presses the explicit
-  // "help others" button below, so indecisive clicking never leaves a trail.
+  // Feedback changes only local totals and the inquiry message. Nothing leaves
+  // the browser until the explicit service-help button is pressed.
   const handleFeedback = (row: AnalysisResult, action: UserFeedbackAction) => {
-    setFeedbackById((prev) => {
-      const next = { ...prev };
-      if (next[row.id] === action) {
-        delete next[row.id];
-      } else {
-        next[row.id] = action;
-      }
+    setCopied(false);
+    setFeedbackById((previous) => {
+      const next = { ...previous };
+      if (next[row.id] === action) delete next[row.id];
+      else next[row.id] = action;
       return next;
     });
   };
 
   const handleSubmitJudgments = async () => {
-    if (judgmentCount === 0 || sendState === "sending") {
-      return;
-    }
+    if (judgmentCount === 0 || sendState === "sending") return;
+
     const items = results
-      .filter((r) => feedbackById[r.id])
-      .map((r) => ({ result: r, action: feedbackById[r.id] }));
+      .filter((result) => feedbackById[result.id])
+      .map((result) => ({ result, action: feedbackById[result.id] }));
     setSendState("sending");
     const ok = await submitJudgments(items);
     if (ok) {
@@ -137,165 +159,329 @@ export default function Home() {
     }
   };
 
+  const copyInquiryMessage = async () => {
+    if (!inquiryMessage) return;
+    try {
+      await navigator.clipboard.writeText(inquiryMessage);
+      setCopied(true);
+    } catch {
+      // The message remains visible for manual selection.
+    }
+  };
+
+  const goNext = () => {
+    if (currentStep === 1 && hasResults) moveToStep(2);
+    else if (currentStep === 2) moveToStep(3);
+    else if (currentStep === 3 && copied) handleReset();
+    else if (currentStep === 3) void copyInquiryMessage();
+  };
+
+  const nextDisabled =
+    (currentStep === 1 && !hasResults) ||
+    (currentStep === 3 && !copied && !inquiryMessage);
+  const nextLabel =
+    currentStep === 1
+      ? hasResults
+        ? "결과 보기"
+        : "파일을 올리면 계속돼요"
+      : currentStep === 2
+        ? "문의 문구 만들기"
+        : copied
+          ? "새 파일 검사"
+          : "문구 복사";
+  const footerStatus =
+    currentStep === 1
+      ? "1544-7000에서 파일을 받을 수 있어요"
+      : `문의 반영 ${formatNumber(summary.includedCount)}건 · +${formatNumber(summary.totalExpectedAdditionalPoints)}P${
+          pendingReviewCount > 0 ? ` · 미판정 ${pendingReviewCount}건` : ""
+        }`;
+
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl" aria-hidden>
-            🏨
+    <div className="flex min-h-screen flex-col bg-canvas text-ink">
+      <header className="sticky top-0 z-40 border-b border-black/10 bg-canvas/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 w-full max-w-[1060px] items-center gap-3 px-5 sm:px-8">
+          <span className="text-[17px] font-semibold tracking-[-0.03em]">
+            bonvoy checker
           </span>
-          <h1 className="text-3xl font-bold text-neutral-900">
-            Bonvoy L4/L5 Checker
-          </h1>
+          <span className="hidden text-xs text-muted sm:inline">
+            신한 메리어트 특별적립 검사
+          </span>
         </div>
-        <p className="mt-3 max-w-2xl text-neutral-600">
-          신한카드 포인트 적립 상세내역 엑셀을 업로드하면, 메리어트 계열 호텔
-          결제가 국내 L4 / 해외 L5로 특별적립되었는지 확인해드립니다.
-        </p>
-        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800">
-          <span aria-hidden>🔒</span>
-          파일은 서버에 저장되지 않고 브라우저 안에서만 분석됩니다.
-        </p>
+        <MobileProgress currentStep={currentStep} />
       </header>
 
-      <FileUpload
-        fileName={fileName}
-        isParsing={isParsing}
-        error={error}
-        errorDiagnostic={errorDiagnostic}
-        onFile={handleFile}
-        onReset={handleReset}
-      />
+      <div className="mx-auto flex w-full max-w-[1060px] flex-1 items-start gap-11 px-5 pb-10 pt-7 sm:px-8 md:pt-9">
+        <GuidedProgress
+          currentStep={currentStep}
+          hasResults={hasResults}
+          onStepChange={moveToStep}
+        />
 
-      {!hasResults && (
-        <div className="mt-4 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-600">
-          <p className="font-medium text-neutral-800">
-            💡 엑셀 파일은 어디서 받나요?
-          </p>
-          <p className="mt-1">
-            신한카드 고객센터{" "}
-            <a href="tel:15447000" className="font-semibold text-blue-700">
-              1544-7000
-            </a>
-            에 전화해서 &ldquo;메리어트 본보이 카드{" "}
-            <b>포인트 적립 상세내역</b>을 엑셀 파일로 보내달라&rdquo;고
-            요청하면 이메일로 받을 수 있습니다. 앱/홈페이지에서는 제공되지
-            않는 자료입니다.
-          </p>
-        </div>
-      )}
+        <main className="min-w-0 flex-1 md:max-w-[720px]">
+          {currentStep === 1 && (
+            <section aria-labelledby="upload-step-title">
+              <h1
+                id="upload-step-title"
+                className="text-[30px] leading-[1.2] font-semibold tracking-[-0.04em] sm:text-[36px]"
+              >
+                엑셀 파일 하나면
+                <br />시작할 수 있어요
+              </h1>
+              <p className="mt-3 max-w-2xl text-[15px] leading-6 text-ink-soft sm:text-base">
+                신한카드 ‘포인트 적립 상세내역’을 올리면 메리어트 결제의
+                특별적립 누락 의심 항목을 확인해드립니다.
+              </p>
+              <p className="mt-3 rounded-lg bg-ember-soft px-3 py-2 text-xs leading-5 text-ember-deep">
+                현재는 메리어트 본보이™ 더 베스트 신한카드만 지원합니다. 더
+                클래식 카드는 적립 기준이 달라 결과가 맞지 않을 수 있어요.
+              </p>
 
-      {columnWarning && (
-        <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          ⚠️ {columnWarning}
-        </div>
-      )}
-
-      {hasResults && (
-        <div className="mt-10 space-y-10">
-          <section aria-label="분석 요약">
-            <SummaryCards summary={summary} />
-          </section>
-
-          <section aria-label="신한카드 문의 문구">
-            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              ✉️ 신한카드 문의 문구
-            </h2>
-            <InquiryMessage message={inquiryMessage} />
-          </section>
-
-          <section aria-label="적립 누락 의심 거래">
-            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              🔴 적립 누락 의심{" "}
-              <span className="text-neutral-400">
-                {summary.missingSuspectedCount}건
-              </span>
-            </h2>
-            <MissingTransactionsTable
-              rows={missingRows}
-              onFeedback={handleFeedback}
-            />
-          </section>
-
-          <section aria-label="확인 필요 거래">
-            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              🟡 확인 필요{" "}
-              <span className="text-neutral-400">
-                {summary.needsReviewCount}건
-              </span>
-            </h2>
-            <ReviewTransactionsTable
-              rows={reviewRows}
-              onFeedback={handleFeedback}
-            />
-          </section>
-
-          {collectionEnabled && judgmentCount > 0 && (
-            <section aria-label="판단 제보">
-              <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-5">
-                <p className="text-sm text-neutral-700">
-                  확인해주신 판단 <b>{judgmentCount}건</b>을 익명으로
-                  보내주시면, 애매한 가맹점을 더 정확히 판별하는 데 쓰여 다른
-                  사용자에게 도움이 됩니다. 가맹점명·적립 등급·앱 판정·사용자
-                  판단과 이번 방문을 구분하는 임시 익명 ID만 전송되고, 업로드
-                  파일·금액 상세·카드번호는 전송되지 않습니다.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleSubmitJudgments}
-                  disabled={sendState === "sending" || alreadySent}
-                  className={`mt-3 rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-80 ${
-                    alreadySent
-                      ? "bg-emerald-600 text-white"
-                      : "bg-blue-700 text-white hover:bg-blue-800"
-                  }`}
-                >
-                  {sendState === "sending"
-                    ? "보내는 중…"
-                    : alreadySent
-                      ? "✓ 도와주셔서 감사합니다"
-                      : sendState === "sent"
-                        ? `변경사항 다시 보내기 (${judgmentCount}건)`
-                        : sendState === "failed"
-                          ? `전송 실패 · 다시 시도 (${judgmentCount}건)`
-                          : `내 판단으로 서비스 돕기 (${judgmentCount}건)`}
-                </button>
-                {sendState === "failed" && (
-                  <p className="mt-1.5 text-xs text-red-600">
-                    전송에 실패했습니다. 잠시 후 다시 시도해주세요.
-                  </p>
-                )}
+              <div className="mt-6">
+                <FileUpload
+                  fileName={fileName}
+                  isParsing={isParsing}
+                  error={error}
+                  errorDiagnostic={errorDiagnostic}
+                  onFile={handleFile}
+                  onReset={handleReset}
+                />
               </div>
+
+              <details open className="mt-4 overflow-hidden rounded-[18px] border border-hairline bg-white">
+                <summary className="flex min-h-14 cursor-pointer items-center px-5 py-4 text-sm font-semibold text-ink">
+                  엑셀 파일은 어디서 받나요?
+                </summary>
+                <div className="border-t border-hairline px-5 py-4 text-sm leading-6 text-ink-soft">
+                  <ol className="list-decimal space-y-1.5 pl-5">
+                    <li>
+                      신한카드 고객센터 {" "}
+                      <a href="tel:15447000" className="font-semibold text-ember">
+                        1544-7000
+                      </a>
+                      에 전화합니다.
+                    </li>
+                    <li>
+                      “메리어트 본보이 카드 <b>포인트 적립 상세내역</b>을
+                      엑셀로 보내주세요”라고 요청합니다.
+                    </li>
+                    <li>이메일로 받은 .xlsx 파일을 여기에 올립니다.</li>
+                  </ol>
+                  <p className="mt-2 text-xs text-muted">
+                    앱과 홈페이지에서는 제공되지 않는 자료입니다.
+                  </p>
+                </div>
+              </details>
             </section>
           )}
 
-          <section aria-label="전체 거래">
-            <p className="mb-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-600">
-              🏨 메리어트 계열 호텔에 묵으셨는데 위{" "}
-              <span className="font-medium">적립 누락 의심</span>·
-              <span className="font-medium">확인 필요</span>에 안 보이나요? 아래
-              전체 거래를 펼쳐 해당 결제를 &lsquo;메리어트로 표시&rsquo;하면
-              예상 누락과 문의 문구에 반영됩니다.
-            </p>
-            <AllTransactionsTable
-              results={results}
-              onFlagMarriott={(row) => handleFeedback(row, "include")}
-            />
-          </section>
-        </div>
-      )}
+          {currentStep === 2 && hasResults && (
+            <div className="space-y-7">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-hairline bg-white px-4 py-3">
+                <div className="min-w-0">
+                  <p className="break-words text-sm font-medium text-ink">
+                    {fileName}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted" role="status">
+                    분석이 완료되었습니다.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="min-h-11 rounded-full border border-line bg-white px-4 text-xs font-medium text-ink-soft"
+                >
+                  다른 파일 업로드
+                </button>
+              </div>
 
-      {collectionEnabled && (
-        <p className="mt-10 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-xs text-neutral-500">
-          &lsquo;내 판단으로 서비스 돕기&rsquo;나 파싱 실패 제보 버튼을 누를
-          때만 가맹점명·적립 등급·앱 판정·사용자 판단·임시 익명 ID가
-          전송됩니다. 업로드한 파일, 금액 상세, 카드번호는 전송되지 않습니다.
-        </p>
-      )}
+              <section aria-label="분석 요약">
+                <SummaryCards summary={summary} />
+              </section>
 
-      <div className="mt-12">
-        <Disclaimer />
+              {columnWarning && (
+                <div role="status" className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+                  {columnWarning}
+                </div>
+              )}
+
+              <section aria-label="확인 필요 거래">
+                <div className="mb-3">
+                  <p className="text-sm font-semibold text-ink">
+                    먼저 직접 확인해주세요
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted">
+                    확인 필요 거래는 사용자가 선택한 경우에만 문의에 반영됩니다.
+                  </p>
+                </div>
+                <ReviewTransactionsTable
+                  rows={reviewRows}
+                  onFeedback={handleFeedback}
+                />
+              </section>
+
+              <section aria-label="적립 누락 의심 거래">
+                <MissingTransactionsTable
+                  rows={missingRows}
+                  onFeedback={handleFeedback}
+                />
+              </section>
+
+              <section aria-label="전체 거래">
+                <AllTransactionsTable
+                  results={results}
+                  onFlagMarriott={(row) => handleFeedback(row, "include")}
+                />
+              </section>
+
+              {collectionEnabled && judgmentCount > 0 && !alreadySent && (
+                <p
+                  role="note"
+                  className="rounded-xl border border-hairline bg-white px-4 py-3 text-xs leading-5 text-muted"
+                >
+                  판단 {judgmentCount}건 · 문의 보내기 전에 익명으로 보낼 수
+                  있어요
+                </p>
+              )}
+            </div>
+          )}
+
+          {currentStep === 3 && hasResults && (
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-hairline bg-white px-4 py-3">
+                <div className="min-w-0">
+                  <p className="break-words text-sm font-medium text-ink">
+                    {fileName}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted" role="status">
+                    분석이 완료되었습니다.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="min-h-11 rounded-full border border-line bg-white px-4 text-xs font-medium text-ink-soft"
+                >
+                  다른 파일 업로드
+                </button>
+              </div>
+              <section aria-label="신한카드 문의 문구" className="mt-3">
+                <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
+                  문의 보내기
+                </p>
+                <h1 className="mt-1 text-[30px] leading-[1.2] font-semibold tracking-[-0.04em] sm:text-[36px]">
+                  {!inquiryMessage ? (
+                    "문의에 담을 항목이 없어요"
+                  ) : copied ? (
+                    <>
+                      복사 완료.
+                      <br />이제 붙여넣기만 하면 돼요
+                    </>
+                  ) : (
+                    "문구가 준비됐어요"
+                  )}
+                </h1>
+                <p className="mt-3 mb-5 text-[15px] leading-6 text-ink-soft sm:text-base">
+                  {inquiryMessage ? (
+                    <>
+                      {formatNumber(summary.includedCount)}건 · 예상 +
+                      {formatNumber(summary.totalExpectedAdditionalPoints)}P가
+                      문구에 담겼어요. 실제 적립 여부는 카드사 기준에 따라
+                      달라질 수 있습니다.
+                    </>
+                  ) : (
+                    "2단계에서 누락 의심 거래를 유지하거나 확인 필요 거래를 문의에 포함하면 문구가 만들어집니다."
+                  )}
+                </p>
+                <InquiryMessage
+                  message={inquiryMessage}
+                  copied={copied}
+                  onCopy={copyInquiryMessage}
+                />
+              </section>
+
+              {collectionEnabled && judgmentCount > 0 && (
+                <section aria-label="판단 제보" className="mt-4">
+                  <div className="rounded-[18px] border border-ember/40 bg-white p-5">
+                    <p className="text-xs font-semibold tracking-[0.08em] text-ember uppercase">
+                      서비스 돕기
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-ink-soft">
+                      확인하신 판단 <b>{judgmentCount}건</b>을 익명으로
+                      보내주시면 애매한 가맹점 판별 개선에 도움이 됩니다.
+                      명시적으로 아래 버튼을 누르기 전에는 아무것도 전송되지
+                      않습니다.
+                    </p>
+                    <p className="mt-2 text-xs leading-5 text-muted">
+                      가맹점명·적립 등급·앱 판정·사용자 판단·임시 익명 ID만
+                      전송되고, 업로드 파일·금액 상세·카드번호는 전송되지
+                      않습니다.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleSubmitJudgments}
+                      disabled={sendState === "sending" || alreadySent}
+                      className={`mt-4 min-h-11 rounded-full px-5 text-sm font-semibold text-white transition disabled:opacity-75 ${
+                        alreadySent ? "bg-emerald-700" : "bg-ember"
+                      }`}
+                    >
+                      {sendState === "sending"
+                        ? "보내는 중…"
+                        : alreadySent
+                          ? "도와주셔서 감사합니다"
+                          : sendState === "sent"
+                            ? `변경사항 다시 보내기 (${judgmentCount}건)`
+                            : sendState === "failed"
+                              ? `전송 실패 · 다시 시도 (${judgmentCount}건)`
+                              : `내 판단으로 서비스 돕기 (${judgmentCount}건)`}
+                    </button>
+                    {sendState === "failed" && (
+                      <p className="mt-2 text-xs text-ember">
+                        전송에 실패했습니다. 잠시 후 다시 시도해주세요.
+                      </p>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              <InquirySend
+                message={inquiryMessage}
+                onEnsureCopied={copyInquiryMessage}
+              />
+
+              <div className="mt-8">
+                <Disclaimer />
+              </div>
+            </div>
+          )}
+
+          <div className="h-8" />
+        </main>
       </div>
-    </main>
+
+      <div className="sticky bottom-0 z-50 border-t border-black/10 bg-canvas/95 backdrop-blur-xl">
+        <div className="mx-auto flex min-h-[72px] w-full max-w-[1060px] items-center gap-3 px-5 py-3 sm:px-8">
+          {currentStep > 1 && (
+            <button
+              type="button"
+              onClick={() => moveToStep((currentStep - 1) as GuidedStep)}
+              className="min-h-11 shrink-0 rounded-full border border-ember bg-white px-5 text-sm font-semibold text-ember"
+            >
+              이전
+            </button>
+          )}
+          <p className="ml-auto text-right text-xs leading-5 tabular-nums text-ink-soft sm:text-sm">
+            {footerStatus}
+          </p>
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={nextDisabled}
+            className="min-h-11 min-w-32 shrink-0 rounded-full bg-ember px-5 text-sm font-semibold text-white transition hover:bg-ember-deep disabled:cursor-not-allowed disabled:bg-disabled"
+          >
+            {nextLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
