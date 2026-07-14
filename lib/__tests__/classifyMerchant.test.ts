@@ -274,6 +274,19 @@ describe("classifyMerchant", () => {
     expect(result.region).toBe("overseas");
   });
 
+  it("keeps a shared China merchant linked to both Qingdao properties", () => {
+    const result = classifyMerchant("QINGDAOQINGMAOIYEYOXINGON");
+
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe(
+      "Renaissance Qingdao Hotel / Element Qingdao"
+    );
+    expect(result.matchedPattern).toBe("QINGDAOQINGMAOIYEYOXINGON");
+  });
+
   it.each([
     "W Bangkok",
     "Sheraton Grande Sukhumvit",
@@ -571,6 +584,22 @@ describe("classifyMerchant", () => {
     expect(result.normalizedName).toBe("Jeju Shinhwa World Marriott Resort");
   });
 
+  it("maps 비에스떠블유파트너스 to Daegu Marriott Hotel", () => {
+    const result = classifyMerchant("비에스떠블유파트너스");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Daegu Marriott Hotel");
+  });
+
+  it("maps 세경호텔 to Courtyard by Marriott Sejong", () => {
+    const result = classifyMerchant("세경호텔");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Courtyard by Marriott Sejong");
+  });
+
   it("maps 대신투자개발 to Aloft Seoul Gangnam", () => {
     const result = classifyMerchant("대신투자개발 주식회사");
     expect(result.isLikelyMarriott).toBe(true);
@@ -603,6 +632,52 @@ describe("classifyMerchant", () => {
     expect(result.normalizedName).toBe(
       "Fairfield by Marriott Busan Songdo Beach"
     );
+  });
+
+  it("maps 제이엔에스인부산 to Fairfield by Marriott Busan", () => {
+    const result = classifyMerchant("제이엔에스인부산");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Fairfield by Marriott Busan");
+  });
+
+  it("maps 와이씨앤티 to Four Points by Sheraton Seoul, Guro", () => {
+    const result = classifyMerchant("와이씨앤티");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe(
+      "Four Points by Sheraton Seoul, Guro"
+    );
+  });
+
+  it("maps 경방 to Courtyard by Marriott Seoul Times Square", () => {
+    const result = classifyMerchant("경방");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe(
+      "Courtyard by Marriott Seoul Times Square"
+    );
+  });
+
+  it("maps 미래엠 to Courtyard by Marriott Seoul Botanic Park", () => {
+    const result = classifyMerchant("미래엠");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe(
+      "Courtyard by Marriott Seoul Botanic Park"
+    );
+  });
+
+  it("maps 대우송도호텔 to Sheraton Grand Incheon Hotel", () => {
+    const result = classifyMerchant("대우송도호텔");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("Sheraton Grand Incheon Hotel");
   });
 
   it("maps 서우제이앤디 to Four Points Seoul Gangnam", () => {
@@ -647,6 +722,22 @@ describe("classifyMerchant", () => {
     expect(result.normalizedName).toBe(
       "Four Points by Sheraton Dalian Donggang"
     );
+  });
+
+  it("maps qing dao lv cheng hua chu to Sheraton Qingdao Licang", () => {
+    const result = classifyMerchant("qing dao lv cheng hua chu");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe("Sheraton Qingdao Licang Hotel");
+  });
+
+  it("maps Y P H Y Hotel Management to Moxy Xi'an Beilin", () => {
+    const result = classifyMerchant("Y P H Y Hotel Management");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.region).toBe("overseas");
+    expect(result.normalizedName).toBe("Moxy Xi'an Beilin");
   });
 
   it("maps CTY CP VINPEARL to Vinpearl Landmark 81 as review candidate", () => {

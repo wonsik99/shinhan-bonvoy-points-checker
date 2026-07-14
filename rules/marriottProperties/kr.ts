@@ -160,6 +160,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("COURTYARD BY MARRIOTT SEOUL TIMES SQUARE"),
     contains("코트야드메리어트타임스퀘어"),
     contains("코트야드서울타임스퀘어"),
+    // Shinhan statement merchant for Courtyard by Marriott Seoul Times Square
+    contains("경방"),
   ]),
   korea("kr-the-link-seoul", "The Link Seoul, a Tribute Portfolio Hotel", "Tribute Portfolio", [
     contains("THE LINK SEOUL"),
@@ -171,12 +173,16 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("FOUR POINTS SHERATON SEOUL GURO"),
     contains("FOUR POINTS SEOUL GURO"),
     contains("포포인츠서울구로"),
+    // Shinhan statement merchant for Four Points by Sheraton Seoul, Guro
+    contains("와이씨앤티"),
   ]),
   korea("kr-courtyard-seoul-botanic-park", "Courtyard by Marriott Seoul Botanic Park", "Courtyard by Marriott", [
     contains("COURTYARD MARRIOTT SEOUL BOTANIC PARK"),
     contains("COURTYARD BY MARRIOTT SEOUL BOTANIC PARK"),
     contains("코트야드메리어트서울보타닉파크"),
     contains("코트야드보타닉파크"),
+    // Shinhan statement merchant for Courtyard by Marriott Seoul Botanic Park
+    contains("미래엠"),
   ]),
   korea("kr-courtyard-seoul-pangyo", "Courtyard by Marriott Seoul Pangyo", "Courtyard by Marriott", [
     contains("COURTYARD MARRIOTT SEOUL PANGYO"),
@@ -215,6 +221,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("SHERATON GRAND INCHEON"),
     contains("쉐라톤그랜드인천"),
     contains("셰라톤그랜드인천"),
+    // Shinhan statement merchant for Sheraton Grand Incheon Hotel
+    contains("대우송도호텔"),
   ]),
   korea("kr-nest-hotel-incheon", "Nest Hotel, a Member of Design Hotels", "Design Hotels", [
     contains("NEST HOTEL"),
@@ -237,6 +245,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("FAIRFIELD MARRIOTT BUSAN"),
     contains("FAIRFIELD BY MARRIOTT BUSAN"),
     contains("페어필드메리어트부산"),
+    // Shinhan statement merchant for Fairfield by Marriott Busan
+    contains("제이엔에스인부산"),
   ]),
   korea("kr-fairfield-busan-songdo-beach", "Fairfield by Marriott Busan Songdo Beach", "Fairfield by Marriott", [
     contains("FAIRFIELD MARRIOTT BUSAN SONGDO"),
@@ -270,6 +280,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
   korea("kr-daegu-marriott", "Daegu Marriott Hotel", "Marriott Hotels", [
     contains("DAEGU MARRIOTT"),
     contains("대구메리어트"),
+    // Shinhan statement merchant for Daegu Marriott Hotel
+    contains("비에스떠블유파트너스"),
   ]),
   korea("kr-hotel-onoma-daejeon", "Hotel Onoma, Daejeon, Autograph Collection", "Autograph Collection", [
     contains("HOTEL ONOMA DAEJEON"),
@@ -280,5 +292,7 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("COURTYARD MARRIOTT SEJONG"),
     contains("COURTYARD BY MARRIOTT SEJONG"),
     contains("코트야드메리어트세종"),
+    // Shinhan statement merchant for Courtyard by Marriott Sejong
+    contains("세경호텔"),
   ]),
 ];
