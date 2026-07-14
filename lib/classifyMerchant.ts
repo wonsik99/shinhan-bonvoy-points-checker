@@ -5,8 +5,10 @@ import {
   koreanMarriottKeywords,
   marriottProperties,
   marriottKeywords,
+  sharedMarriottMerchantRules,
   type MarriottProperty,
   type MarriottPropertyAlias,
+  type SharedMarriottMerchantRule,
 } from "@/rules/marriott";
 import { defaultPropertyAliasMatch } from "@/rules/marriottProperties/helpers";
 
@@ -47,6 +49,11 @@ interface CompiledPropertyAlias {
   compact: string;
 }
 
+interface CompiledSharedMerchantRule {
+  rule: SharedMarriottMerchantRule;
+  compact: string;
+}
+
 /**
  * Compact key for property-alias matching.
  * Statements often drop hyphens/periods/& that appear in official names
@@ -61,6 +68,40 @@ function compactMatchKeyFromNormalized(normalized: string): string {
 
 function aliasKey(value: string): string {
   return compactMatchKeyFromNormalized(normalizeMerchantName(value));
+}
+
+const sharedMerchantRules = sharedMarriottMerchantRules.map(
+  (rule): CompiledSharedMerchantRule => ({
+    rule,
+    compact: aliasKey(rule.pattern),
+  })
+);
+
+const exactSharedMerchantRules = new Map<string, CompiledSharedMerchantRule[]>();
+const containsSharedMerchantRulesByFirstChar = new Map<
+  string,
+  CompiledSharedMerchantRule[]
+>();
+
+for (const compiled of sharedMerchantRules) {
+  const match =
+    compiled.rule.match ??
+    defaultPropertyAliasMatch(compiled.rule.pattern);
+  if (match === "exact") {
+    const matches = exactSharedMerchantRules.get(compiled.compact) ?? [];
+    matches.push(compiled);
+    exactSharedMerchantRules.set(compiled.compact, matches);
+    continue;
+  }
+
+  const firstChar = compiled.compact[0];
+  if (!firstChar) {
+    continue;
+  }
+  const matches =
+    containsSharedMerchantRulesByFirstChar.get(firstChar) ?? [];
+  matches.push(compiled);
+  containsSharedMerchantRulesByFirstChar.set(firstChar, matches);
 }
 
 const propertyAliases = marriottProperties.flatMap((property) =>
@@ -169,14 +210,60 @@ function matchPropertyAlias(
   return undefined;
 }
 
+function sharedMerchantRuleToClassification(
+  compiled: CompiledSharedMerchantRule
+): MerchantClassification {
+  const { rule } = compiled;
+  return {
+    isLikelyMarriott: rule.brandGroup === "marriott",
+    confidence: rule.confidence,
+    status: rule.status,
+    normalizedName: rule.normalizedName,
+    matchedPattern: rule.pattern,
+    reason: rule.reason,
+    region: rule.region,
+  };
+}
+
+function matchSharedMerchantRule(
+  normalized: string
+): MerchantClassification | undefined {
+  const compact = compactMatchKeyFromNormalized(normalized);
+  const exactMatch = exactSharedMerchantRules.get(compact)?.[0];
+  if (exactMatch) {
+    return sharedMerchantRuleToClassification(exactMatch);
+  }
+
+  const checkedRules = new Set<string>();
+  for (const char of new Set(compact)) {
+    const bucket = containsSharedMerchantRulesByFirstChar.get(char);
+    if (!bucket) {
+      continue;
+    }
+
+    for (const compiled of bucket) {
+      if (checkedRules.has(compiled.compact)) {
+        continue;
+      }
+      checkedRules.add(compiled.compact);
+      if (compact.includes(compiled.compact)) {
+        return sharedMerchantRuleToClassification(compiled);
+      }
+    }
+  }
+
+  return undefined;
+}
+
 /**
  * Deterministic classification pipeline:
  * 1. Korean Marriott brand keywords → certain domestic
- * 2. Global property alias DB (exact/contains, pre-indexed)
- * 3. English Marriott brand keywords → certain overseas
- * 4. Country-specific Korean rules, including operator names → needs_review
- * 5. Hotel-like keywords → low-confidence review candidate
- * 6. Otherwise not Marriott-related
+ * 2. Shared merchant rules (one statement merchant for multiple properties)
+ * 3. Global property alias DB (exact/contains, pre-indexed)
+ * 4. English Marriott brand keywords → certain overseas
+ * 5. Country-specific Korean rules, including operator names → needs_review
+ * 6. Hotel-like keywords → low-confidence review candidate
+ * 7. Otherwise not Marriott-related
  */
 export function classifyMerchant(merchantName: string): MerchantClassification {
   const normalized = normalizeMerchantName(merchantName);
@@ -202,6 +289,11 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
         region: "domestic",
       };
     }
+  }
+
+  const sharedMerchantMatch = matchSharedMerchantRule(normalized);
+  if (sharedMerchantMatch) {
+    return sharedMerchantMatch;
   }
 
   const propertyMatch = matchPropertyAlias(normalized);

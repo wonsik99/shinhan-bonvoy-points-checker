@@ -1,5 +1,9 @@
 import { contains, high, inferBrand } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import type {
+  MarriottProperty,
+  MarriottPropertyAlias,
+  SharedMarriottMerchantRule,
+} from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const chinaOfficialRows = [
@@ -800,7 +804,35 @@ const chinaAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
   "Four Points by Sheraton Dalian Donggang": [
     contains("LKL*DALIANFUMAOJIUDIAN", high),
   ],
+  // Shinhan overseas statement merchant for Sheraton Qingdao Licang Hotel
+  "Sheraton Qingdao Licang Hotel": [
+    contains("QING DAO LV CHENG HUA CHU", high),
+  ],
+  // Shinhan overseas statement merchant for Moxy Xi'an Beilin
+  "Moxy Xi'an Beilin": [
+    contains("Y P H Y HOTEL MANAGEMENT", high),
+  ],
 };
+
+/**
+ * Some Chinese hotel operators use one statement merchant name for multiple
+ * Marriott properties. Keep these outside property aliases so one property
+ * does not win merely because it appears first in the index.
+ */
+export const chinaSharedMerchantRules: SharedMarriottMerchantRule[] = [
+  {
+    pattern: "QINGDAOQINGMAOIYEYOXINGON",
+    normalizedName: "Renaissance Qingdao Hotel / Element Qingdao",
+    propertyIds: ["cn-taobr", "cn-taoel"],
+    region: "overseas",
+    match: "contains",
+    brandGroup: "marriott",
+    confidence: "high",
+    status: "active",
+    reason:
+      "QINGDAOQINGMAOIYEYOXINGON은 Renaissance Qingdao Hotel과 Element Qingdao에 공통으로 사용되는 가맹점명입니다. 명세서만으로 개별 호텔을 구분할 수 없어 두 호텔을 함께 표시합니다.",
+  },
+];
 
 export const chinaMarriottProperties: MarriottProperty[] =
   chinaOfficialRows.map(({ id, officialName }) => ({

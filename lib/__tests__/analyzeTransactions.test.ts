@@ -40,6 +40,22 @@ describe("analyzeTransactions", () => {
     expect(result.effectiveIncluded).toBe(true);
   });
 
+  it("flags a shared Qingdao merchant as overseas Marriott expecting L5", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "QINGDAOQINGMAOIYEYOXINGON" }),
+    ]);
+
+    expect(result.classification.normalizedName).toBe(
+      "Renaissance Qingdao Hotel / Element Qingdao"
+    );
+    expect(result.classification.region).toBe("overseas");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L5");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(420);
+    expect(result.effectiveIncluded).toBe(true);
+  });
+
   it("auto-flags TIAD via derived exact alias on the L2 fallback grade", () => {
     const [result] = analyzeTransactions([
       tx({ merchantName: "TIAD", pointType: "L2", actualPoints: 629 }),
@@ -169,6 +185,130 @@ describe("domestic Marriott (L4) handling", () => {
     expect(result.expectedPoints).toBe(1049); // round(209755 / 1000 × 5)
     expect(result.difference).toBe(1049 - 210);
     expect(result.classification.reason).toContain("L4");
+  });
+
+  it("treats the Daegu Marriott merchant alias as domestic L4", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "비에스떠블유파트너스",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
+    ]);
+    expect(result.classification.normalizedName).toBe("Daegu Marriott Hotel");
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(839);
+  });
+
+  it("treats the Sejong Marriott merchant alias as domestic L4", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "세경호텔",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
+    ]);
+    expect(result.classification.normalizedName).toBe(
+      "Courtyard by Marriott Sejong"
+    );
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(839);
+  });
+
+  it("treats the Fairfield Busan merchant alias as domestic L4", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "제이엔에스인부산",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
+    ]);
+    expect(result.classification.normalizedName).toBe(
+      "Fairfield by Marriott Busan"
+    );
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(839);
+  });
+
+  it("treats the Sheraton Grand Incheon merchant alias as domestic L4", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "대우송도호텔",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
+    ]);
+    expect(result.classification.normalizedName).toBe(
+      "Sheraton Grand Incheon Hotel"
+    );
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(839);
+  });
+
+  it("treats the Four Points Seoul Guro merchant alias as domestic L4", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "와이씨앤티",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
+    ]);
+    expect(result.classification.normalizedName).toBe(
+      "Four Points by Sheraton Seoul, Guro"
+    );
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(839);
+  });
+
+  it("treats the Courtyard Times Square merchant alias as domestic L4", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "경방",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
+    ]);
+    expect(result.classification.normalizedName).toBe(
+      "Courtyard by Marriott Seoul Times Square"
+    );
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(839);
+  });
+
+  it("treats the Courtyard Botanic Park merchant alias as domestic L4", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "미래엠",
+        pointType: "L1",
+        actualPoints: 210,
+      }),
+    ]);
+    expect(result.classification.normalizedName).toBe(
+      "Courtyard by Marriott Seoul Botanic Park"
+    );
+    expect(result.classification.region).toBe("domestic");
+    expect(result.analysisStatus).toBe("missing_suspected");
+    expect(result.expectedPointType).toBe("L4");
+    expect(result.expectedPoints).toBe(1049);
+    expect(result.difference).toBe(839);
   });
 
   it("defensively avoids auto-counting impossible domestic grade combinations", () => {

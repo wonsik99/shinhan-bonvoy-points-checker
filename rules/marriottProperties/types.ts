@@ -12,6 +12,25 @@ export interface MarriottPropertyAlias {
   reason?: string;
 }
 
+/**
+ * A merchant name shared by multiple Marriott properties.
+ *
+ * The property alias index intentionally maps one alias to one property. A
+ * shared merchant is kept separately so classification can preserve the
+ * ambiguity instead of assigning the first matching property by accident.
+ */
+export interface SharedMarriottMerchantRule {
+  pattern: string;
+  normalizedName: string;
+  propertyIds: string[];
+  region: "domestic" | "overseas";
+  match?: MatchMode;
+  brandGroup: BrandGroup;
+  confidence: Confidence;
+  status: RuleStatus;
+  reason: string;
+}
+
 export interface MarriottProperty {
   id: string;
   country: string;
