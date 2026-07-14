@@ -10,7 +10,12 @@ import {
 } from "@/lib/analyzeTransactions";
 import { buildInquiryMessage } from "@/lib/inquiryMessage";
 import { formatNumber } from "@/lib/format";
-import { isFeedbackPersistenceEnabled, submitJudgments } from "@/lib/feedback";
+import {
+  buildAutomaticAliasFeedback,
+  isAutomaticAliasFeedbackCandidate,
+  isFeedbackPersistenceEnabled,
+  submitJudgments,
+} from "@/lib/feedback";
 import FileUpload from "@/components/FileUpload";
 import SummaryCards from "@/components/SummaryCards";
 import MissingTransactionsTable from "@/components/MissingTransactionsTable";
@@ -79,6 +84,15 @@ export default function Home() {
     [feedbackById]
   );
   const judgmentCount = Object.keys(feedbackById).length;
+  const automaticAliasFeedbackCount = useMemo(
+    () =>
+      results.filter(
+        (result) =>
+          isAutomaticAliasFeedbackCandidate(result) &&
+          result.userFeedback === "include"
+      ).length,
+    [results]
+  );
   const alreadySent = sendState === "sent" && sentSnapshot === judgmentSnapshot;
 
   const moveToStep = (step: GuidedStep) => {
@@ -95,8 +109,11 @@ export default function Home() {
     try {
       const { transactions, columnWarning: warning } =
         await parseShinhanExcel(file);
-      setBaseResults(analyzeTransactions(transactions));
-      setFeedbackById({});
+      const analyzedResults = analyzeTransactions(transactions);
+      setBaseResults(analyzedResults);
+      setFeedbackById(
+        collectionEnabled ? buildAutomaticAliasFeedback(analyzedResults) : {}
+      );
       setFileName(file.name);
       setColumnWarning(warning ?? null);
       setSendState("idle");
@@ -338,7 +355,7 @@ export default function Home() {
                   rows={okRows}
                   earnedPoints={summary.okAccruedPoints}
                   collectionEnabled={collectionEnabled}
-                  onAliasFeedback={(row) => handleFeedback(row, "include")}
+                  onToggleAliasFeedback={(row) => handleFeedback(row, "include")}
                 />
               </section>
 
@@ -354,8 +371,8 @@ export default function Home() {
                   role="note"
                   className="rounded-xl border border-hairline bg-white px-4 py-3 text-xs leading-5 text-muted"
                 >
-                  서비스 개선 제보 {judgmentCount}건 · 문의 보내기 전에
-                  익명으로 보낼 수 있어요
+                  서비스 개선 제보 목록 {judgmentCount}건 · 마지막 단계에서
+                  직접 보내기 전까지 전송되지 않아요
                 </p>
               )}
             </div>
@@ -422,10 +439,16 @@ export default function Home() {
                       서비스 돕기
                     </p>
                     <p className="mt-2 text-sm leading-6 text-ink-soft">
-                      확인하신 판단과 DB 미등록 가맹점명 <b>{judgmentCount}건</b>을
-                      익명으로 보내주시면 가맹점 판별 개선에 도움이 됩니다.
-                      명시적으로 아래 버튼을 누르기 전에는 아무것도 전송되지
-                      않습니다.
+                      {automaticAliasFeedbackCount > 0 ? (
+                        <>
+                          DB 미등록 L4/L5 가맹점명 {" "}
+                          <b>{automaticAliasFeedbackCount}건</b>은 제보 목록에
+                          자동으로 포함됐습니다. {" "}
+                        </>
+                      ) : null}
+                      제보 목록의 총 <b>{judgmentCount}건</b>을 익명으로
+                      보내주시면 가맹점 판별 개선에 도움이 됩니다. 아래 버튼을
+                      누르기 전에는 아무것도 전송되지 않습니다.
                     </p>
                     <p className="mt-2 text-xs leading-5 text-muted">
                       가맹점명·적립 등급·앱 판정·사용자 판단·임시 익명 ID만
@@ -446,9 +469,9 @@ export default function Home() {
                           ? "도와주셔서 감사합니다"
                           : sendState === "sent"
                             ? `변경사항 다시 보내기 (${judgmentCount}건)`
-                            : sendState === "failed"
+                          : sendState === "failed"
                               ? `전송 실패 · 다시 시도 (${judgmentCount}건)`
-                              : `내 판단으로 서비스 돕기 (${judgmentCount}건)`}
+                              : `서비스 개선 정보 보내기 (${judgmentCount}건)`}
                     </button>
                     {sendState === "failed" && (
                       <p className="mt-2 text-xs text-ember">

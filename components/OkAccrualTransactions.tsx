@@ -10,19 +10,20 @@ interface OkAccrualTransactionsProps {
   /** Total points already credited on these rows (summary.okAccruedPoints). */
   earnedPoints: number;
   collectionEnabled: boolean;
-  onAliasFeedback: (row: AnalysisResult) => void;
+  onToggleAliasFeedback: (row: AnalysisResult) => void;
 }
 
 /**
  * Collapsed-by-default list of correctly-accrued Marriott payments. When an
  * L4/L5 grade confirms the transaction but the merchant DB did not recognize
- * its name, the user can explicitly queue that name for service improvement.
+ * its name, that name is preselected locally for service improvement. The user
+ * can opt out here; nothing is transmitted until the final explicit action.
  */
 export default function OkAccrualTransactions({
   rows,
   earnedPoints,
   collectionEnabled,
-  onAliasFeedback,
+  onToggleAliasFeedback,
 }: OkAccrualTransactionsProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -81,10 +82,19 @@ export default function OkAccrualTransactions({
                       {row.pointType || "-"}
                     </p>
                     {aliasCandidate ? (
-                      <p className="mt-1.5 text-xs leading-5 text-ink-soft">
-                        명세서 {row.pointType} 등급으로 메리어트 특별적립 확인 ·
-                        가맹점명은 DB 미등록
-                      </p>
+                      <>
+                        <p className="mt-1.5 text-xs leading-5 text-ink-soft">
+                          명세서 {row.pointType} 등급으로 메리어트 특별적립 확인 ·
+                          가맹점명은 DB 미등록
+                        </p>
+                        {collectionEnabled ? (
+                          <p className="mt-1 text-xs leading-5 text-muted">
+                            {selectedForFeedback
+                              ? "서비스 개선 제보 목록에 자동 포함됨"
+                              : "서비스 개선 제보 목록에서 제외됨"}
+                          </p>
+                        ) : null}
+                      </>
                     ) : null}
                   </div>
                   <div className="flex shrink-0 items-center justify-between gap-3 sm:flex-col sm:items-end">
@@ -94,20 +104,22 @@ export default function OkAccrualTransactions({
                     {aliasCandidate && collectionEnabled ? (
                       <button
                         type="button"
-                        onClick={() => onAliasFeedback(row)}
+                        onClick={() => onToggleAliasFeedback(row)}
                         aria-pressed={selectedForFeedback}
                         aria-label={
                           selectedForFeedback
-                            ? `${row.merchantName} 가맹점명 제보 취소`
-                            : `${row.merchantName} 가맹점명을 서비스 개선 제보에 포함`
+                            ? `${row.merchantName} 가맹점명을 서비스 개선 제보 목록에서 제외`
+                            : `${row.merchantName} 가맹점명을 서비스 개선 제보 목록에 다시 포함`
                         }
                         className={`min-h-11 rounded-full border px-4 text-xs font-medium transition ${
                           selectedForFeedback
-                            ? "border-ember bg-ember text-white"
+                            ? "border-ember/40 bg-ember-soft text-ember-deep"
                             : "border-line bg-white text-ink-soft hover:border-ember hover:text-ember"
                         }`}
                       >
-                        {selectedForFeedback ? "제보에 포함됨" : "가맹점명 제보"}
+                        {selectedForFeedback
+                          ? "제보 목록에서 제외"
+                          : "제보 목록에 다시 포함"}
                       </button>
                     ) : null}
                   </div>

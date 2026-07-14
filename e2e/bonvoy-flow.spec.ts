@@ -149,6 +149,13 @@ test("treats unmapped L4/L5 as normal and submits aliases only after consent", a
   await expect(
     page.getByText("추가로 확인할 미분류 거래가 없습니다.")
   ).toBeVisible();
+  await expect(
+    page.getByText(
+      "서비스 개선 제보 목록 2건 · 마지막 단계에서 직접 보내기 전까지 전송되지 않아요"
+    )
+  ).toBeVisible();
+  expect(collectorBodies).toHaveLength(0);
+  expect(mutationRequests).toHaveLength(0);
 
   await page
     .getByRole("button", { name: "정상 적립 2건 펼치기" })
@@ -164,21 +171,36 @@ test("treats unmapped L4/L5 as normal and submits aliases only after consent", a
     )
   ).toBeVisible();
 
-  await page
-    .getByRole("button", {
-      name: "유한회사 오로라비즈니스 가맹점명을 서비스 개선 제보에 포함",
-    })
-    .click();
-  await expect(
-    page.getByRole("button", {
-      name: "유한회사 오로라비즈니스 가맹점명 제보 취소",
-    })
-  ).toHaveAttribute("aria-pressed", "true");
+  const domesticAliasButton = page.getByRole("button", {
+    name: "유한회사 오로라비즈니스 가맹점명을 서비스 개선 제보 목록에서 제외",
+  });
+  const overseasAliasButton = page.getByRole("button", {
+    name: "QINGDAOQINGMAO TEST CO LTD 가맹점명을 서비스 개선 제보 목록에서 제외",
+  });
+  await expect(domesticAliasButton).toHaveAttribute("aria-pressed", "true");
+  await expect(overseasAliasButton).toHaveAttribute("aria-pressed", "true");
   await expect(
     page.getByText(
-      "서비스 개선 제보 1건 · 문의 보내기 전에 익명으로 보낼 수 있어요"
+      "서비스 개선 제보 목록에 자동 포함됨"
+    )
+  ).toHaveCount(2);
+
+  await overseasAliasButton.click();
+  await expect(
+    page.getByRole("button", {
+      name: "QINGDAOQINGMAO TEST CO LTD 가맹점명을 서비스 개선 제보 목록에 다시 포함",
+    })
+  ).toHaveAttribute("aria-pressed", "false");
+  await expect(
+    page.getByText(
+      "서비스 개선 제보 목록 1건 · 마지막 단계에서 직접 보내기 전까지 전송되지 않아요"
     )
   ).toBeVisible();
+  await page
+    .getByRole("button", {
+      name: "QINGDAOQINGMAO TEST CO LTD 가맹점명을 서비스 개선 제보 목록에 다시 포함",
+    })
+    .click();
   expect(collectorBodies).toHaveLength(0);
   expect(mutationRequests).toHaveLength(0);
 
@@ -188,21 +210,38 @@ test("treats unmapped L4/L5 as normal and submits aliases only after consent", a
   await expect(
     page.getByRole("heading", { name: "문의에 담을 항목이 없어요" })
   ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "판단 제보" })
+  ).toContainText(
+    "DB 미등록 L4/L5 가맹점명 2건은 제보 목록에 자동으로 포함됐습니다."
+  );
   await page
-    .getByRole("button", { name: "내 판단으로 서비스 돕기 (1건)" })
+    .getByRole("button", { name: "서비스 개선 정보 보내기 (2건)" })
     .click();
 
-  await expect.poll(() => collectorBodies.length).toBe(1);
-  expect(mutationRequests).toEqual([COLLECTOR_URL]);
-  expect(collectorBodies[0]).toMatchObject({
-    merchant_raw_name: "유한회사 오로라비즈니스",
-    normalized_merchant_name: null,
-    user_action: "include",
-    detected_status: "ok_l5",
-    detected_confidence: "none",
-    point_type: "L4",
-  });
-  const serialized = JSON.stringify(collectorBodies[0]);
+  await expect.poll(() => collectorBodies.length).toBe(2);
+  expect(mutationRequests).toEqual([COLLECTOR_URL, COLLECTOR_URL]);
+  expect(collectorBodies).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        merchant_raw_name: "유한회사 오로라비즈니스",
+        normalized_merchant_name: null,
+        user_action: "include",
+        detected_status: "ok_l5",
+        detected_confidence: "none",
+        point_type: "L4",
+      }),
+      expect.objectContaining({
+        merchant_raw_name: "QINGDAOQINGMAO TEST CO LTD",
+        normalized_merchant_name: null,
+        user_action: "include",
+        detected_status: "ok_l5",
+        detected_confidence: "none",
+        point_type: "L5",
+      }),
+    ])
+  );
+  const serialized = JSON.stringify(collectorBodies);
   expect(serialized).not.toContain("180000");
   expect(serialized).not.toContain("grade-confirmed.xlsx");
 });
@@ -250,7 +289,7 @@ test("uploads locally and keeps feedback local until explicit submission", async
   await expect(page.getByRole("region", { name: "판단 제보" })).toHaveCount(0);
   await expect(
     page.getByText(
-      "서비스 개선 제보 1건 · 문의 보내기 전에 익명으로 보낼 수 있어요"
+      "서비스 개선 제보 목록 1건 · 마지막 단계에서 직접 보내기 전까지 전송되지 않아요"
     )
   ).toBeVisible();
 
@@ -263,8 +302,11 @@ test("uploads locally and keeps feedback local until explicit submission", async
     page.getByRole("region", { name: "문의 보내기 채널" })
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "내 판단으로 서비스 돕기 (1건)" })
+    page.getByRole("button", { name: "서비스 개선 정보 보내기 (1건)" })
   ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "판단 제보" })
+  ).not.toContainText("DB 미등록 L4/L5 가맹점명");
   expect(collectorBodies).toHaveLength(0);
   await page.getByRole("button", { name: "이전" }).click();
 
@@ -334,7 +376,7 @@ test("uploads locally and keeps feedback local until explicit submission", async
 
   await expect(page.getByText(/임시 익명 ID만/)).toBeVisible();
   await page
-    .getByRole("button", { name: "내 판단으로 서비스 돕기 (1건)" })
+    .getByRole("button", { name: "서비스 개선 정보 보내기 (1건)" })
     .click();
   await expect.poll(() => collectorBodies.length).toBe(1);
   expect(mutationRequests).toEqual([COLLECTOR_URL]);

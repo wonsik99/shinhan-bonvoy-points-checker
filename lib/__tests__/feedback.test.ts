@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  buildAutomaticAliasFeedback,
   isFeedbackPersistenceEnabled,
   submitJudgments,
   submitParseErrorReport,
@@ -91,6 +92,50 @@ describe("feedback persistence configuration", () => {
     installBrowser();
     expect(await submitJudgments([])).toBe(false);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("buildAutomaticAliasFeedback", () => {
+  it("preselects only DB-unmapped L4/L5 normal-accrual rows", () => {
+    const unknownClassification = {
+      isLikelyMarriott: false,
+      confidence: "none" as const,
+      status: "rejected" as const,
+      reason: "test",
+    };
+    const feedback = buildAutomaticAliasFeedback([
+      result({
+        id: "unknown-l4",
+        pointType: "L4",
+        analysisStatus: "ok_l5",
+        gradeConfirmedMarriott: true,
+        classification: unknownClassification,
+      }),
+      result({
+        id: "unknown-l5",
+        pointType: "L5",
+        analysisStatus: "ok_l5",
+        gradeConfirmedMarriott: true,
+        classification: unknownClassification,
+      }),
+      result({
+        id: "known-l5",
+        pointType: "L5",
+        analysisStatus: "ok_l5",
+        gradeConfirmedMarriott: true,
+      }),
+      result({
+        id: "unknown-l1",
+        pointType: "L1",
+        analysisStatus: "not_marriott",
+        classification: unknownClassification,
+      }),
+    ]);
+
+    expect(feedback).toEqual({
+      "unknown-l4": "include",
+      "unknown-l5": "include",
+    });
   });
 });
 
