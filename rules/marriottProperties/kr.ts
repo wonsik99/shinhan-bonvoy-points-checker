@@ -194,16 +194,22 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("AC HOTEL SEOUL GEUMJEONG"),
     contains("AC호텔서울금정"),
     contains("에이씨호텔서울금정"),
+    // Shinhan statement merchant for AC Hotel Seoul Geumjeong
+    contains("프라임아이티"),
   ]),
   korea("kr-courtyard-suwon", "Courtyard by Marriott Suwon", "Courtyard by Marriott", [
     contains("COURTYARD MARRIOTT SUWON"),
     contains("COURTYARD BY MARRIOTT SUWON"),
     contains("코트야드메리어트수원"),
+    // Shinhan statement merchant for Courtyard by Marriott Suwon
+    contains("에스엘지수원"),
   ]),
   korea("kr-four-points-suwon", "Four Points by Sheraton Suwon", "Four Points by Sheraton", [
     contains("FOUR POINTS SHERATON SUWON"),
     contains("FOUR POINTS SUWON"),
     contains("포포인츠수원"),
+    // Shinhan statement merchant for Four Points by Sheraton Suwon
+    contains("성문더플레이스"),
   ]),
   korea("kr-sheraton-grand-incheon", "Sheraton Grand Incheon Hotel", "Sheraton", [
     contains("SHERATON GRAND INCHEON"),

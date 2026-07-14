@@ -50,6 +50,12 @@ export interface AnalysisResult extends NormalizedTransaction {
   userFeedback?: UserFeedbackAction;
   effectiveIncluded: boolean;
   /**
+   * True when the statement itself carries this card profile's Marriott
+   * special-accrual grade (currently L4 or L5). This is transaction evidence,
+   * independent of whether the merchant-name rule database recognized it.
+   */
+  gradeConfirmedMarriott?: boolean;
+  /**
    * True when the user manually flagged an otherwise-unmatched (not_marriott)
    * transaction as a Marriott property — the false-negative rescue path.
    */

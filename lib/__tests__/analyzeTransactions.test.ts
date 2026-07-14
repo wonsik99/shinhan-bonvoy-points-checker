@@ -59,18 +59,47 @@ describe("analyzeTransactions", () => {
     expect(result.effectiveIncluded).toBe(false);
   });
 
+  it.each(["L4", "L5"])(
+    "treats an unmapped %s merchant as Marriott confirmed by the statement grade",
+    (pointType) => {
+      const [result] = analyzeTransactions([
+        tx({
+          merchantName: "OPAQUE MERCHANT CO LTD",
+          pointType,
+          actualPoints: 1049,
+        }),
+      ]);
+
+      expect(result.classification.isLikelyMarriott).toBe(false);
+      expect(result.analysisStatus).toBe("ok_l5");
+      expect(result.gradeConfirmedMarriott).toBe(true);
+      expect(result.effectiveIncluded).toBe(false);
+    }
+  );
+
   it("marks canceled rows as canceled regardless of merchant", () => {
-    const [result] = analyzeTransactions([tx({ isCanceled: true })]);
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "OPAQUE MERCHANT CO LTD",
+        pointType: "L5",
+        isCanceled: true,
+      }),
+    ]);
     expect(result.analysisStatus).toBe("canceled");
+    expect(result.gradeConfirmedMarriott).toBeUndefined();
     expect(result.effectiveIncluded).toBe(false);
   });
 
-  it("marks non-Marriott merchants as not_marriott", () => {
-    const [result] = analyzeTransactions([
-      tx({ merchantName: "ZIPPY AUTO WASH - ELLSWO" }),
-    ]);
-    expect(result.analysisStatus).toBe("not_marriott");
-  });
+  it.each(["L1", "L2", "L3"])(
+    "keeps an unmapped %s merchant outside the Marriott set",
+    (pointType) => {
+      const [result] = analyzeTransactions([
+        tx({ merchantName: "ZIPPY AUTO WASH - ELLSWO", pointType }),
+      ]);
+      expect(result.analysisStatus).toBe("not_marriott");
+      expect(result.gradeConfirmedMarriott).toBeUndefined();
+    }
+  );
 
   it("sends medium-confidence merchants to needs_review, not missing", () => {
     const [result] = analyzeTransactions([
@@ -157,12 +186,13 @@ describe("domestic Marriott (L4) handling", () => {
     expect(result.analysisStatus).toBe("missing_suspected");
   });
 
-  it("keeps L4 on an overseas Marriott merchant in review", () => {
+  it("treats L4 on an overseas Marriott merchant as a confirmed special grade", () => {
     const [result] = analyzeTransactions([
       tx({ pointType: "L4", actualPoints: 839 }),
     ]);
-    expect(result.analysisStatus).toBe("needs_review");
-    expect(result.difference).toBe(1049 - 839);
+    expect(result.analysisStatus).toBe("ok_l5");
+    expect(result.gradeConfirmedMarriott).toBe(true);
+    expect(result.difference).toBeUndefined();
     expect(result.effectiveIncluded).toBe(false);
   });
 
@@ -278,33 +308,6 @@ describe("user-designated Marriott (false-negative rescue)", () => {
     expect(reverted.analysisStatus).toBe("not_marriott");
   });
 
-  it("does not fabricate missing points when the row was already well-credited", () => {
-    const wellCredited = tx({
-      merchantName: "SAMMAEBONG CO LTD",
-      eligibleAmount: 600000,
-      pointType: "L5",
-      actualPoints: 3000,
-    });
-    const results = analyzeTransactions([wellCredited]);
-    const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
-    expect(flagged.difference).toBe(0);
-    expect(flagged.effectiveIncluded).toBe(false);
-  });
-
-  it("keeps user-designated L4 rows on the domestic expected grade", () => {
-    const domesticCredited = tx({
-      merchantName: "SAMMAEBONG CO LTD",
-      eligibleAmount: 600000,
-      pointType: "L4",
-      actualPoints: 3000,
-    });
-    const results = analyzeTransactions([domesticCredited]);
-    const [flagged] = applyFeedback(results, { [results[0].id]: "include" });
-    expect(flagged.expectedPointType).toBe("L4");
-    expect(flagged.difference).toBe(0);
-    expect(flagged.effectiveIncluded).toBe(false);
-  });
-
   it("uses L1 -> L4 for user-designated unmatched domestic-looking fallback rows", () => {
     const domesticFallback = tx({
       merchantName: "SAMMAEBONG CO LTD",
@@ -319,6 +322,32 @@ describe("user-designated Marriott (false-negative rescue)", () => {
     expect(flagged.difference).toBe(2400);
     expect(flagged.effectiveIncluded).toBe(true);
   });
+});
+
+describe("grade-confirmed alias feedback", () => {
+  it.each(["L4", "L5"])(
+    "queues an unmapped %s merchant without changing inquiry totals",
+    (pointType) => {
+      const results = analyzeTransactions([
+        tx({
+          merchantName: "SAMMAEBONG CO LTD",
+          eligibleAmount: 600000,
+          pointType,
+          actualPoints: 3000,
+        }),
+      ]);
+      const [selected] = applyFeedback(results, {
+        [results[0].id]: "include",
+      });
+
+      expect(selected.analysisStatus).toBe("ok_l5");
+      expect(selected.gradeConfirmedMarriott).toBe(true);
+      expect(selected.userFeedback).toBe("include");
+      expect(selected.userDesignatedMarriott).toBeUndefined();
+      expect(selected.difference).toBeUndefined();
+      expect(selected.effectiveIncluded).toBe(false);
+    }
+  );
 });
 
 describe("summarizeResults", () => {
@@ -386,7 +415,12 @@ describe("summarizeResults", () => {
 
   it("sums already-credited points over ok_l5 rows only", () => {
     const results = analyzeTransactions([
-      tx({ id: "ok-overseas", pointType: "L5", actualPoints: 2500 }),
+      tx({
+        id: "ok-overseas",
+        merchantName: "OPAQUE MERCHANT CO LTD",
+        pointType: "L5",
+        actualPoints: 2500,
+      }),
       tx({
         id: "ok-domestic",
         merchantName: "웨스틴조선서울",
@@ -399,6 +433,7 @@ describe("summarizeResults", () => {
     const summary = summarizeResults(results);
 
     expect(summary.okL5Count).toBe(2);
+    expect(summary.marriottCount).toBe(4);
     // Only the two ok_l5 rows contribute; missing/canceled are ignored.
     expect(summary.okAccruedPoints).toBe(3500);
   });

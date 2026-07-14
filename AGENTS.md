@@ -60,9 +60,9 @@ google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내
 next.config.ts          CSP 헤더 (connect-src 'self' + Apps Script 수집기 도메인 자동 추가)
 ```
 
-분석 규칙 요점: 취소→canceled / 비메리어트→not_marriott / 정상등급(국내 L4·L5, 해외 L5)→ok_l5 / 확신(certain·high)+정상 누락 패턴(국내 L1→L4, 해외 L2→L5)+양수차이→missing_suspected / 그 외→needs_review. `effectiveIncluded` = missing_suspected(제외 안 한 것) + 사용자가 ✅포함한 needs_review.
+분석 규칙 요점: 취소→canceled / L4·L5는 가맹점명 DB 인식 여부와 관계없이 ok_l5 / 그 외 비메리어트→not_marriott / 확신(certain·high)+정상 누락 패턴(국내 L1→L4, 해외 L2→L5)+양수차이→missing_suspected / 그 외→needs_review. `effectiveIncluded` = missing_suspected(제외 안 한 것) + 사용자가 ✅포함한 needs_review.
 
-**피드백 전송 모델**: ✅/❌/모르겠음 버튼은 로컬 상태(합계·문의 문구)만 바꾼다. 실제 시트 전송은 절대 버튼 클릭마다 하지 않고, 사용자가 명시적으로 "내 판단으로 서비스 돕기" 버튼을 누를 때 최종 판단만 한 번에 `submitJudgments`로 보낸다(고민 중 클릭이 노이즈로 안 남게). 파싱 실패 제보도 별도 버튼(명시적). 둘 다 collector env 없으면 no-op/복사 fallback.
+**피드백 전송 모델**: ✅/❌/모르겠음 버튼은 로컬 상태(합계·문의 문구)만 바꾼다. DB 미등록 L4/L5 가맹점명은 업로드 분석 시 로컬 제보 목록에 자동 포함되며 사용자가 제외할 수 있다. 실제 시트 전송은 절대 분석·선택 시점에 하지 않고, 사용자가 마지막 단계에서 명시적으로 "서비스 개선 정보 보내기" 버튼을 누를 때 목록의 최종 내용만 한 번에 `submitJudgments`로 보낸다. 파싱 실패 제보도 별도 버튼(명시적). 둘 다 collector env 없으면 no-op/복사 fallback.
 
 **False-negative 구제**: 앱이 아예 못 잡은(not_marriott) 거래를 사용자가 전체 거래 표에서 "🏨 메리어트로 표시"하면, `applyFeedback`이 예상 포인트를 계산해 `userDesignatedMarriott`로 마킹하고 합계·문의 문구에 반영(status는 not_marriott 유지 → 전체 거래 표에서 토글). 시트엔 detected_status="user_designated"로 전송돼 규칙 후보 중 최우선 신호가 됨.
 

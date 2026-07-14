@@ -60,6 +60,23 @@ export function analyzeTransactions(
       };
     }
 
+    // For the active card profile, the statement's Marriott special-accrual
+    // grades are stronger transaction evidence than merchant-name matching.
+    // Keep the raw classification intact so an unmapped merchant can still be
+    // identified as an alias candidate without misrepresenting a DB match.
+    const gradeConfirmedMarriott =
+      tx.pointType === activeCardProfile.domesticGrade ||
+      tx.pointType === activeCardProfile.overseasGrade;
+    if (gradeConfirmedMarriott) {
+      return {
+        ...tx,
+        classification,
+        analysisStatus: "ok_l5" as const,
+        effectiveIncluded: false,
+        gradeConfirmedMarriott: true,
+      };
+    }
+
     const isMarriottish =
       classification.isLikelyMarriott ||
       classification.status === "needs_review";
@@ -74,20 +91,6 @@ export function analyzeTransactions(
     }
 
     const isDomestic = classification.region === "domestic";
-
-    // Domestic Marriott accrues as L4, overseas as L5 — both 5P/1,000원.
-    // Either grade on a matching merchant means the special accrual applied.
-    const properGrades = isDomestic
-      ? [activeCardProfile.domesticGrade, activeCardProfile.overseasGrade]
-      : [activeCardProfile.overseasGrade];
-    if (properGrades.includes(tx.pointType)) {
-      return {
-        ...tx,
-        classification,
-        analysisStatus: "ok_l5" as const,
-        effectiveIncluded: false,
-      };
-    }
 
     const expectedPointType = expectedPointTypeForRegion(isDomestic);
     const fallbackPointType = fallbackPointTypeForRegion(isDomestic);
@@ -196,8 +199,9 @@ export function summarizeResults(results: AnalysisResult[]): AnalysisSummary {
   const included = results.filter((r) => r.effectiveIncluded);
   return {
     totalCount: results.length,
-    marriottCount: results.filter((r) => r.classification.isLikelyMarriott)
-      .length,
+    marriottCount: results.filter(
+      (r) => r.classification.isLikelyMarriott || r.gradeConfirmedMarriott
+    ).length,
     okL5Count: results.filter((r) => r.analysisStatus === "ok_l5").length,
     okAccruedPoints: results
       .filter((r) => r.analysisStatus === "ok_l5")

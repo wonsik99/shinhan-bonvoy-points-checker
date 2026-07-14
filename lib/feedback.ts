@@ -15,6 +15,35 @@ export function isFeedbackPersistenceEnabled(): boolean {
   return getEndpoint() !== null;
 }
 
+export function isAutomaticAliasFeedbackCandidate(
+  result: AnalysisResult
+): boolean {
+  return (
+    result.analysisStatus === "ok_l5" &&
+    result.gradeConfirmedMarriott === true &&
+    !result.classification.isLikelyMarriott
+  );
+}
+
+/**
+ * Preselect only transactions whose L4/L5 statement grade confirms Marriott
+ * special accrual while the merchant-name database still has no match. This
+ * changes local UI state only; submitJudgments remains the sole network path.
+ */
+export function buildAutomaticAliasFeedback(
+  results: AnalysisResult[]
+): Record<string, UserFeedbackAction> {
+  const feedbackById: Record<string, UserFeedbackAction> = {};
+
+  for (const result of results) {
+    if (isAutomaticAliasFeedbackCandidate(result)) {
+      feedbackById[result.id] = "include";
+    }
+  }
+
+  return feedbackById;
+}
+
 function getAnonymousSessionId(): string {
   try {
     // sessionStorage (not localStorage) so the id dies with the tab session —

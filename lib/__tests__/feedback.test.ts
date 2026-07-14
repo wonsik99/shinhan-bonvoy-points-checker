@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  buildAutomaticAliasFeedback,
   isFeedbackPersistenceEnabled,
   submitJudgments,
   submitParseErrorReport,
@@ -91,6 +92,50 @@ describe("feedback persistence configuration", () => {
     installBrowser();
     expect(await submitJudgments([])).toBe(false);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("buildAutomaticAliasFeedback", () => {
+  it("preselects only DB-unmapped L4/L5 normal-accrual rows", () => {
+    const unknownClassification = {
+      isLikelyMarriott: false,
+      confidence: "none" as const,
+      status: "rejected" as const,
+      reason: "test",
+    };
+    const feedback = buildAutomaticAliasFeedback([
+      result({
+        id: "unknown-l4",
+        pointType: "L4",
+        analysisStatus: "ok_l5",
+        gradeConfirmedMarriott: true,
+        classification: unknownClassification,
+      }),
+      result({
+        id: "unknown-l5",
+        pointType: "L5",
+        analysisStatus: "ok_l5",
+        gradeConfirmedMarriott: true,
+        classification: unknownClassification,
+      }),
+      result({
+        id: "known-l5",
+        pointType: "L5",
+        analysisStatus: "ok_l5",
+        gradeConfirmedMarriott: true,
+      }),
+      result({
+        id: "unknown-l1",
+        pointType: "L1",
+        analysisStatus: "not_marriott",
+        classification: unknownClassification,
+      }),
+    ]);
+
+    expect(feedback).toEqual({
+      "unknown-l4": "include",
+      "unknown-l5": "include",
+    });
   });
 });
 
@@ -188,6 +233,35 @@ describe("submitJudgments", () => {
       normalized_merchant_name: null,
       detected_status: "user_designated",
       point_type: null,
+    });
+  });
+
+  it("submits an unmapped grade-confirmed merchant as ok_l5 metadata", async () => {
+    vi.stubEnv("NEXT_PUBLIC_APPS_SCRIPT_URL", ENDPOINT);
+    installBrowser("sid-existing");
+    const fetchMock = installFetch();
+
+    const gradeConfirmed = result({
+      merchantName: "OPAQUE MERCHANT CO LTD",
+      pointType: "L4",
+      analysisStatus: "ok_l5",
+      gradeConfirmedMarriott: true,
+      classification: {
+        isLikelyMarriott: false,
+        confidence: "none",
+        status: "rejected",
+        reason: "test",
+      },
+    });
+    await submitJudgments([{ result: gradeConfirmed, action: "include" }]);
+
+    expect(requestBody(fetchMock)).toMatchObject({
+      merchant_raw_name: "OPAQUE MERCHANT CO LTD",
+      normalized_merchant_name: null,
+      user_action: "include",
+      detected_status: "ok_l5",
+      detected_confidence: "none",
+      point_type: "L4",
     });
   });
 

@@ -9,17 +9,21 @@ interface OkAccrualTransactionsProps {
   rows: AnalysisResult[];
   /** Total points already credited on these rows (summary.okAccruedPoints). */
   earnedPoints: number;
+  collectionEnabled: boolean;
+  onToggleAliasFeedback: (row: AnalysisResult) => void;
 }
 
 /**
- * Collapsed-by-default list of correctly-accrued Marriott payments. It needs
- * no user action — it exists for reassurance and completeness: showing what the
- * card credited correctly makes the missing/review flags more trustworthy and
- * balances the "덜 적립된 것 같아요" headline with the points already earned.
+ * Collapsed-by-default list of correctly-accrued Marriott payments. When an
+ * L4/L5 grade confirms the transaction but the merchant DB did not recognize
+ * its name, that name is preselected locally for service improvement. The user
+ * can opt out here; nothing is transmitted until the final explicit action.
  */
 export default function OkAccrualTransactions({
   rows,
   earnedPoints,
+  collectionEnabled,
+  onToggleAliasFeedback,
 }: OkAccrualTransactionsProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -60,25 +64,69 @@ export default function OkAccrualTransactions({
           id="ok-accrual-content"
           className="divide-y divide-hairline border-t border-hairline"
         >
-          {rows.map((row) => (
-            <article
-              key={row.id}
-              className="flex items-center justify-between gap-3 px-5 py-4"
-            >
-              <div className="min-w-0 flex-1">
-                <h3 className="break-words text-sm font-medium text-ink">
-                  {row.merchantName}
-                </h3>
-                <p className="mt-1 break-words text-xs leading-5 tabular-nums text-muted">
-                  {row.transactionDate ?? "-"} · {formatKrw(row.originalAmount)} ·{" "}
-                  {row.pointType || "-"}
-                </p>
-              </div>
-              <p className="shrink-0 text-sm font-semibold tabular-nums text-emerald-700">
-                +{formatNumber(row.actualPoints)}P
-              </p>
-            </article>
-          ))}
+          {rows.map((row) => {
+            const aliasCandidate =
+              row.gradeConfirmedMarriott === true &&
+              !row.classification.isLikelyMarriott;
+            const selectedForFeedback = row.userFeedback === "include";
+
+            return (
+              <article key={row.id} className="px-5 py-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="break-words text-sm font-medium text-ink">
+                      {row.merchantName}
+                    </h3>
+                    <p className="mt-1 break-words text-xs leading-5 tabular-nums text-muted">
+                      {row.transactionDate ?? "-"} · {formatKrw(row.originalAmount)} ·{" "}
+                      {row.pointType || "-"}
+                    </p>
+                    {aliasCandidate ? (
+                      <>
+                        <p className="mt-1.5 text-xs leading-5 text-ink-soft">
+                          명세서 {row.pointType} 등급으로 메리어트 특별적립 확인 ·
+                          가맹점명은 DB 미등록
+                        </p>
+                        {collectionEnabled ? (
+                          <p className="mt-1 text-xs leading-5 text-muted">
+                            {selectedForFeedback
+                              ? "서비스 개선 제보 목록에 자동 포함됨"
+                              : "서비스 개선 제보 목록에서 제외됨"}
+                          </p>
+                        ) : null}
+                      </>
+                    ) : null}
+                  </div>
+                  <div className="flex shrink-0 items-center justify-between gap-3 sm:flex-col sm:items-end">
+                    <p className="text-sm font-semibold tabular-nums text-emerald-700">
+                      +{formatNumber(row.actualPoints)}P
+                    </p>
+                    {aliasCandidate && collectionEnabled ? (
+                      <button
+                        type="button"
+                        onClick={() => onToggleAliasFeedback(row)}
+                        aria-pressed={selectedForFeedback}
+                        aria-label={
+                          selectedForFeedback
+                            ? `${row.merchantName} 가맹점명을 서비스 개선 제보 목록에서 제외`
+                            : `${row.merchantName} 가맹점명을 서비스 개선 제보 목록에 다시 포함`
+                        }
+                        className={`min-h-11 rounded-full border px-4 text-xs font-medium transition ${
+                          selectedForFeedback
+                            ? "border-ember/40 bg-ember-soft text-ember-deep"
+                            : "border-line bg-white text-ink-soft hover:border-ember hover:text-ember"
+                        }`}
+                      >
+                        {selectedForFeedback
+                          ? "제보 목록에서 제외"
+                          : "제보 목록에 다시 포함"}
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </div>
