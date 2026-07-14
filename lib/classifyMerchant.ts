@@ -8,6 +8,7 @@ import {
   sharedMarriottMerchantRules,
   type MarriottProperty,
   type MarriottPropertyAlias,
+  type MarriottPropertyAliasSource,
   type SharedMarriottMerchantRule,
 } from "@/rules/marriott";
 import { defaultPropertyAliasMatch } from "@/rules/marriottProperties/helpers";
@@ -45,6 +46,7 @@ function matchesKorean(normalizedNoSpace: string, keyword: string): boolean {
 interface CompiledPropertyAlias {
   property: MarriottProperty;
   alias: MarriottPropertyAlias;
+  source: MarriottPropertyAliasSource | "official" | "local";
   normalized: string;
   compact: string;
 }
@@ -52,6 +54,16 @@ interface CompiledPropertyAlias {
 interface CompiledSharedMerchantRule {
   rule: SharedMarriottMerchantRule;
   compact: string;
+}
+
+interface PropertyAliasMatch {
+  compiled: CompiledPropertyAlias;
+  isFullMatch: boolean;
+}
+
+interface SharedMerchantRuleMatch {
+  compiled: CompiledSharedMerchantRule;
+  isFullMatch: boolean;
 }
 
 /**
@@ -68,83 +80,6 @@ function compactMatchKeyFromNormalized(normalized: string): string {
 
 function aliasKey(value: string): string {
   return compactMatchKeyFromNormalized(normalizeMerchantName(value));
-}
-
-const sharedMerchantRules = sharedMarriottMerchantRules.map(
-  (rule): CompiledSharedMerchantRule => ({
-    rule,
-    compact: aliasKey(rule.pattern),
-  })
-);
-
-const exactSharedMerchantRules = new Map<string, CompiledSharedMerchantRule[]>();
-const containsSharedMerchantRulesByFirstChar = new Map<
-  string,
-  CompiledSharedMerchantRule[]
->();
-
-for (const compiled of sharedMerchantRules) {
-  const match =
-    compiled.rule.match ??
-    defaultPropertyAliasMatch(compiled.rule.pattern);
-  if (match === "exact") {
-    const matches = exactSharedMerchantRules.get(compiled.compact) ?? [];
-    matches.push(compiled);
-    exactSharedMerchantRules.set(compiled.compact, matches);
-    continue;
-  }
-
-  const firstChar = compiled.compact[0];
-  if (!firstChar) {
-    continue;
-  }
-  const matches =
-    containsSharedMerchantRulesByFirstChar.get(firstChar) ?? [];
-  matches.push(compiled);
-  containsSharedMerchantRulesByFirstChar.set(firstChar, matches);
-}
-
-const propertyAliases = marriottProperties.flatMap((property) =>
-  [
-    { value: property.officialName },
-    ...(property.localName
-      ? [{ value: property.localName }]
-      : []),
-    ...property.aliases,
-  ].map(
-    (alias): CompiledPropertyAlias => {
-      const match = alias.match ?? defaultPropertyAliasMatch(alias.value);
-      return {
-        property,
-        alias: { ...alias, match },
-        normalized: normalizeMerchantName(alias.value),
-        compact: aliasKey(alias.value),
-      };
-    }
-  )
-);
-
-const exactPropertyAliases = new Map<string, CompiledPropertyAlias[]>();
-const containsPropertyAliasesByFirstChar = new Map<
-  string,
-  CompiledPropertyAlias[]
->();
-
-for (const compiled of propertyAliases) {
-  if (compiled.alias.match === "exact") {
-    const matches = exactPropertyAliases.get(compiled.compact) ?? [];
-    matches.push(compiled);
-    exactPropertyAliases.set(compiled.compact, matches);
-    continue;
-  }
-
-  const firstChar = compiled.compact[0];
-  if (!firstChar) {
-    continue;
-  }
-  const matches = containsPropertyAliasesByFirstChar.get(firstChar) ?? [];
-  matches.push(compiled);
-  containsPropertyAliasesByFirstChar.set(firstChar, matches);
 }
 
 function propertyAliasToClassification(
@@ -169,45 +104,121 @@ function propertyAliasToClassification(
   };
 }
 
-function matchPropertyAlias(
-  normalized: string
+const propertyAliasSourcePriority: Record<
+  CompiledPropertyAlias["source"],
+  number
+> = {
+  explicit: 3,
+  official: 2,
+  local: 2,
+  derived: 1,
+};
+
+function comparePropertyAliasMatchPriority(
+  left: PropertyAliasMatch,
+  right: PropertyAliasMatch
+): number {
+  if (left.isFullMatch !== right.isFullMatch) {
+    return Number(left.isFullMatch) - Number(right.isFullMatch);
+  }
+
+  const sourceDifference =
+    propertyAliasSourcePriority[left.compiled.source] -
+    propertyAliasSourcePriority[right.compiled.source];
+  if (sourceDifference !== 0) {
+    return sourceDifference;
+  }
+
+  return left.compiled.compact.length - right.compiled.compact.length;
+}
+
+function compareText(left: string, right: string): number {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
+function uniqueSorted(values: string[]): string[] {
+  return [...new Set(values)].sort(compareText);
+}
+
+function ambiguousPropertyMatchesToClassification(
+  matches: PropertyAliasMatch[]
+): MerchantClassification {
+  const properties = [
+    ...new Map(
+      [...matches]
+        .sort((left, right) =>
+          compareText(left.compiled.property.id, right.compiled.property.id)
+        )
+        .map(({ compiled }) => [compiled.property.id, compiled.property])
+    ).values(),
+  ];
+  const propertyNames = uniqueSorted(
+    properties.map((property) => property.officialName)
+  );
+  const patterns = uniqueSorted(
+    matches.map(({ compiled }) => compiled.alias.value)
+  );
+  const regions = new Set(properties.map((property) => property.region));
+  const isLikelyMarriott = matches.every(({ compiled }) => {
+    const brandGroup =
+      compiled.alias.brandGroup ??
+      compiled.property.brandGroup ??
+      "marriott";
+    return brandGroup === "marriott";
+  });
+  const candidateSummary =
+    propertyNames.length > 1
+      ? ` 후보: ${propertyNames.slice(0, 3).join(" / ")}${
+          propertyNames.length > 3 ? ` 외 ${propertyNames.length - 3}곳` : ""
+        }.`
+      : "";
+
+  return {
+    isLikelyMarriott,
+    confidence: "medium",
+    status: "needs_review",
+    normalizedName:
+      propertyNames.length > 1
+        ? propertyNames.slice(0, 3).join(" / ")
+        : undefined,
+    matchedPattern: patterns.slice(0, 3).join(" / "),
+    reason: `동일한 우선순위의 호텔 후보 ${properties.length}곳과 일치해 정확한 호텔 확인이 필요합니다.${candidateSummary}`,
+    region: regions.size === 1 ? properties[0]?.region : undefined,
+  };
+}
+
+function selectBestPropertyAliasMatch(
+  matches: PropertyAliasMatch[]
 ): MerchantClassification | undefined {
-  const compact = compactMatchKeyFromNormalized(normalized);
-  const exactMatches = exactPropertyAliases.get(compact);
-  if (exactMatches?.[0]) {
-    return propertyAliasToClassification(exactMatches[0]);
+  if (matches.length === 0) {
+    return undefined;
   }
 
-  const checkedAliases = new Set<string>();
-  for (const char of new Set(compact)) {
-    const bucket = containsPropertyAliasesByFirstChar.get(char);
-    if (!bucket) {
-      continue;
-    }
-
-    for (const compiled of bucket) {
-      if (checkedAliases.has(compiled.compact)) {
-        continue;
-      }
-      checkedAliases.add(compiled.compact);
-
-      // Single-token short ASCII aliases (e.g. TIAD) use word boundaries so
-      // FOOTIAD does not match. Spaced short aliases (e.g. "L ESCAPE") and
-      // longer aliases keep space-insensitive compact contains for truncation.
-      const isShortAsciiToken =
-        compiled.compact.length < 8 && /^[A-Z0-9]+$/.test(compiled.compact);
-      const aliasHasSpaces = compiled.normalized.includes(" ");
-      const matched =
-        isShortAsciiToken && !aliasHasSpaces
-          ? matchesKeyword(normalized, compiled.normalized)
-          : compact.includes(compiled.compact);
-      if (matched) {
-        return propertyAliasToClassification(compiled);
-      }
+  let best = matches[0];
+  for (const match of matches.slice(1)) {
+    if (comparePropertyAliasMatchPriority(match, best) > 0) {
+      best = match;
     }
   }
 
-  return undefined;
+  const topMatches = matches.filter(
+    (match) => comparePropertyAliasMatchPriority(match, best) === 0
+  );
+  const propertyIds = new Set(
+    topMatches.map(({ compiled }) => compiled.property.id)
+  );
+  if (propertyIds.size > 1) {
+    return ambiguousPropertyMatchesToClassification(topMatches);
+  }
+
+  const selected = [...topMatches].sort(
+    (left, right) =>
+      compareText(left.compiled.alias.value, right.compiled.alias.value) ||
+      compareText(left.compiled.source, right.compiled.source)
+  )[0];
+  return propertyAliasToClassification(selected.compiled);
 }
 
 function sharedMerchantRuleToClassification(
@@ -225,35 +236,249 @@ function sharedMerchantRuleToClassification(
   };
 }
 
-function matchSharedMerchantRule(
-  normalized: string
-): MerchantClassification | undefined {
-  const compact = compactMatchKeyFromNormalized(normalized);
-  const exactMatch = exactSharedMerchantRules.get(compact)?.[0];
-  if (exactMatch) {
-    return sharedMerchantRuleToClassification(exactMatch);
+function compareSharedMerchantRuleMatchPriority(
+  left: SharedMerchantRuleMatch,
+  right: SharedMerchantRuleMatch
+): number {
+  if (left.isFullMatch !== right.isFullMatch) {
+    return Number(left.isFullMatch) - Number(right.isFullMatch);
   }
 
-  const checkedRules = new Set<string>();
-  for (const char of new Set(compact)) {
-    const bucket = containsSharedMerchantRulesByFirstChar.get(char);
-    if (!bucket) {
+  return left.compiled.compact.length - right.compiled.compact.length;
+}
+
+function selectBestSharedMerchantRuleMatch(
+  matches: SharedMerchantRuleMatch[]
+): MerchantClassification | undefined {
+  if (matches.length === 0) {
+    return undefined;
+  }
+
+  let best = matches[0];
+  for (const match of matches.slice(1)) {
+    if (compareSharedMerchantRuleMatchPriority(match, best) > 0) {
+      best = match;
+    }
+  }
+
+  const topMatches = matches.filter(
+    (match) => compareSharedMerchantRuleMatchPriority(match, best) === 0
+  );
+  const ruleKeys = new Set(
+    topMatches.map(({ compiled }) =>
+      JSON.stringify({
+        pattern: compiled.rule.pattern,
+        normalizedName: compiled.rule.normalizedName,
+        propertyIds: [...compiled.rule.propertyIds].sort(compareText),
+      })
+    )
+  );
+  if (ruleKeys.size > 1) {
+    const names = uniqueSorted(
+      topMatches.map(({ compiled }) => compiled.rule.normalizedName)
+    );
+    const patterns = uniqueSorted(
+      topMatches.map(({ compiled }) => compiled.rule.pattern)
+    );
+    const regions = new Set(
+      topMatches.map(({ compiled }) => compiled.rule.region)
+    );
+    return {
+      isLikelyMarriott: topMatches.every(
+        ({ compiled }) => compiled.rule.brandGroup === "marriott"
+      ),
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: names.slice(0, 3).join(" / "),
+      matchedPattern: patterns.slice(0, 3).join(" / "),
+      reason:
+        "동일한 우선순위의 공용 가맹점 규칙이 여러 개 일치해 정확한 호텔 확인이 필요합니다.",
+      region:
+        regions.size === 1 ? topMatches[0].compiled.rule.region : undefined,
+    };
+  }
+
+  const selected = [...topMatches].sort((left, right) =>
+    compareText(left.compiled.rule.pattern, right.compiled.rule.pattern)
+  )[0];
+  return sharedMerchantRuleToClassification(selected.compiled);
+}
+
+/** Builds an indexed matcher whose result does not depend on property order. */
+export function createPropertyAliasMatcher(
+  properties: MarriottProperty[]
+): (normalized: string) => MerchantClassification | undefined {
+  const propertyAliases = properties.flatMap((property) => {
+    const aliases: Array<{
+      alias: MarriottPropertyAlias;
+      source: CompiledPropertyAlias["source"];
+    }> = [
+      { alias: { value: property.officialName }, source: "official" },
+      ...(property.localName
+        ? [
+            {
+              alias: { value: property.localName },
+              source: "local" as const,
+            },
+          ]
+        : []),
+      ...property.aliases.map((alias) => ({
+        alias,
+        source: alias.source ?? ("explicit" as const),
+      })),
+    ];
+
+    return aliases.map(({ alias, source }): CompiledPropertyAlias => {
+      const match = alias.match ?? defaultPropertyAliasMatch(alias.value);
+      return {
+        property,
+        alias: { ...alias, match },
+        source,
+        normalized: normalizeMerchantName(alias.value),
+        compact: aliasKey(alias.value),
+      };
+    });
+  });
+  const exactPropertyAliases = new Map<string, CompiledPropertyAlias[]>();
+  const containsPropertyAliasesByFirstChar = new Map<
+    string,
+    CompiledPropertyAlias[]
+  >();
+
+  for (const compiled of propertyAliases) {
+    if (compiled.alias.match === "exact") {
+      const matches = exactPropertyAliases.get(compiled.compact) ?? [];
+      matches.push(compiled);
+      exactPropertyAliases.set(compiled.compact, matches);
       continue;
     }
 
-    for (const compiled of bucket) {
-      if (checkedRules.has(compiled.compact)) {
-        continue;
-      }
-      checkedRules.add(compiled.compact);
-      if (compact.includes(compiled.compact)) {
-        return sharedMerchantRuleToClassification(compiled);
-      }
+    const firstChar = compiled.compact[0];
+    if (!firstChar) {
+      continue;
     }
+    const matches = containsPropertyAliasesByFirstChar.get(firstChar) ?? [];
+    matches.push(compiled);
+    containsPropertyAliasesByFirstChar.set(firstChar, matches);
   }
 
-  return undefined;
+  return (normalized) => {
+    const compact = compactMatchKeyFromNormalized(normalized);
+    const matches: PropertyAliasMatch[] = (
+      exactPropertyAliases.get(compact) ?? []
+    ).map((compiled) => ({ compiled, isFullMatch: true }));
+    const checkedAliases = new Set<CompiledPropertyAlias>();
+
+    for (const char of new Set(compact)) {
+      const bucket = containsPropertyAliasesByFirstChar.get(char);
+      if (!bucket) {
+        continue;
+      }
+
+      for (const compiled of bucket) {
+        if (checkedAliases.has(compiled)) {
+          continue;
+        }
+        checkedAliases.add(compiled);
+
+        // Single-token short ASCII aliases (e.g. TIAD) use word boundaries so
+        // FOOTIAD does not match. Spaced short aliases (e.g. "L ESCAPE") and
+        // longer aliases keep space-insensitive compact contains for truncation.
+        const isShortAsciiToken =
+          compiled.compact.length < 8 && /^[A-Z0-9]+$/.test(compiled.compact);
+        const aliasHasSpaces = compiled.normalized.includes(" ");
+        const matched =
+          isShortAsciiToken && !aliasHasSpaces
+            ? matchesKeyword(normalized, compiled.normalized)
+            : compact.includes(compiled.compact);
+        if (matched) {
+          matches.push({
+            compiled,
+            isFullMatch: compact === compiled.compact,
+          });
+        }
+      }
+    }
+
+    return selectBestPropertyAliasMatch(matches);
+  };
 }
+
+/** Builds an indexed matcher whose result does not depend on rule order. */
+export function createSharedMerchantRuleMatcher(
+  rules: SharedMarriottMerchantRule[]
+): (normalized: string) => MerchantClassification | undefined {
+  const sharedMerchantRules = rules.map(
+    (rule): CompiledSharedMerchantRule => ({
+      rule,
+      compact: aliasKey(rule.pattern),
+    })
+  );
+  const exactSharedMerchantRules = new Map<
+    string,
+    CompiledSharedMerchantRule[]
+  >();
+  const containsSharedMerchantRulesByFirstChar = new Map<
+    string,
+    CompiledSharedMerchantRule[]
+  >();
+
+  for (const compiled of sharedMerchantRules) {
+    const match =
+      compiled.rule.match ??
+      defaultPropertyAliasMatch(compiled.rule.pattern);
+    if (match === "exact") {
+      const matches = exactSharedMerchantRules.get(compiled.compact) ?? [];
+      matches.push(compiled);
+      exactSharedMerchantRules.set(compiled.compact, matches);
+      continue;
+    }
+
+    const firstChar = compiled.compact[0];
+    if (!firstChar) {
+      continue;
+    }
+    const matches =
+      containsSharedMerchantRulesByFirstChar.get(firstChar) ?? [];
+    matches.push(compiled);
+    containsSharedMerchantRulesByFirstChar.set(firstChar, matches);
+  }
+
+  return (normalized) => {
+    const compact = compactMatchKeyFromNormalized(normalized);
+    const matches: SharedMerchantRuleMatch[] = (
+      exactSharedMerchantRules.get(compact) ?? []
+    ).map((compiled) => ({ compiled, isFullMatch: true }));
+    const checkedRules = new Set<CompiledSharedMerchantRule>();
+
+    for (const char of new Set(compact)) {
+      const bucket = containsSharedMerchantRulesByFirstChar.get(char);
+      if (!bucket) {
+        continue;
+      }
+
+      for (const compiled of bucket) {
+        if (checkedRules.has(compiled)) {
+          continue;
+        }
+        checkedRules.add(compiled);
+        if (compact.includes(compiled.compact)) {
+          matches.push({
+            compiled,
+            isFullMatch: compact === compiled.compact,
+          });
+        }
+      }
+    }
+
+    return selectBestSharedMerchantRuleMatch(matches);
+  };
+}
+
+const matchPropertyAlias = createPropertyAliasMatcher(marriottProperties);
+const matchSharedMerchantRule = createSharedMerchantRuleMatcher(
+  sharedMarriottMerchantRules
+);
 
 /**
  * Deterministic classification pipeline:

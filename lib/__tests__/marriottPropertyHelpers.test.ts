@@ -74,9 +74,9 @@ describe("buildSafeDerivedAliases", () => {
     ]);
 
     expect(built.aliases).toEqual([
-      { value: "ABC", match: "exact" },
-      { value: "ALREADY EXACT", match: "exact" },
-      { value: "Unique Retreat", match: "contains" },
+      { value: "ABC", match: "exact", source: "explicit" },
+      { value: "ALREADY EXACT", match: "exact", source: "explicit" },
+      { value: "Unique Retreat", match: "contains", source: "derived" },
     ]);
   });
 
