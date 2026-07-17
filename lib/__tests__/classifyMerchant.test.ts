@@ -1087,6 +1087,22 @@ describe("classifyMerchant", () => {
     expect(result.confidence).toBe("medium");
   });
 
+  it("matches the Shinsegae Central hotel division to JW Marriott Seoul", () => {
+    const result = classifyMerchant("(주)신세계센트럴 호텔부문");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("JW Marriott Hotel Seoul");
+  });
+
+  it("does not broaden the Shinsegae Central alias to the short company name", () => {
+    const result = classifyMerchant("신세계센트럴");
+    expect(result.isLikelyMarriott).toBe(false);
+    expect(result.confidence).toBe("none");
+    expect(result.status).toBe("rejected");
+  });
+
   it("does not let the operator rule downgrade a specific-brand match", () => {
     // 웨스틴조선호텔 must still be certain via the 웨스틴 keyword, not
     // needs_review via the operator rule.
