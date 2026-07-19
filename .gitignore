@@ -27,6 +27,7 @@
 
 # local-only docs and fixtures (do not publish)
 /docs/_local/
+/.antigravitycli/
 
 # debug
 npm-debug.log*
