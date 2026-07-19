@@ -3,6 +3,7 @@ import {
   hotelLikeKeywords,
   koreanKnownMerchantRules,
   koreanMarriottKeywords,
+  marriottContextualKeywords,
   marriottProperties,
   marriottKeywords,
   sharedMarriottMerchantRules,
@@ -12,6 +13,12 @@ import {
   type SharedMarriottMerchantRule,
 } from "@/rules/marriott";
 import { defaultPropertyAliasMatch } from "@/rules/marriottProperties/helpers";
+import {
+  createMarriottPropertyTokenMatcher,
+  tokenizeMarriottPropertyText,
+  type MarriottPropertyTokenCandidate,
+  type MarriottPropertyTokenEvidence,
+} from "@/lib/marriottPropertyTokenIndex";
 
 /** Uppercases, trims, collapses spaces, and strips invisible characters. */
 export function normalizeMerchantName(name: string): string {
@@ -140,6 +147,195 @@ function compareText(left: string, right: string): number {
 
 function uniqueSorted(values: string[]): string[] {
   return [...new Set(values)].sort(compareText);
+}
+
+// When a brandless candidate leaves one token unexplained, require at least
+// one matched token that occurs in no more than five properties. The count is
+// derived from the current property corpus, not from a hand-maintained word list.
+const MAX_DISTINCTIVE_TOKEN_PROPERTY_COUNT = 5;
+
+function topPropertyTokenCandidates(
+  candidates: MarriottPropertyTokenCandidate[]
+): MarriottPropertyTokenCandidate[] {
+  const bestMatchedTokenCount = candidates[0]?.matchedTokens.length;
+  return bestMatchedTokenCount === undefined
+    ? []
+    : candidates.filter(
+        (candidate) =>
+          candidate.matchedTokens.length === bestMatchedTokenCount
+      );
+}
+
+function propertyTokenCandidateIsActiveMarriott(
+  candidate: MarriottPropertyTokenCandidate
+): boolean {
+  const { property } = candidate;
+  return (
+    (property.brandGroup ?? "marriott") === "marriott" &&
+    (property.status ?? "active") === "active"
+  );
+}
+
+function candidateContainsBrandAndPropertyTokens(
+  candidate: MarriottPropertyTokenCandidate,
+  brandKeyword: string
+): boolean {
+  const brandTokens = tokenizeMarriottPropertyText(brandKeyword);
+  return (
+    brandTokens.length > 0 &&
+    brandTokens.every((token) => candidate.matchedTokens.includes(token)) &&
+    candidate.matchedTokens.some((token) => !brandTokens.includes(token))
+  );
+}
+
+function topCandidatesForBrand(
+  evidence: MarriottPropertyTokenEvidence | undefined,
+  brandKeyword: string
+): MarriottPropertyTokenCandidate[] {
+  if (!evidence) {
+    return [];
+  }
+
+  return topPropertyTokenCandidates(
+    evidence.candidates.filter((candidate) =>
+      candidateContainsBrandAndPropertyTokens(candidate, brandKeyword)
+    )
+  );
+}
+
+function unexplainedTokenText(tokens: string[]): string {
+  return tokens.length > 0
+    ? ` 설명되지 않는 토큰: ${tokens.join(", ")}.`
+    : "";
+}
+
+function propertyTokenReviewClassification(
+  candidates: MarriottPropertyTokenCandidate[]
+): MerchantClassification {
+  const properties = candidates.map((candidate) => candidate.property);
+  const propertyNames = uniqueSorted(
+    properties.map((property) => property.officialName)
+  );
+  const regions = new Set(properties.map((property) => property.region));
+
+  if (candidates.length === 1) {
+    const [candidate] = candidates;
+    return {
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: candidate.property.officialName,
+      matchedPattern: candidate.matchedTokens.join(" "),
+      reason: `공식 호텔명 토큰(${candidate.matchedTokens.join(
+        ", "
+      )})이 ${
+        candidate.property.officialName
+      } 후보와 일치하지만 자동 확정하지 않고 확인이 필요합니다.${unexplainedTokenText(
+        candidate.unexplainedTokens
+      )}`,
+      region: candidate.property.region,
+    };
+  }
+
+  const candidateText = propertyNames.slice(0, 3).join(" / ");
+  const extraCandidateCount = Math.max(0, propertyNames.length - 3);
+  const matchedTokens = uniqueSorted(
+    candidates.flatMap((candidate) => candidate.matchedTokens)
+  );
+  const unexplainedTokens = uniqueSorted(
+    candidates.flatMap((candidate) => candidate.unexplainedTokens)
+  );
+
+  return {
+    isLikelyMarriott: false,
+    confidence: "medium",
+    status: "needs_review",
+    matchedPattern: matchedTokens.join(" "),
+    reason: `공식 호텔명 토큰이 같은 수준으로 일치하는 후보가 ${
+      candidates.length
+    }곳 있어 정확한 호텔 확인이 필요합니다.${
+      candidateText
+        ? ` 후보: ${candidateText}${
+            extraCandidateCount > 0 ? ` 외 ${extraCandidateCount}곳` : ""
+          }.`
+        : ""
+    }${unexplainedTokenText(unexplainedTokens)}`,
+    region:
+      properties.length > 0 && regions.size === 1
+        ? properties[0].region
+        : undefined,
+  };
+}
+
+function contextualBrandPropertyClassification(
+  candidate: MarriottPropertyTokenCandidate,
+  brandKeyword: string
+): MerchantClassification {
+  const brandTokens = tokenizeMarriottPropertyText(brandKeyword);
+  const propertyTokens = candidate.matchedTokens.filter(
+    (token) => !brandTokens.includes(token)
+  );
+
+  return {
+    isLikelyMarriott: true,
+    confidence: "high",
+    status: "active",
+    normalizedName: candidate.property.officialName,
+    matchedPattern: candidate.matchedTokens.join(" "),
+    reason: `조건부 Marriott 브랜드 토큰(${brandKeyword})과 공식 호텔명 토큰(${propertyTokens.join(
+      ", "
+    )})이 ${candidate.property.officialName} 한 곳과 일치합니다.`,
+    region: candidate.property.region,
+  };
+}
+
+function standaloneBrandClassification(
+  brandKeyword: string,
+  candidate?: MarriottPropertyTokenCandidate
+): MerchantClassification {
+  if (candidate) {
+    const brandTokens = tokenizeMarriottPropertyText(brandKeyword);
+    const propertyTokens = candidate.matchedTokens.filter(
+      (token) => !brandTokens.includes(token)
+    );
+    return {
+      isLikelyMarriott: true,
+      confidence: "certain",
+      status: "active",
+      normalizedName: candidate.property.officialName,
+      matchedPattern: brandKeyword,
+      reason: `Marriott 계열 브랜드 키워드(${brandKeyword})와 공식 호텔명 토큰(${propertyTokens.join(
+        ", "
+      )})이 ${candidate.property.officialName} 한 곳과 일치합니다.`,
+      region: candidate.property.region,
+    };
+  }
+
+  return {
+    isLikelyMarriott: true,
+    confidence: "certain",
+    status: "active",
+    matchedPattern: brandKeyword,
+    reason: `가맹점명에 Marriott 계열 브랜드 키워드(${brandKeyword})가 포함되어 있습니다.`,
+    region: "overseas",
+  };
+}
+
+function qualifiesForBrandlessTokenReview(
+  candidate: MarriottPropertyTokenCandidate
+): boolean {
+  if (candidate.unexplainedTokens.length === 0) {
+    return true;
+  }
+
+  if (candidate.unexplainedTokens.length > 1) {
+    return false;
+  }
+
+  return Object.values(candidate.matchedTokenOwnerCounts).some(
+    (ownerCount) =>
+      ownerCount > 0 && ownerCount <= MAX_DISTINCTIVE_TOKEN_PROPERTY_COUNT
+  );
 }
 
 function ambiguousPropertyMatchesToClassification(
@@ -479,13 +675,17 @@ const matchPropertyAlias = createPropertyAliasMatcher(marriottProperties);
 const matchSharedMerchantRule = createSharedMerchantRuleMatcher(
   sharedMarriottMerchantRules
 );
+const matchPropertyTokens = createMarriottPropertyTokenMatcher(
+  marriottProperties
+);
 
 /**
  * Deterministic classification pipeline:
  * 1. Korean Marriott brand keywords → certain domestic
  * 2. Shared merchant rules (one statement merchant for multiple properties)
  * 3. Global property alias DB (exact/contains, pre-indexed)
- * 4. English Marriott brand keywords → certain overseas
+ * 4. Existing English brand evidence + official/local property candidates
+ *    → certain, contextual-brand high, or conservative review
  * 5. Country-specific Korean rules, including operator names → needs_review
  * 6. Hotel-like keywords → low-confidence review candidate
  * 7. Otherwise not Marriott-related
@@ -526,16 +726,66 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
     return propertyMatch;
   }
 
-  for (const keyword of marriottKeywords) {
-    if (matchesKeyword(normalized, keyword)) {
-      return {
-        isLikelyMarriott: true,
-        confidence: "certain",
-        status: "active",
-        matchedPattern: keyword,
-        reason: `가맹점명에 Marriott 계열 브랜드 키워드(${keyword})가 포함되어 있습니다.`,
-        region: "overseas",
-      };
+  const matchedEnglishBrandKeyword = marriottKeywords.find((keyword) =>
+    matchesKeyword(normalized, keyword)
+  );
+  const matchedContextualBrandKeyword = marriottContextualKeywords.find(
+    (keyword) => matchesKeyword(normalized, keyword)
+  );
+  const propertyTokenEvidence = matchPropertyTokens(normalized);
+
+  if (matchedEnglishBrandKeyword) {
+    const brandCandidates = topCandidatesForBrand(
+      propertyTokenEvidence,
+      matchedEnglishBrandKeyword
+    );
+    const propertyCandidate =
+      brandCandidates.length === 1 &&
+      brandCandidates[0].unexplainedTokens.length === 0 &&
+      propertyTokenCandidateIsActiveMarriott(brandCandidates[0])
+        ? brandCandidates[0]
+        : undefined;
+
+    // Existing standalone brand evidence remains authoritative. Property
+    // tokens only enrich a fully explained unique match; they never replace or
+    // downgrade the established brand rule.
+    return standaloneBrandClassification(
+      matchedEnglishBrandKeyword,
+      propertyCandidate
+    );
+  }
+
+  if (matchedContextualBrandKeyword) {
+    const contextualCandidates = topCandidatesForBrand(
+      propertyTokenEvidence,
+      matchedContextualBrandKeyword
+    );
+    if (contextualCandidates.length > 0) {
+      const [candidate] = contextualCandidates;
+      if (
+        contextualCandidates.length === 1 &&
+        candidate.unexplainedTokens.length === 0 &&
+        propertyTokenCandidateIsActiveMarriott(candidate)
+      ) {
+        return contextualBrandPropertyClassification(
+          candidate,
+          matchedContextualBrandKeyword
+        );
+      }
+
+      return propertyTokenReviewClassification(contextualCandidates);
+    }
+  }
+
+  if (propertyTokenEvidence) {
+    const topCandidates = topPropertyTokenCandidates(
+      propertyTokenEvidence.candidates
+    );
+    if (
+      topCandidates.length === 1 &&
+      qualifiesForBrandlessTokenReview(topCandidates[0])
+    ) {
+      return propertyTokenReviewClassification(topCandidates);
     }
   }
 

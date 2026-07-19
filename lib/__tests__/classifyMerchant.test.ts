@@ -136,6 +136,9 @@ describe("classifyMerchant", () => {
       "MGM Collection with Marriott Bonvoy",
       "Outdoor Collection by Marriott Bonvoy",
     ]);
+    expect(
+      marriottBrandCatalog.find((brand) => brand.officialName === "W Hotels")
+    ).toMatchObject({ contextualKeywords: ["W"] });
   });
 
   it.each(marriottBrandCatalog.map((brand) => brand.officialName))(
@@ -749,13 +752,127 @@ describe("classifyMerchant", () => {
     expect(result.normalizedName).toBe("Courtyard by Marriott Sapporo");
   });
 
+  it("maps the compact former Moxy Osaka name via an exact alias", () => {
+    expect(classifyMerchant("MOXYOSAKASHINUMEDA")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      status: "active",
+      region: "overseas",
+      normalizedName: "Moxy Osaka Umeda",
+      matchedPattern: "MOXY OSAKA SHIN UMEDA",
+    });
+
+    expect(classifyMerchant("MOXY-OSAKA-SHIN-UMEDA")).toMatchObject({
+      normalizedName: "Moxy Osaka Umeda",
+      matchedPattern: "MOXY OSAKA SHIN UMEDA",
+    });
+
+    expect(
+      classifyMerchant("MOXYOSAKASHINUMEDASHOP").normalizedName
+    ).not.toBe("Moxy Osaka Umeda");
+  });
+
+  it("maps the confirmed Princesa statement merchant via an exact alias", () => {
+    expect(classifyMerchant("PRINCESA PLAZA MADRID FOH")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      status: "active",
+      region: "overseas",
+      normalizedName: "Madrid Marriott Hotel Princesa Plaza",
+      matchedPattern: "PRINCESA PLAZA MADRID FOH",
+    });
+  });
+
+  it.each([
+    "FOH PRINCESA PLAZA MADRID",
+    "PRINCESA FOH PLAZA MADRID",
+    "MADRID PRINCESA PLAZA FOH",
+    "PRINCESA PLAZA MADRID RESTAURANT",
+    "TUDOR PARK RESTAURANT",
+    "CRYSTAL GATEWAY",
+    "ANN ARBOR NORTH",
+  ])("surfaces a unique general token candidate for review (%s)", (name) => {
+    const result = classifyMerchant(name);
+
+    expect(result).toMatchObject({
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+    });
+    expect(result.normalizedName).toBeDefined();
+  });
+
+  it("automatically confirms W Singapore from brand and property tokens", () => {
+    expect(classifyMerchant("W SINGAPORE")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      status: "active",
+      region: "overseas",
+      normalizedName: "W Singapore - Sentosa Cove",
+    });
+  });
+
+  it("keeps a contextual W candidate with unexplained text in review", () => {
+    expect(classifyMerchant("W STORE SINGAPORE")).toMatchObject({
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: "W Singapore - Sentosa Cove",
+    });
+  });
+
+  it("normalizes a fully explained Element property-token match", () => {
+    expect(classifyMerchant("ELEMENT LAS COLINAS")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "certain",
+      status: "active",
+      normalizedName: "Element by Marriott Dallas Las Colinas",
+    });
+  });
+
+  it("preserves an existing standalone brand match despite extra text", () => {
+    expect(classifyMerchant("ELEMENT LAS COLINAS FITNESS")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "certain",
+      status: "active",
+      matchedPattern: "ELEMENT",
+    });
+  });
+
+  it("keeps tied contextual W candidates in review without selecting one", () => {
+    const result = classifyMerchant("W DUBAI");
+
+    expect(result).toMatchObject({
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+    });
+    expect(result.normalizedName).toBeUndefined();
+  });
+
+  it.each([
+    "FRITZ BURGER CO",
+    "FOH STARBUCKS MADRID",
+    "ZIPPY AUTO WASH ELLSWO",
+    "ANN ARBOR NORTH CAMPUS UMICH",
+    "DETROIT AIRPORT PARKING",
+    "MADRID DENTAL CENTER",
+    "GRAND RAPIDS SWEET",
+    "W",
+  ])("does not create a token candidate from weak evidence (%s)", (name) => {
+    const result = classifyMerchant(name);
+
+    expect(result.isLikelyMarriott).toBe(false);
+    expect(result.confidence).toBe("none");
+  });
+
   it("classifies ZIPPY AUTO WASH - ELLSWO as not Marriott", () => {
     const result = classifyMerchant("ZIPPY AUTO WASH - ELLSWO");
     expect(result.isLikelyMarriott).toBe(false);
     expect(result.confidence).toBe("none");
   });
 
-  it("sends unknown hotel-like merchants to low-confidence review", () => {
+  it("keeps a weak unknown hotel-like merchant in low-confidence review", () => {
     const result = classifyMerchant("GRAND SUNRISE HOTEL BUSAN");
     expect(result.isLikelyMarriott).toBe(false);
     expect(result.confidence).toBe("low");

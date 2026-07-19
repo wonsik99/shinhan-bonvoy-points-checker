@@ -1,5 +1,5 @@
-import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import { exact, high, inferBrand } from "./helpers";
+import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const spainMarriottOfficialRows = [
@@ -126,6 +126,13 @@ const spainMarriottOfficialRows = [
   { id: "BCNOX", officialName: "Moxy Barcelona" },
 ] as const;
 
+const spainAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  // Confirmed Shinhan statement merchant for Madrid Marriott Princesa Plaza.
+  "Madrid Marriott Hotel Princesa Plaza": [
+    exact("PRINCESA PLAZA MADRID FOH", high),
+  ],
+};
+
 export const spainMarriottProperties: MarriottProperty[] = spainMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
@@ -134,6 +141,6 @@ export const spainMarriottProperties: MarriottProperty[] = spainMarriottOfficial
     officialName,
     brand: inferBrand(officialName),
     ...high,
-    aliases: [],
+    aliases: spainAliasOverrides[officialName] ?? [],
   })
 );
