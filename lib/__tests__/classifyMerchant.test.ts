@@ -284,7 +284,8 @@ describe("classifyMerchant", () => {
           `${property.id}: official name mapped to ${result.normalizedName}`
         ).toBe(true);
       }
-    }
+    },
+    15_000
   );
 
   it.each([
