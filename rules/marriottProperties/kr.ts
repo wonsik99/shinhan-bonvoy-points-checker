@@ -101,6 +101,8 @@ export const koreaMarriottProperties: MarriottProperty[] = [
     contains("JW MARRIOTT HOTEL SEOUL"),
     contains("JW 메리어트 호텔 서울"),
     contains("제이더블유메리어트호텔서울"),
+    // Shinhan statement merchant for JW Marriott Hotel Seoul
+    contains("신세계센트럴호텔부문"),
   ]),
   korea("kr-aloft-seoul-gangnam", "Aloft Seoul Gangnam", "Aloft", [
     contains("ALOFT SEOUL GANGNAM"),
@@ -272,8 +274,7 @@ export const koreaMarriottProperties: MarriottProperty[] = [
   korea("kr-jeju-shinhwa-world-marriott-resort", "Jeju Shinhwa World Marriott Resort", "Marriott Hotels", [
     contains("JEJU SHINHWA WORLD MARRIOTT"),
     contains("SHINHWA WORLD MARRIOTT"),
-    contains("제주신화월드메리어트"),
-    contains("신화월드메리어트"),
+    contains("제주신화월드"),
     // Shinhan statement merchant for Jeju Shinhwa World Marriott
     contains("람정제주개발"),
   ]),

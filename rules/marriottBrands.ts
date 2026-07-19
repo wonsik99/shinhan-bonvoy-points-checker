@@ -9,6 +9,11 @@ export interface MarriottBrandEntry {
   officialName: string;
   category: MarriottBrandCategory;
   keywords: readonly string[];
+  /**
+   * Ambiguous short brand tokens that are evidence only when an additional
+   * official/local property-name token points to a Marriott property.
+   */
+  contextualKeywords?: readonly string[];
 }
 
 export const marriottBrandCatalog = [
@@ -41,6 +46,7 @@ export const marriottBrandCatalog = [
     officialName: "W Hotels",
     category: "luxury",
     keywords: ["W HOTEL", "W HOTELS"],
+    contextualKeywords: ["W"],
   },
   {
     officialName: "EDITION",
@@ -228,6 +234,14 @@ export const marriottBrandCatalog = [
 
 export const marriottKeywords = Array.from(
   new Set(marriottBrandCatalog.flatMap((brand) => brand.keywords))
+);
+
+export const marriottContextualKeywords = Array.from(
+  new Set(
+    marriottBrandCatalog.flatMap((brand) =>
+      "contextualKeywords" in brand ? brand.contextualKeywords : []
+    )
+  )
 );
 
 export const hotelLikeKeywords = [

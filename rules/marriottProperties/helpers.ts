@@ -94,9 +94,11 @@ export function buildSafeDerivedAliases(
   }
 
   return properties.map((property) => {
-    const aliases = property.aliases.map((alias) =>
-      alias.match ? alias : { ...alias, match: defaultPropertyAliasMatch(alias.value) }
-    );
+    const aliases = property.aliases.map((alias) => ({
+      ...alias,
+      match: alias.match ?? defaultPropertyAliasMatch(alias.value),
+      source: alias.source ?? ("explicit" as const),
+    }));
     const alias = baseName(property.officialName);
     if (!alias || baseAliasCounts.get(compactAliasKey(alias)) !== 1) {
       return { ...property, aliases };
@@ -121,7 +123,7 @@ export function buildSafeDerivedAliases(
       defaultPropertyAliasMatch(alias) === "exact" ? exact(alias) : contains(alias);
     return {
       ...property,
-      aliases: [...aliases, derivedAlias],
+      aliases: [...aliases, { ...derivedAlias, source: "derived" }],
     };
   });
 }

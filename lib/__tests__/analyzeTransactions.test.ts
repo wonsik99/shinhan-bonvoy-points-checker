@@ -159,6 +159,46 @@ describe("analyzeTransactions", () => {
     expect(result.expectedPoints).toBe(1049);
     expect(result.difference).toBe(420);
   });
+
+  it.each([
+    ["PRINCESA PLAZA MADRID FOH", "Madrid Marriott Hotel Princesa Plaza"],
+    ["W SINGAPORE", "W Singapore - Sentosa Cove"],
+  ])(
+    "auto-flags a trusted or branded property match on L2 (%s)",
+    (merchantName, normalizedName) => {
+      const [result] = analyzeTransactions([tx({ merchantName })]);
+
+      expect(result.classification.normalizedName).toBe(normalizedName);
+      expect(result.analysisStatus).toBe("missing_suspected");
+      expect(result.effectiveIncluded).toBe(true);
+    }
+  );
+
+  it.each(["FOH PRINCESA PLAZA MADRID", "CRYSTAL GATEWAY"])(
+    "keeps a general property-token candidate out of automatic totals (%s)",
+    (merchantName) => {
+      const [result] = analyzeTransactions([tx({ merchantName })]);
+
+      expect(result.classification.confidence).toBe("medium");
+      expect(result.analysisStatus).toBe("needs_review");
+      expect(result.effectiveIncluded).toBe(false);
+    }
+  );
+
+  it.each([
+    "ANN ARBOR NORTH CAMPUS UMICH",
+    "DETROIT AIRPORT PARKING",
+    "MADRID DENTAL CENTER",
+  ])(
+    "keeps weak location-token collisions out of the review queue (%s)",
+    (merchantName) => {
+      const [result] = analyzeTransactions([tx({ merchantName })]);
+
+      expect(result.classification.confidence).toBe("none");
+      expect(result.analysisStatus).toBe("not_marriott");
+      expect(result.effectiveIncluded).toBe(false);
+    }
+  );
 });
 
 describe("domestic Marriott (L4) handling", () => {

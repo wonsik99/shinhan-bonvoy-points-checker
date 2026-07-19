@@ -1,4 +1,4 @@
-import { contains, high, inferBrand } from "./helpers";
+import { contains, exact, high, inferBrand } from "./helpers";
 import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
@@ -138,6 +138,8 @@ const japanAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
   "Courtyard by Marriott Sapporo": [
     contains("CYMARRIOTTSAPPOR", high),
   ],
+  // Former official name seen as a space-free Shinhan statement merchant.
+  "Moxy Osaka Umeda": [exact("MOXY OSAKA SHIN UMEDA", high)],
 };
 
 export const japanMarriottProperties: MarriottProperty[] =

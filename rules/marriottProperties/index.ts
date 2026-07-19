@@ -15,6 +15,7 @@ export type {
   BrandGroup,
   MarriottProperty,
   MarriottPropertyAlias,
+  MarriottPropertyAliasSource,
   MatchMode,
   SharedMarriottMerchantRule,
 } from "./types";

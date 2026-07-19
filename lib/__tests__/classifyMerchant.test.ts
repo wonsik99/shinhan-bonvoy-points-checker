@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { classifyMerchant, normalizeMerchantName } from "@/lib/classifyMerchant";
+import {
+  classifyMerchant,
+  createPropertyAliasMatcher,
+  createSharedMerchantRuleMatcher,
+  normalizeMerchantName,
+} from "@/lib/classifyMerchant";
 import {
   americasMarriottProperties,
   asiaPacificMarriottProperties,
@@ -11,7 +16,10 @@ import {
   middleEastAfricaMarriottProperties,
   unitedStatesMarriottProperties,
 } from "@/rules/marriott";
-import type { MarriottProperty } from "@/rules/marriott";
+import type {
+  MarriottProperty,
+  SharedMarriottMerchantRule,
+} from "@/rules/marriott";
 
 function compactAlias(value: string): string {
   return value
@@ -128,6 +136,9 @@ describe("classifyMerchant", () => {
       "MGM Collection with Marriott Bonvoy",
       "Outdoor Collection by Marriott Bonvoy",
     ]);
+    expect(
+      marriottBrandCatalog.find((brand) => brand.officialName === "W Hotels")
+    ).toMatchObject({ contextualKeywords: ["W"] });
   });
 
   it.each(marriottBrandCatalog.map((brand) => brand.officialName))(
@@ -189,6 +200,16 @@ describe("classifyMerchant", () => {
           `${property.id}: ${value}`
         ).toBe(true);
         expect(result.region, `${property.id}: ${value}`).toBe(property.region);
+
+        const storedAlias = property.aliases.find(
+          (alias) => alias.value === value
+        );
+        if (storedAlias?.source === "explicit" && isAsciiAlias(value)) {
+          expect(
+            result.normalizedName,
+            `${property.id}: explicit alias ${value} mapped to ${result.normalizedName}`
+          ).toBe(property.officialName);
+        }
       }
     }
   });
@@ -257,8 +278,14 @@ describe("classifyMerchant", () => {
           property.officialName
         ).toBe(true);
         expect(result.region, property.officialName).toBe(region);
+        expect(
+          result.normalizedName === property.officialName ||
+            result.status === "needs_review",
+          `${property.id}: official name mapped to ${result.normalizedName}`
+        ).toBe(true);
       }
-    }
+    },
+    15_000
   );
 
   it.each([
@@ -408,6 +435,258 @@ describe("classifyMerchant", () => {
     expect(result.normalizedName).toBe("TIAD, Autograph Collection");
   });
 
+  it.each([
+    ["MOXY SEOUL INSADONG", "Moxy Seoul Insadong"],
+    [
+      "FAIRFIELD BY MARRIOTT BUSAN SONGDO",
+      "Fairfield by Marriott Busan Songdo Beach",
+    ],
+    [
+      "COURTYARD BY MARRIOTT BANGKOK SUVARNABHUMI AIRPORT",
+      "Courtyard by Marriott Bangkok Suvarnabhumi Airport",
+    ],
+    ["LE MERIDIEN TAIPEI BANQIAO", "Le Méridien Taipei Banqiao"],
+    [
+      "MYSTIQUE HOLBOX BY ROYALTON A TRIBUTE PORTFOLIO RESORT",
+      "Mystique Holbox by Royalton, A Tribute Portfolio Resort",
+    ],
+    [
+      "THE BROWN PALACE HOTEL AND SPA AUTOGRAPH COLLECTION",
+      "The Brown Palace Hotel and Spa, Autograph Collection",
+    ],
+  ])(
+    "selects the most specific property instead of the first broad match (%s)",
+    (merchantName, expectedProperty) => {
+      expect(classifyMerchant(merchantName)).toMatchObject({
+        isLikelyMarriott: true,
+        normalizedName: expectedProperty,
+      });
+    }
+  );
+
+  it("keeps a true same-priority property tie in review", () => {
+    const result = classifyMerchant("COURTYARD BY MARRIOTT HAMILTON");
+
+    expect(result).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "medium",
+      status: "needs_review",
+      region: "overseas",
+    });
+    expect(result.normalizedName).toBeUndefined();
+    expect(result.reason).toContain("정확한 호텔 확인이 필요");
+  });
+
+  it("keeps property selection independent of source array order", () => {
+    const broadProperty: MarriottProperty = {
+      id: "broad-moxy",
+      country: "KR",
+      region: "domestic",
+      officialName: "Moxy Seoul, Myeongdong",
+      brand: "Moxy",
+      aliases: [
+        {
+          value: "MOXY SEOUL",
+          match: "contains",
+          source: "derived",
+        },
+      ],
+    };
+    const specificProperty: MarriottProperty = {
+      id: "specific-moxy",
+      country: "KR",
+      region: "domestic",
+      officialName: "Moxy Seoul Insadong",
+      brand: "Moxy",
+      aliases: [
+        {
+          value: "MOXY SEOUL INSADONG",
+          match: "contains",
+          source: "explicit",
+        },
+      ],
+    };
+    const input = normalizeMerchantName("MOXY SEOUL INSADONG");
+
+    for (const properties of [
+      [broadProperty, specificProperty],
+      [specificProperty, broadProperty],
+    ]) {
+      expect(createPropertyAliasMatcher(properties)(input)?.normalizedName).toBe(
+        "Moxy Seoul Insadong"
+      );
+    }
+  });
+
+  it("handles multiple equal aliases for the same property deterministically", () => {
+    const property: MarriottProperty = {
+      id: "same-property",
+      country: "KR",
+      region: "domestic",
+      officialName: "Alpha Hotel",
+      brand: "Marriott Bonvoy",
+      aliases: [
+        {
+          value: "ALPHA-MERCHANT",
+          match: "contains",
+          source: "explicit",
+        },
+        {
+          value: "ALPHA MERCHANT",
+          match: "contains",
+          source: "explicit",
+        },
+      ],
+    };
+
+    expect(
+      createPropertyAliasMatcher([property])(
+        normalizeMerchantName("ALPHA MERCHANT")
+      )
+    ).toMatchObject({
+      normalizedName: "Alpha Hotel",
+      matchedPattern: "ALPHA MERCHANT",
+    });
+  });
+
+  it("keeps a cross-region same-priority property tie in review", () => {
+    const alpha: MarriottProperty = {
+      id: "alpha",
+      country: "KR",
+      region: "domestic",
+      officialName: "Alpha Hotel",
+      brand: "Marriott Bonvoy",
+      aliases: [
+        {
+          value: "ALPHA MERCHANT",
+          match: "contains",
+          source: "explicit",
+        },
+      ],
+    };
+    const omega: MarriottProperty = {
+      ...alpha,
+      id: "omega",
+      country: "US",
+      region: "overseas",
+      officialName: "Omega Hotel",
+      aliases: [
+        {
+          value: "OMEGA MERCHANT",
+          match: "contains",
+          source: "explicit",
+        },
+      ],
+    };
+    const result = createPropertyAliasMatcher([omega, alpha])(
+      normalizeMerchantName("ALPHA MERCHANT OMEGA MERCHANT")
+    );
+
+    expect(result).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: "Alpha Hotel / Omega Hotel",
+    });
+    expect(result?.region).toBeUndefined();
+  });
+
+  it("selects the longest shared merchant rule independent of array order", () => {
+    const broadRule: SharedMarriottMerchantRule = {
+      pattern: "QINGDAO",
+      normalizedName: "Broad Qingdao candidate",
+      propertyIds: ["broad"],
+      region: "overseas",
+      match: "contains",
+      brandGroup: "marriott",
+      confidence: "high",
+      status: "active",
+      reason: "broad",
+    };
+    const specificRule: SharedMarriottMerchantRule = {
+      ...broadRule,
+      pattern: "QINGDAO MERCHANT",
+      normalizedName: "Specific Qingdao candidate",
+      propertyIds: ["specific"],
+      reason: "specific",
+    };
+    const input = normalizeMerchantName("QINGDAO MERCHANT TERMINAL");
+
+    for (const rules of [
+      [broadRule, specificRule],
+      [specificRule, broadRule],
+    ]) {
+      expect(createSharedMerchantRuleMatcher(rules)(input)?.normalizedName).toBe(
+        "Specific Qingdao candidate"
+      );
+    }
+  });
+
+  it("keeps equal shared merchant rules in review", () => {
+    const alpha: SharedMarriottMerchantRule = {
+      pattern: "ALPHA MERCHANT",
+      normalizedName: "Alpha Hotel",
+      propertyIds: ["alpha"],
+      region: "overseas",
+      match: "contains",
+      brandGroup: "marriott",
+      confidence: "high",
+      status: "active",
+      reason: "alpha",
+    };
+    const omega: SharedMarriottMerchantRule = {
+      ...alpha,
+      pattern: "OMEGA MERCHANT",
+      normalizedName: "Omega Hotel",
+      propertyIds: ["omega"],
+      reason: "omega",
+    };
+    const result = createSharedMerchantRuleMatcher([omega, alpha])(
+      normalizeMerchantName("ALPHA MERCHANT OMEGA MERCHANT")
+    );
+
+    expect(result).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: "Alpha Hotel / Omega Hotel",
+      region: "overseas",
+    });
+  });
+
+  it("prioritizes an exact shared rule and tolerates duplicate rule rows", () => {
+    const exactRule: SharedMarriottMerchantRule = {
+      pattern: "TIAD",
+      normalizedName: "TIAD, Autograph Collection",
+      propertyIds: ["tiad"],
+      region: "overseas",
+      brandGroup: "marriott",
+      confidence: "high",
+      status: "active",
+      reason: "exact",
+    };
+    const broadRule: SharedMarriottMerchantRule = {
+      ...exactRule,
+      pattern: "TIA",
+      normalizedName: "Broad candidate",
+      propertyIds: ["broad"],
+      match: "contains",
+      reason: "broad",
+    };
+
+    expect(
+      createSharedMerchantRuleMatcher([
+        broadRule,
+        exactRule,
+        { ...exactRule, propertyIds: [...exactRule.propertyIds] },
+      ])(normalizeMerchantName("TIAD"))
+    ).toMatchObject({
+      normalizedName: "TIAD, Autograph Collection",
+      matchedPattern: "TIAD",
+      status: "active",
+    });
+  });
+
   it("matches property aliases after normalizing hyphen, period, and &", () => {
     // Official: "W Dubai - The Palm" — statement drops the hyphen
     expect(classifyMerchant("W DUBAI THE PALM")).toMatchObject({
@@ -474,13 +753,127 @@ describe("classifyMerchant", () => {
     expect(result.normalizedName).toBe("Courtyard by Marriott Sapporo");
   });
 
+  it("maps the compact former Moxy Osaka name via an exact alias", () => {
+    expect(classifyMerchant("MOXYOSAKASHINUMEDA")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      status: "active",
+      region: "overseas",
+      normalizedName: "Moxy Osaka Umeda",
+      matchedPattern: "MOXY OSAKA SHIN UMEDA",
+    });
+
+    expect(classifyMerchant("MOXY-OSAKA-SHIN-UMEDA")).toMatchObject({
+      normalizedName: "Moxy Osaka Umeda",
+      matchedPattern: "MOXY OSAKA SHIN UMEDA",
+    });
+
+    expect(
+      classifyMerchant("MOXYOSAKASHINUMEDASHOP").normalizedName
+    ).not.toBe("Moxy Osaka Umeda");
+  });
+
+  it("maps the confirmed Princesa statement merchant via an exact alias", () => {
+    expect(classifyMerchant("PRINCESA PLAZA MADRID FOH")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      status: "active",
+      region: "overseas",
+      normalizedName: "Madrid Marriott Hotel Princesa Plaza",
+      matchedPattern: "PRINCESA PLAZA MADRID FOH",
+    });
+  });
+
+  it.each([
+    "FOH PRINCESA PLAZA MADRID",
+    "PRINCESA FOH PLAZA MADRID",
+    "MADRID PRINCESA PLAZA FOH",
+    "PRINCESA PLAZA MADRID RESTAURANT",
+    "TUDOR PARK RESTAURANT",
+    "CRYSTAL GATEWAY",
+    "ANN ARBOR NORTH",
+  ])("surfaces a unique general token candidate for review (%s)", (name) => {
+    const result = classifyMerchant(name);
+
+    expect(result).toMatchObject({
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+    });
+    expect(result.normalizedName).toBeDefined();
+  });
+
+  it("automatically confirms W Singapore from brand and property tokens", () => {
+    expect(classifyMerchant("W SINGAPORE")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "high",
+      status: "active",
+      region: "overseas",
+      normalizedName: "W Singapore - Sentosa Cove",
+    });
+  });
+
+  it("keeps a contextual W candidate with unexplained text in review", () => {
+    expect(classifyMerchant("W STORE SINGAPORE")).toMatchObject({
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: "W Singapore - Sentosa Cove",
+    });
+  });
+
+  it("normalizes a fully explained Element property-token match", () => {
+    expect(classifyMerchant("ELEMENT LAS COLINAS")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "certain",
+      status: "active",
+      normalizedName: "Element by Marriott Dallas Las Colinas",
+    });
+  });
+
+  it("preserves an existing standalone brand match despite extra text", () => {
+    expect(classifyMerchant("ELEMENT LAS COLINAS FITNESS")).toMatchObject({
+      isLikelyMarriott: true,
+      confidence: "certain",
+      status: "active",
+      matchedPattern: "ELEMENT",
+    });
+  });
+
+  it("keeps tied contextual W candidates in review without selecting one", () => {
+    const result = classifyMerchant("W DUBAI");
+
+    expect(result).toMatchObject({
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+    });
+    expect(result.normalizedName).toBeUndefined();
+  });
+
+  it.each([
+    "FRITZ BURGER CO",
+    "FOH STARBUCKS MADRID",
+    "ZIPPY AUTO WASH ELLSWO",
+    "ANN ARBOR NORTH CAMPUS UMICH",
+    "DETROIT AIRPORT PARKING",
+    "MADRID DENTAL CENTER",
+    "GRAND RAPIDS SWEET",
+    "W",
+  ])("does not create a token candidate from weak evidence (%s)", (name) => {
+    const result = classifyMerchant(name);
+
+    expect(result.isLikelyMarriott).toBe(false);
+    expect(result.confidence).toBe("none");
+  });
+
   it("classifies ZIPPY AUTO WASH - ELLSWO as not Marriott", () => {
     const result = classifyMerchant("ZIPPY AUTO WASH - ELLSWO");
     expect(result.isLikelyMarriott).toBe(false);
     expect(result.confidence).toBe("none");
   });
 
-  it("sends unknown hotel-like merchants to low-confidence review", () => {
+  it("keeps a weak unknown hotel-like merchant in low-confidence review", () => {
     const result = classifyMerchant("GRAND SUNRISE HOTEL BUSAN");
     expect(result.isLikelyMarriott).toBe(false);
     expect(result.confidence).toBe("low");
@@ -810,6 +1203,22 @@ describe("classifyMerchant", () => {
     const result = classifyMerchant("(주)신세계조선호텔");
     expect(result.status).toBe("needs_review");
     expect(result.confidence).toBe("medium");
+  });
+
+  it("matches the Shinsegae Central hotel division to JW Marriott Seoul", () => {
+    const result = classifyMerchant("(주)신세계센트럴 호텔부문");
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
+    expect(result.region).toBe("domestic");
+    expect(result.normalizedName).toBe("JW Marriott Hotel Seoul");
+  });
+
+  it("does not broaden the Shinsegae Central alias to the short company name", () => {
+    const result = classifyMerchant("신세계센트럴");
+    expect(result.isLikelyMarriott).toBe(false);
+    expect(result.confidence).toBe("none");
+    expect(result.status).toBe("rejected");
   });
 
   it("does not let the operator rule downgrade a specific-brand match", () => {
