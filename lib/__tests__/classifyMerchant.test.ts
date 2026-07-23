@@ -908,6 +908,35 @@ describe("classifyMerchant", () => {
     expect(classifyMerchant("W HOTEL HOLLYWOOD").confidence).toBe("certain");
   });
 
+  // Shinhan statements sometimes print the merchant with a single-T "MARRIOT"
+  // spelling (real report: "JW MARRIOT HOTEL KL"). The catalog derives that
+  // variant for every MARRIOTT keyword so the whole family stays recognized.
+  it.each([
+    "JW MARRIOT HOTEL KL",
+    "MARRIOT HOTELS",
+    "DELTA HOTELS BY MARRIOT",
+    "MARRIOT VACATION CLUB",
+  ])("classifies the one-T MARRIOT spelling as certain Marriott (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("certain");
+  });
+
+  it("still matches the canonical JW MARRIOTT spelling", () => {
+    // Full official name resolves via the property alias DB (high); the
+    // abbreviated form falls through to the brand keyword (certain). Both are
+    // confident Marriott matches — the variant must not disturb either.
+    expect(classifyMerchant("JW MARRIOTT HOTEL KUALA LUMPUR").confidence).toBe(
+      "high"
+    );
+    expect(classifyMerchant("JW MARRIOTT HOTEL KL").confidence).toBe("certain");
+  });
+
+  it("does not treat unrelated MARIO/FRITZ names as MARRIOT", () => {
+    expect(classifyMerchant("MARIO PIZZA").confidence).toBe("none");
+    expect(classifyMerchant("FRITZ CAFE").confidence).toBe("none");
+  });
+
   it.each([
     "코트야드메리어트서울남대문",
     "제이더블유메리어트호텔",

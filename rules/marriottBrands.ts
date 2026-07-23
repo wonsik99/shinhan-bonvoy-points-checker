@@ -232,8 +232,28 @@ export const marriottBrandCatalog = [
   },
 ] as const satisfies readonly MarriottBrandEntry[];
 
-export const marriottKeywords = Array.from(
-  new Set(marriottBrandCatalog.flatMap((brand) => brand.keywords))
+/**
+ * Register the one-T "MARRIOT" spelling alongside every "MARRIOTT" keyword.
+ * Shinhan statements sometimes print the merchant name with a single T
+ * (e.g. real report "JW MARRIOT HOTEL KL"), and that exact spelling otherwise
+ * slips past exact brand-keyword matching across the whole Marriott family.
+ * This mirrors the domestic precedent of listing both 메리어트 and 매리어트.
+ * Kept as a deterministic, human-curated variant — not fuzzy matching.
+ */
+function withMarriottSpellingVariants(
+  keywords: readonly string[]
+): readonly string[] {
+  const all = new Set(keywords);
+  for (const keyword of keywords) {
+    if (keyword.includes("MARRIOTT")) {
+      all.add(keyword.replace(/MARRIOTT/g, "MARRIOT"));
+    }
+  }
+  return Array.from(all);
+}
+
+export const marriottKeywords = withMarriottSpellingVariants(
+  Array.from(new Set(marriottBrandCatalog.flatMap((brand) => brand.keywords)))
 );
 
 export const marriottContextualKeywords = Array.from(
