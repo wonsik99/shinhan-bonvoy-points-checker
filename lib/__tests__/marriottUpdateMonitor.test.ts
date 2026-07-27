@@ -383,6 +383,37 @@ describe("Marriott hotel DB update monitor", () => {
     ]);
   });
 
+  it("renders an official source change in the Markdown review report", () => {
+    const previous = officialProperty("AAA01", "hotel-a");
+    const current = {
+      ...officialProperty("AAA01", "hotel-a", "ritz_carlton"),
+      officialUrl:
+        "https://www.ritzcarlton.com/en/hotels/aaa01-hotel-a/overview/",
+      sourceUrl: ritzShard,
+    };
+    const result = compareMarriottCatalogs(
+      [],
+      collection([current]),
+      baseline([previous]),
+      {
+        minimumMarriottPropertyCount: 0,
+        minimumRitzPropertyCount: 0,
+        minimumBvlgariPropertyCount: 0,
+      }
+    );
+    const report = renderMarriottUpdateReport(result);
+
+    expect(result.status).toBe("review_required");
+    expect(result.summary.sourceChanges).toBe(1);
+    expect(result.sourceChanges).toHaveLength(1);
+    expect(report).toContain("## 공식 소스 변경");
+    expect(report).toContain("AAA01");
+    expect(report).toContain("Marriott HWS XML");
+    expect(report).toContain("Ritz-Carlton HWS XML");
+    expect(report).toContain(previous.officialUrl);
+    expect(report).toContain(current.officialUrl);
+  });
+
   it("blocks conclusions when an official source is incomplete", () => {
     const current = collection([]);
     current.failures.push({

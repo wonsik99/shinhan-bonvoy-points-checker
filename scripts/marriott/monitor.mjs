@@ -999,6 +999,24 @@ export function renderMarriottUpdateReport(result) {
         officialLink(item.current),
       ])
     ),
+    "## 공식 소스 변경",
+    "",
+    markdownTable(
+      [
+        "Code",
+        "이전 Source",
+        "현재 Source",
+        "이전 공식 페이지",
+        "현재 공식 페이지",
+      ],
+      result.sourceChanges.map((item) => [
+        item.propertyCode,
+        SOURCE_LABELS[item.previous.source] ?? item.previous.source,
+        SOURCE_LABELS[item.current.source] ?? item.current.source,
+        officialLink(item.previous),
+        officialLink(item.current),
+      ])
+    ),
     "## 로컬 DB 등록 검토 후보",
     "",
     markdownTable(
