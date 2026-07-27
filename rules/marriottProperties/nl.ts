@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const netherlandsMarriottOfficialRows = [
@@ -30,9 +30,13 @@ const netherlandsMarriottOfficialRows = [
   { id: "AMSRI", officialName: "Residence Inn by Marriott Amsterdam Houthavens" },
   { id: "AMSBI", officialName: "Residence Inn by Marriott Amsterdam Schiphol Airport" },
   { id: "RTMRI", officialName: "Residence Inn by Marriott The Hague" },
+  { id: "AMSMA", officialName: "citizenM Amsterdam Amstel" },
+  { id: "AMSMZ", officialName: "citizenM Amsterdam South" },
+  { id: "AMSSA", officialName: "citizenM Amsterdam Airport Schiphol" },
+  { id: "RTMCM", officialName: "citizenM Rotterdam" },
 ] as const;
 
-export const netherlandsMarriottProperties: MarriottProperty[] = netherlandsMarriottOfficialRows.map(
+export const netherlandsMarriottProperties: MarriottPropertySeed[] = netherlandsMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "NL",

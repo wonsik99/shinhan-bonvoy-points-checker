@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const arubaMarriottOfficialRows = [
@@ -9,9 +9,11 @@ const arubaMarriottOfficialRows = [
   { id: "AUAAO", officialName: "Marriott's Aruba Ocean Club" },
   { id: "AUABR", officialName: "Renaissance Wind Creek Aruba Resort" },
   { id: "AUACY", officialName: "Courtyard by Marriott Aruba Resort" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "AUART", officialName: "The Ritz-Carlton, Aruba" },
 ] as const;
 
-export const arubaMarriottProperties: MarriottProperty[] = arubaMarriottOfficialRows.map(
+export const arubaMarriottProperties: MarriottPropertySeed[] = arubaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "AW",

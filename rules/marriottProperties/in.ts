@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const indiaOfficialRows = [
@@ -231,7 +231,7 @@ const indiaOfficialRows = [
   { id: "VTZFI", officialName: "Fairfield by Marriott Visakhapatnam" },
 ];
 
-export const indiaMarriottProperties: MarriottProperty[] =
+export const indiaMarriottProperties: MarriottPropertySeed[] =
   indiaOfficialRows.map(({ id, officialName }) => ({
     id: `in-${id.toLowerCase()}`,
     country: "IN",

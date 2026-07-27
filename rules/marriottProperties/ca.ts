@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const canadaMarriottOfficialRows = [
@@ -305,9 +305,16 @@ const canadaMarriottOfficialRows = [
   { id: "YYJST", officialName: "TownePlace Suites by Marriott Victoria Airport Sidney" },
   { id: "YULTS", officialName: "TownePlace Suites by Marriott Montreal Airport" },
   { id: "YYZVT", officialName: "TownePlace Suites by Marriott Vaughan" },
+  { id: "YOWBT", officialName: "TownePlace Suites Ottawa Barrhaven" },
+  { id: "YQBTR", officialName: "Residence Inn Trois-Rivières" },
+  { id: "YVRRA", officialName: "Residence Inn Vancouver Airport" },
+  { id: "YYZFT", officialName: "Fairfield Inn & Suites Bolton" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "YULRM", officialName: "The Ritz-Carlton, Montreal" },
+  { id: "YYZRZ", officialName: "The Ritz-Carlton, Toronto" },
 ] as const;
 
-export const canadaMarriottProperties: MarriottProperty[] = canadaMarriottOfficialRows.map(
+export const canadaMarriottProperties: MarriottPropertySeed[] = canadaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "CA",

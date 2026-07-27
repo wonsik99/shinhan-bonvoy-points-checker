@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const usVirginIslandsMarriottOfficialRows = [
@@ -8,9 +8,11 @@ const usVirginIslandsMarriottOfficialRows = [
   { id: "STTWJ", officialName: "The Westin St. John Resort Villas" },
   { id: "STXBR", officialName: "Carambola Beach Resort St. Croix, US Virgin Islands" },
   { id: "STTWI", officialName: "The Westin St. Thomas Beach Resort & Spa" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "STTRZ", officialName: "The Ritz-Carlton, St. Thomas" },
 ] as const;
 
-export const usVirginIslandsMarriottProperties: MarriottProperty[] = usVirginIslandsMarriottOfficialRows.map(
+export const usVirginIslandsMarriottProperties: MarriottPropertySeed[] = usVirginIslandsMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "VI",

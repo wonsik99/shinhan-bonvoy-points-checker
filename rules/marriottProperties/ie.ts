@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const irelandMarriottOfficialRows = [
@@ -13,9 +13,10 @@ const irelandMarriottOfficialRows = [
   { id: "DUBXD", officialName: "Moxy Dublin Docklands" },
   { id: "ORKOX", officialName: "Moxy Cork" },
   { id: "ORKRI", officialName: "Residence Inn by Marriott Cork" },
+  { id: "DUBSP", officialName: "citizenM Dublin St Patrick's" },
 ] as const;
 
-export const irelandMarriottProperties: MarriottProperty[] = irelandMarriottOfficialRows.map(
+export const irelandMarriottProperties: MarriottPropertySeed[] = irelandMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "IE",

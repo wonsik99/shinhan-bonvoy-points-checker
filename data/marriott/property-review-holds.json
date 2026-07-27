@@ -1,0 +1,313 @@
+{
+  "version": 1,
+  "properties": [
+    {
+      "propertyCode": "BEGAC",
+      "officialName": "AC Hotel Airport City Belgrade",
+      "country": "RS",
+      "region": "overseas",
+      "aliases": ["AC Hotel Belgrade Airport City"],
+      "status": "not_yet_open",
+      "reason": "개발사 공식 정보에서 아직 개발 중이며 2026년 말 완공 예정으로 확인되어 운영 개시 전까지 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/begac-ac-hotel-airport-city-belgrade/overview/",
+      "lastReviewedAt": "2026-07-27"
+    },
+    {
+      "propertyCode": "BKIFI",
+      "officialName": "Fairfield by Marriott Kota Kinabalu",
+      "country": "MY",
+      "region": "overseas",
+      "aliases": ["Fairfield Kota Kinabalu"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bkifi-fairfield-kota-kinabalu/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "CAEFW",
+      "officialName": "Fairfield by Marriott Inn & Suites Columbia West",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Fairfield Inn & Suites Columbia West"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/caefw-fairfield-inn-and-suites-columbia-west/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "CSXPF",
+      "officialName": "Four Points by Sheraton Changsha South Station",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Four Points Changsha South Station"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/csxpf-four-points-changsha-south-station/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "CTUFF",
+      "officialName": "Fairfield by Marriott Chengdu Fenghuangshan Sports Park",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Fairfield Chengdu Fenghuangshan Sports Park"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ctuff-fairfield-chengdu-fenghuangshan-sports-park/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "EUGCX",
+      "officialName": "City Express by Marriott Corvallis",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["City Express Corvallis"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/eugcx-city-express-corvallis/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "HGHFU",
+      "officialName": "Fairfield by Marriott Hangzhou Fuyang",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Fairfield Hangzhou Fuyang"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/hghfu-fairfield-hangzhou-fuyang/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "ISTXA",
+      "officialName": "Four Points Flex by Sheraton Istanbul Airport",
+      "country": "TR",
+      "region": "overseas",
+      "aliases": ["Four Points Flex Istanbul Airport"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지는 있으나 객실 요금이 제공되지 않고 실제 운영·예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/istxa-four-points-flex-istanbul-airport/overview/",
+      "lastReviewedAt": "2026-07-27"
+    },
+    {
+      "propertyCode": "MQTTS",
+      "officialName": "TownePlace Suites by Marriott Marquette",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["TownePlace Suites Marquette"],
+      "status": "not_yet_open",
+      "reason": "Marriott 공식 페이지는 있으나 객실 요금과 실제 운영 개시를 확인하지 못했고 공사 중인 정황이 있어 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/mqtts-towneplace-suites-marquette/overview/",
+      "lastReviewedAt": "2026-07-27"
+    },
+    {
+      "propertyCode": "MSPXE",
+      "officialName": "City Express by Marriott Minneapolis Airport",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["City Express Minneapolis Airport"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/mspxe-city-express-minneapolis-airport/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "MYRFI",
+      "officialName": "Fairfield by Marriott Inn & Suites Myrtle Beach",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Fairfield Inn & Suites Myrtle Beach"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/myrfi-fairfield-inn-and-suites-myrtle-beach/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "NUMAK",
+      "officialName": "Oraya, Sindalah, Autograph Collection",
+      "country": "SA",
+      "region": "overseas",
+      "aliases": ["Oraya Sindalah"],
+      "status": "not_yet_open",
+      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/numak-oraya-sindalah-autograph-collection/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "NUMLC",
+      "officialName": "The Syanne, A Luxury Collection Resort, Sindalah",
+      "country": "SA",
+      "region": "overseas",
+      "aliases": ["The Syanne Sindalah"],
+      "status": "not_yet_open",
+      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotel-sitemap/saudi-arabia-hotel-sitemap",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "NUMSA",
+      "officialName": "Seratoro, Sindalah, Apartments by Marriott Bonvoy",
+      "country": "SA",
+      "region": "overseas",
+      "aliases": ["Seratoro Sindalah"],
+      "status": "not_yet_open",
+      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/numsa-apartments-bonvoy-sindalah-island-neom/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "NUMSL",
+      "officialName": "Coramar, A Luxury Collection All-Suites Hotel, Sindalah",
+      "country": "SA",
+      "region": "overseas",
+      "aliases": ["Coramar Sindalah"],
+      "status": "not_yet_open",
+      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotel-sitemap/saudi-arabia-hotel-sitemap",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "OKCTD",
+      "officialName": "TownePlace Suites by Marriott Oklahoma City Downtown",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["TownePlace Suites Oklahoma City Downtown"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/okctd-towneplace-suites-oklahoma-city-downtown/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "PUSAH",
+      "officialName": "Anook Signature Busan Haeundae, Series by Marriott",
+      "country": "KR",
+      "region": "domestic",
+      "aliases": ["Anook Signature Busan Haeundae"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/pusah-anook-signature-busan-haeundae-series-by-marriot/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "SELAI",
+      "officialName": "Anook Signature Incheon Guwol, Series by Marriott",
+      "country": "KR",
+      "region": "domestic",
+      "aliases": ["Anook Signature Incheon Guwol"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/selai-anook-signature-incheon-guwol-series/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "SELSG",
+      "officialName": "Anook Signature Hotel Seoul Guro, Series by Marriott",
+      "country": "KR",
+      "region": "domestic",
+      "aliases": ["Anook Signature Hotel Seoul Guro"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/selsg-anook-signature-hotel-seoul-guro-series/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "SHAHQ",
+      "officialName": "Fairfield by Marriott Shanghai Hongqiao Airport Qibao",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Fairfield Shanghai Hongqiao Airport Qibao"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/shahq-fairfield-shanghai-hongqiao-airport-qibao/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "SNAAF",
+      "officialName": "Fairfield by Marriott Inn & Suites Anaheim Resort",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Fairfield Inn & Suites Anaheim Resort"],
+      "status": "reservations_unavailable",
+      "reason": "동일 주소의 기존 호텔이 다른 브랜드로 운영 중이며 Fairfield 전환 및 Marriott 예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/snaaf-fairfield-inn-and-suites-anaheim-resort/overview/",
+      "lastReviewedAt": "2026-07-27"
+    },
+    {
+      "propertyCode": "SNAAL",
+      "officialName": "SpringHill Suites by Marriott Anaheim Resort",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["SpringHill Suites Anaheim Resort"],
+      "status": "reservations_unavailable",
+      "reason": "동일 주소의 기존 호텔이 다른 브랜드로 운영 중이며 SpringHill Suites 전환 및 Marriott 예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/snaal-springhill-suites-anaheim-resort/overview/",
+      "lastReviewedAt": "2026-07-27"
+    },
+    {
+      "propertyCode": "TIJPC",
+      "officialName": "Courtyard by Marriott Tijuana, Plaza Toreo",
+      "country": "MX",
+      "region": "overseas",
+      "aliases": ["Courtyard Tijuana Plaza Toreo"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/tijpc-courtyard-tijuana-plaza-toreo/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "VCEOX",
+      "officialName": "Moxy Venice Airport",
+      "country": "IT",
+      "region": "overseas",
+      "aliases": ["Moxy Venice Airport"],
+      "status": "not_yet_open",
+      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotel-sitemap/italy-hotel-sitemap",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "WASWF",
+      "officialName": "The Potomac Hotel, Autograph Collection",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["The Potomac Hotel"],
+      "status": "reservations_unavailable",
+      "reason": "기존 Salamander Washington DC의 Autograph Collection 전환과 Marriott 예약 개시가 완료되었는지 확인되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/waswf-the-potomac-hotel-autograph-collection/overview/",
+      "lastReviewedAt": "2026-07-27"
+    },
+    {
+      "propertyCode": "XICQP",
+      "officialName": "Four Points by Sheraton Xichang Qionghai",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Four Points Xichang Qionghai"],
+      "status": "not_yet_open",
+      "reason": "Marriott 공식 호텔 목록에서 개장 예정으로 표시되고 실제 운영·예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/xicqp-four-points-xichang-qionghai/overview/",
+      "lastReviewedAt": "2026-07-27"
+    },
+    {
+      "propertyCode": "XMNXW",
+      "officialName": "The Westin Xiamen Xiang'an",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Westin Xiamen Xiang'an"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/xmnxw-the-westin-xiamen-xiangan/overview/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "ZUHXP",
+      "officialName": "Four Points by Sheraton Zhuhai Xiangzhou",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Four Points Zhuhai Xiangzhou"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/zuhxp-four-points-zhuhai-xiangzhou/overview/",
+      "lastReviewedAt": "2026-07-26"
+    }
+  ]
+}

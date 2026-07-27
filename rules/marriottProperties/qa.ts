@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const qatarMarriottOfficialRows = [
@@ -22,9 +22,12 @@ const qatarMarriottOfficialRows = [
   { id: "DOHEL", officialName: "Element by Marriott West Bay Doha" },
   { id: "DOHEC", officialName: "Marriott Executive Apartments City Center Doha" },
   { id: "DOHEW", officialName: "Marriott Executive Apartments Doha, Le Mirage City Walk" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "DOHRZ", officialName: "The Ritz-Carlton, Doha" },
+  { id: "DOHSQ", officialName: "Sharq Village & Spa, a Ritz-Carlton Hotel" },
 ] as const;
 
-export const qatarMarriottProperties: MarriottProperty[] = qatarMarriottOfficialRows.map(
+export const qatarMarriottProperties: MarriottPropertySeed[] = qatarMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "QA",

@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const costaRicaMarriottOfficialRows = [
@@ -28,9 +28,12 @@ const costaRicaMarriottOfficialRows = [
   { id: "SJOPH", officialName: "Four Points by Sheraton San Jose Sabana" },
   { id: "SJORI", officialName: "Residence Inn by Marriott San Jose Escazu" },
   { id: "SJOAC", officialName: "Residence Inn by Marriott San Jose Alajuela el Coyol" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "LIRRN", officialName: "Nekajui Peninsula Papagayo, a Ritz-Carlton Reserve Residence" },
+  { id: "LIRRZ", officialName: "Nekajui Peninsula Papagayo, a Ritz-Carlton Reserve" },
 ] as const;
 
-export const costaRicaMarriottProperties: MarriottProperty[] = costaRicaMarriottOfficialRows.map(
+export const costaRicaMarriottProperties: MarriottPropertySeed[] = costaRicaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "CR",

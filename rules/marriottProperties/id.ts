@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const indonesiaOfficialRows = [
@@ -96,7 +96,7 @@ const indonesiaOfficialRows = [
   { id: "JOGMC", officialName: "Yogyakarta Marriott Hotel" },
 ];
 
-export const indonesiaMarriottProperties: MarriottProperty[] =
+export const indonesiaMarriottProperties: MarriottPropertySeed[] =
   indonesiaOfficialRows.map(({ id, officialName }) => ({
     id: `id-${id.toLowerCase()}`,
     country: "ID",

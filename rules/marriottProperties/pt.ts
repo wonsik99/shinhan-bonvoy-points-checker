@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const portugalMarriottOfficialRows = [
@@ -33,9 +33,13 @@ const portugalMarriottOfficialRows = [
   { id: "LISOP", officialName: "Moxy Lisbon City" },
   { id: "LISXA", officialName: "Moxy Alfragide Lisboa" },
   { id: "LISRI", officialName: "Residence Inn by Marriott Lisbon" },
+  { id: "FAOMB", officialName: "Memmo Baleeira Hotel a Member of Design Hotels™" },
+  { id: "LISGS", officialName: "Spatia Comporta a Member of Design Hotels™" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "LISRZ", officialName: "Penha Longa Resort" },
 ] as const;
 
-export const portugalMarriottProperties: MarriottProperty[] = portugalMarriottOfficialRows.map(
+export const portugalMarriottProperties: MarriottPropertySeed[] = portugalMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "PT",

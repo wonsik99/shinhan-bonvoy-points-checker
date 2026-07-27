@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const malaysiaOfficialRows = [
@@ -68,9 +68,10 @@ const malaysiaOfficialRows = [
   { id: "KULPG", officialName: "Putrajaya Marriott Hotel" },
   { id: "KULSC", officialName: "Courtyard by Marriott Setia Alam" },
   { id: "KULSY", officialName: "Courtyard By Marriott Subang" },
+  { id: "JHBJW", officialName: "JW Marriott Hotel Johor Bahru" },
 ];
 
-export const malaysiaMarriottProperties: MarriottProperty[] =
+export const malaysiaMarriottProperties: MarriottPropertySeed[] =
   malaysiaOfficialRows.map(({ id, officialName }) => ({
     id: `my-${id.toLowerCase()}`,
     country: "MY",

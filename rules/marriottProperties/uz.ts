@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const uzbekistanMarriottOfficialRows = [
@@ -7,7 +7,7 @@ const uzbekistanMarriottOfficialRows = [
   { id: "TASCY", officialName: "Courtyard by Marriott Tashkent" },
 ] as const;
 
-export const uzbekistanMarriottProperties: MarriottProperty[] = uzbekistanMarriottOfficialRows.map(
+export const uzbekistanMarriottProperties: MarriottPropertySeed[] = uzbekistanMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "UZ",

@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const singaporeOfficialRows = [
@@ -26,7 +26,7 @@ const singaporeOfficialRows = [
   { id: "SINVB", officialName: "The Vagabond Club, Singapore, a Tribute Portfolio Hotel" },
 ];
 
-export const singaporeMarriottProperties: MarriottProperty[] =
+export const singaporeMarriottProperties: MarriottPropertySeed[] =
   singaporeOfficialRows.map(({ id, officialName }) => ({
     id: `sg-${id.toLowerCase()}`,
     country: "SG",

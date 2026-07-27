@@ -1,19 +1,16 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const saudiArabiaMarriottOfficialRows = [
   { id: "EJHEB", officialName: "The Red Sea EDITION" },
   { id: "JEDEB", officialName: "The Jeddah EDITION" },
   { id: "JEDLA", officialName: "Assila, a Luxury Collection Hotel, Jeddah" },
-  { id: "NUMSL", officialName: "Coramar, A Luxury Collection All-Suites Hotel, Sindalah" },
-  { id: "NUMLC", officialName: "The Syanne, A Luxury Collection Resort, Sindalah" },
   { id: "RUHLC", officialName: "Bab Samhan, a Luxury Collection Hotel, Diriyah" },
   { id: "RUHJB", officialName: "JW Marriott Hotel Riyadh" },
   { id: "EJHXR", officialName: "The St. Regis Red Sea Resort" },
   { id: "RUHXR", officialName: "The St. Regis Riyadh" },
   { id: "RUHWH", officialName: "W Riyadh - KAFD" },
-  { id: "NUMAK", officialName: "Oraya, Sindalah, Autograph Collection" },
   { id: "DHAMD", officialName: "Le Méridien Al Khobar" },
   { id: "JEDMK", officialName: "Le Méridien Towers Makkah" },
   { id: "JEDMM", officialName: "Le Méridien Makkah" },
@@ -45,7 +42,6 @@ const saudiArabiaMarriottOfficialRows = [
   { id: "RUHFP", officialName: "Four Points by Sheraton Riyadh Khaldia" },
   { id: "RUHFK", officialName: "Four Points by Sheraton King Abdulaziz Road" },
   { id: "JEDIK", officialName: "Lifestyle Living, Al Salam Jeddah, Apartments by Marriott Bonvoy" },
-  { id: "NUMSA", officialName: "Seratoro, Sindalah, Apartments by Marriott Bonvoy" },
   { id: "ELQEL", officialName: "Element by Marriott Al Qassim" },
   { id: "DMMKA", officialName: "Marriott Executive Apartments Al Khobar" },
   { id: "MEDER", officialName: "Marriott Executive Apartments Madinah" },
@@ -53,9 +49,17 @@ const saudiArabiaMarriottOfficialRows = [
   { id: "RUHRY", officialName: "Marriott Executive Apartments Riyadh, Convention Center" },
   { id: "DMMRI", officialName: "Residence Inn by Marriott Dammam" },
   { id: "GIZRI", officialName: "Residence Inn by Marriott Jazan" },
+  { id: "JEDAR", officialName: "Marriott Executive Apartments Jeddah Al Salam" },
+  { id: "JEDDE", officialName: "Delta Hotels Jeddah Al Salam" },
+  { id: "JEDMP", officialName: "Four Points Makkah Ibrahim Al Khalil" },
+  { id: "RUHOW", officialName: "ROSH Olaya" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "EJHRZ", officialName: "Nujuma, a Ritz-Carlton Reserve" },
+  { id: "JEDRJ", officialName: "The Ritz-Carlton Jeddah" },
+  { id: "RUHRZ", officialName: "The Ritz-Carlton, Riyadh" },
 ] as const;
 
-export const saudiArabiaMarriottProperties: MarriottProperty[] = saudiArabiaMarriottOfficialRows.map(
+export const saudiArabiaMarriottProperties: MarriottPropertySeed[] = saudiArabiaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "SA",

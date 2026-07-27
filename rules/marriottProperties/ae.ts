@@ -1,8 +1,9 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const unitedArabEmiratesMarriottOfficialRows = [
+  { id: "DXBBG", officialName: "Bvlgari Resort Dubai" },
   { id: "AUHEB", officialName: "The Abu Dhabi EDITION" },
   { id: "DXBED", officialName: "The Dubai EDITION" },
   { id: "AUHLC", officialName: "Al Wathba, a Luxury Collection Desert Resort & Spa, Abu Dhabi" },
@@ -23,7 +24,6 @@ const unitedArabEmiratesMarriottOfficialRows = [
   { id: "DXBAK", officialName: "Lapita, Dubai Parks and Resorts, Autograph Collection" },
   { id: "DXBHG", officialName: "Al Habtoor Grand Resort, Autograph Collection" },
   { id: "DXBDD", officialName: "Hotel Boulevard, Autograph Collection" },
-  { id: "DXBCH", officialName: "The Canvas Hotel, Dubai, Autograph Collection" },
   { id: "DXBJK", officialName: "Hotel Local Dubai, Jumeirah Village Triangle, Autograph Collection" },
   { id: "DXBGC", officialName: "Delta Hotels, Dubai Investment Park" },
   { id: "DXBDS", officialName: "FORM Hotel Al Jaddaf, Dubai, a Member of Design Hotels™" },
@@ -81,9 +81,15 @@ const unitedArabEmiratesMarriottOfficialRows = [
   { id: "DXBPR", officialName: "Vintage Grand Hotel Apartments Dubai" },
   { id: "DXBVJ", officialName: "Marriott Executive Apartments Jumeirah Lakes Towers, Dubai" },
   { id: "DXBSZ", officialName: "Residence Inn by Marriott Sheikh Zayed Road, Dubai" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "AUHRZ", officialName: "The Ritz-Carlton Abu Dhabi, Grand Canal" },
+  { id: "DXBIF", officialName: "The Ritz-Carlton, Dubai International Financial Centre" },
+  { id: "DXBRZ", officialName: "The Ritz-Carlton, Dubai" },
+  { id: "RKTRW", officialName: "The Ritz-Carlton Ras Al Khaimah, Al Wadi Desert" },
+  { id: "RKTRZ", officialName: "The Ritz-Carlton Ras Al Khaimah, Al Hamra Beach" },
 ] as const;
 
-export const unitedArabEmiratesMarriottProperties: MarriottProperty[] = unitedArabEmiratesMarriottOfficialRows.map(
+export const unitedArabEmiratesMarriottProperties: MarriottPropertySeed[] = unitedArabEmiratesMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "AE",

@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const guatemalaMarriottOfficialRows = [
@@ -7,9 +7,10 @@ const guatemalaMarriottOfficialRows = [
   { id: "GUAWI", officialName: "The Westin Camino Real, Guatemala" },
   { id: "GUAAR", officialName: "AC Hotel Guatemala City" },
   { id: "GUACY", officialName: "Courtyard by Marriott Guatemala City" },
+  { id: "GUAMG", officialName: "Marriott Guatemala City Cayala" },
 ] as const;
 
-export const guatemalaMarriottProperties: MarriottProperty[] = guatemalaMarriottOfficialRows.map(
+export const guatemalaMarriottProperties: MarriottPropertySeed[] = guatemalaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "GT",

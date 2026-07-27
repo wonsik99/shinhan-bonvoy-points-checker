@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const egyptMarriottOfficialRows = [
@@ -19,9 +19,11 @@ const egyptMarriottOfficialRows = [
   { id: "HRGSS", officialName: "Sheraton Soma Bay Resort" },
   { id: "SSHSI", officialName: "Sheraton Sharm Hotel, Resort, Villas & Spa" },
   { id: "CAIWI", officialName: "The Westin Cairo Golf Resort & Spa, Katameya Dunes" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "CAIRZ", officialName: "The Nile Ritz-Carlton, Cairo" },
 ] as const;
 
-export const egyptMarriottProperties: MarriottProperty[] = egyptMarriottOfficialRows.map(
+export const egyptMarriottProperties: MarriottPropertySeed[] = egyptMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "EG",

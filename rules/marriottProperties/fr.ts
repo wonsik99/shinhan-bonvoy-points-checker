@@ -1,8 +1,9 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const franceMarriottOfficialRows = [
+  { id: "PARBG", officialName: "Bvlgari Hotel Paris" },
   { id: "NCEHC", officialName: "Hôtel du Couvent, a Luxury Collection Hotel, Nice, France" },
   { id: "PARLC", officialName: "Prince de Galles, a Luxury Collection Hotel, Paris" },
   { id: "PARBE", officialName: "Hôtel de Berri Champs-Élysées, a Luxury Collection Hotel, Paris" },
@@ -83,9 +84,15 @@ const franceMarriottOfficialRows = [
   { id: "PARRN", officialName: "Residence Inn by Marriott Paris Didot Montparnasse" },
   { id: "SXBRI", officialName: "Residence Inn by Marriott Strasbourg" },
   { id: "TLSTB", officialName: "Residence Inn by Marriott Toulouse-Blagnac Airport" },
+  { id: "PARCE", officialName: "citizenM Paris Champs-Élysées" },
+  { id: "PARCG", officialName: "citizenM Paris Charles de Gaulle Airport" },
+  { id: "PARCP", officialName: "Four Points by Sheraton Paris Charles de Gaulle Airport" },
+  { id: "PARDF", officialName: "citizenM Paris La Défense" },
+  { id: "PARLY", officialName: "citizenM Paris Gare de Lyon" },
+  { id: "PAROP", officialName: "citizenM Paris Opera" },
 ] as const;
 
-export const franceMarriottProperties: MarriottProperty[] = franceMarriottOfficialRows.map(
+export const franceMarriottProperties: MarriottPropertySeed[] = franceMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "FR",

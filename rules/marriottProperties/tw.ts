@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott Taiwan destination page property codes, July 2026.
 const taiwanOfficialRows = [
@@ -39,7 +39,7 @@ const taiwanOfficialRows = [
   { id: "TPEMT", officialName: "Madison Taipei, a Tribute Portfolio Hotel" },
 ];
 
-export const taiwanMarriottProperties: MarriottProperty[] =
+export const taiwanMarriottProperties: MarriottPropertySeed[] =
   taiwanOfficialRows.map(({ id, officialName }) => ({
     id: `tw-${id.toLowerCase()}`,
     country: "TW",

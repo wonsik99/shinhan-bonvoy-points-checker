@@ -1,12 +1,12 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const djiboutiMarriottOfficialRows = [
   { id: "JIBSI", officialName: "Sheraton Djibouti" },
 ] as const;
 
-export const djiboutiMarriottProperties: MarriottProperty[] = djiboutiMarriottOfficialRows.map(
+export const djiboutiMarriottProperties: MarriottPropertySeed[] = djiboutiMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "DJ",

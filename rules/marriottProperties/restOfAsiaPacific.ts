@@ -6,6 +6,7 @@ import { frenchPolynesiaMarriottProperties } from "./pf";
 import { guamMarriottProperties } from "./gu";
 import { kazakhstanMarriottProperties } from "./kz";
 import { kyrgyzstanMarriottProperties } from "./kg";
+import { laosMarriottProperties } from "./la";
 import { maldivesMarriottProperties } from "./mv";
 import { nepalMarriottProperties } from "./np";
 import { newCaledoniaMarriottProperties } from "./nc";
@@ -24,6 +25,7 @@ export { frenchPolynesiaMarriottProperties } from "./pf";
 export { guamMarriottProperties } from "./gu";
 export { kazakhstanMarriottProperties } from "./kz";
 export { kyrgyzstanMarriottProperties } from "./kg";
+export { laosMarriottProperties } from "./la";
 export { maldivesMarriottProperties } from "./mv";
 export { nepalMarriottProperties } from "./np";
 export { newCaledoniaMarriottProperties } from "./nc";
@@ -43,6 +45,7 @@ export const restOfAsiaPacificMarriottProperties = [
   ...guamMarriottProperties,
   ...kazakhstanMarriottProperties,
   ...kyrgyzstanMarriottProperties,
+  ...laosMarriottProperties,
   ...maldivesMarriottProperties,
   ...nepalMarriottProperties,
   ...newCaledoniaMarriottProperties,

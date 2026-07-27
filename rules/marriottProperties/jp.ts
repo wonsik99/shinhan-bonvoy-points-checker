@@ -1,5 +1,6 @@
-import { contains, exact, high, inferBrand } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
+import { high, inferBrand } from "./helpers";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const japanOfficialRows = [
@@ -131,27 +132,22 @@ const japanOfficialRows = [
   { id: "TYOWY", officialName: "The Westin Yokohama" },
   { id: "TYOYS", officialName: "Yokohama Bay Sheraton Hotel & Towers" },
   { id: "CTSFN", officialName: "Fairfield by Marriott Hokkaido Naganuma" },
+  { id: "OSAKC", officialName: "Courtyard Kyoto Station" },
+  { id: "TYOYY", officialName: "Courtyard Shin Yokohama Station" },
 ];
 
-const japanAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  // Truncated/glued Shinhan overseas statement name (word-boundary MARRIOTT misses this)
-  "Courtyard by Marriott Sapporo": [
-    contains("CYMARRIOTTSAPPOR", high),
-  ],
-  // Former official name seen as a space-free Shinhan statement merchant.
-  "Moxy Osaka Umeda": [exact("MOXY OSAKA SHIN UMEDA", high)],
-};
-
-export const japanMarriottProperties: MarriottProperty[] =
-  japanOfficialRows.map(({ id, officialName }) => ({
-    id: `jp-${id.toLowerCase()}`,
-    country: "JP",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    brandGroup: high.brandGroup,
-    confidence: high.confidence,
-    status: high.status,
-    aliases: japanAliasOverrides[officialName] ?? [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 일본 호텔입니다.`,
-  }));
+export const japanMarriottProperties: MarriottPropertySeed[] =
+  japanOfficialRows.map(({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id: `jp-${id.toLowerCase()}`,
+      country: "JP",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      brandGroup: high.brandGroup,
+      confidence: high.confidence,
+      status: high.status,
+      aliases: [],
+      reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 일본 호텔입니다.`,
+    })
+  );

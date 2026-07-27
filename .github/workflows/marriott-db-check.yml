@@ -1,0 +1,54 @@
+name: Marriott DB Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 12 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  check-official-directory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compare official property-code sources with the approved snapshot
+        id: marriott_check
+        continue-on-error: true
+        run: npm run hotels:check -- --fail-on-official-change --output-dir artifacts/marriott-db-check
+
+      - name: Add the report to the workflow summary
+        if: always()
+        run: |
+          if [ -f artifacts/marriott-db-check/report.md ]; then
+            cat artifacts/marriott-db-check/report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Marriott DB monitor did not produce a report." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the full report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: marriott-db-check-${{ github.run_number }}
+          path: artifacts/marriott-db-check/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Fail when the monitor requires attention
+        if: steps.marriott_check.outcome == 'failure'
+        run: exit 1
