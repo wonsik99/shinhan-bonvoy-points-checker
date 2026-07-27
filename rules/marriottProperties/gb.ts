@@ -1,8 +1,9 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const unitedKingdomMarriottOfficialRows = [
+  { id: "LONBG", officialName: "Bvlgari Hotel London" },
   { id: "LONEB", officialName: "The London EDITION" },
   { id: "EDILG", officialName: "The Edinburgh Grand, a Luxury Collection Hotel, Edinburgh" },
   { id: "LONIV", officialName: "The Langley, a Luxury Collection Hotel, Buckinghamshire" },
@@ -53,6 +54,7 @@ const unitedKingdomMarriottOfficialRows = [
   { id: "LONIS", officialName: "Inhabit Southwick Street, a Member of Design Hotels™" },
   { id: "LONIQ", officialName: "Inhabit Queen's Gardens, a Member of Design Hotels™" },
   { id: "LONSD", officialName: "Sir Devonshire Square, a Member of Design Hotels" },
+  { id: "LONTG", officialName: "Miiro Templeton Garden, a Member of Design Hotels™" },
   { id: "BOHBM", officialName: "Bournemouth Highcliff Marriott Hotel" },
   { id: "BRSRY", officialName: "Bristol Marriott Royal Hotel" },
   { id: "CWLDT", officialName: "Cardiff Marriott Hotel" },
@@ -155,9 +157,17 @@ const unitedKingdomMarriottOfficialRows = [
   { id: "LONRI", officialName: "Residence Inn by Marriott London Bridge" },
   { id: "LONRK", officialName: "Residence Inn by Marriott London Kensington" },
   { id: "MANRI", officialName: "Residence Inn by Marriott Manchester Piccadilly" },
+  { id: "EMANF", officialName: "Four Points Flex Nottingham" },
+  { id: "GLACM", officialName: "citizenM Glasgow" },
+  { id: "LONBS", officialName: "citizenM London Bankside" },
+  { id: "LONST", officialName: "citizenM London Shoreditch" },
+  { id: "LONTL", officialName: "citizenM Tower Of London" },
+  { id: "LONVS", officialName: "citizenM London Victoria Station" },
+  { id: "LONXR", officialName: "The St. Regis London" },
+  { id: "MANAL", officialName: "Aloft Manchester City Centre" },
 ] as const;
 
-export const unitedKingdomMarriottProperties: MarriottProperty[] = unitedKingdomMarriottOfficialRows.map(
+export const unitedKingdomMarriottProperties: MarriottPropertySeed[] = unitedKingdomMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "GB",

@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const namibiaMarriottOfficialRows = [
@@ -10,7 +10,7 @@ const namibiaMarriottOfficialRows = [
   { id: "WVBWA", officialName: "Protea Hotel Walvis Bay Indongo" },
 ] as const;
 
-export const namibiaMarriottProperties: MarriottProperty[] = namibiaMarriottOfficialRows.map(
+export const namibiaMarriottProperties: MarriottPropertySeed[] = namibiaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "NA",

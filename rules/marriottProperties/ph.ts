@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const philippinesOfficialRows = [
@@ -18,7 +18,7 @@ const philippinesOfficialRows = [
   { id: "PPSFP", officialName: "Four Points by Sheraton Palawan Puerto Princesa" },
 ];
 
-export const philippinesMarriottProperties: MarriottProperty[] =
+export const philippinesMarriottProperties: MarriottPropertySeed[] =
   philippinesOfficialRows.map(({ id, officialName }) => ({
     id: `ph-${id.toLowerCase()}`,
     country: "PH",

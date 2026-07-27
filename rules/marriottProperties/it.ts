@@ -1,5 +1,6 @@
-import { contains, high, inferBrand, propertyId } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
+import { high, inferBrand, propertyId } from "./helpers";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott Bonvoy Italy hotel sitemap and destination page, July 2026.
 const italyOfficialNames = [
@@ -11,7 +12,6 @@ const italyOfficialNames = [
   "Pazziella, a Luxury Collection Hotel, Capri",
   "Hotel Cala di Volpe, a Luxury Collection Hotel, Costa Smeralda",
   "The Gritti Palace, a Luxury Collection Hotel, Venice",
-  "Hotel Danieli, a Luxury Collection Hotel, Venice",
   "JW Marriott Venice Resort & Spa",
   "The St. Regis Florence",
   "The St. Regis Rome",
@@ -106,32 +106,25 @@ const italyOfficialNames = [
   "Moxy Milan Linate Airport",
   "Moxy Milan Malpensa Airport",
   "Moxy Pompeii",
-  "Moxy Venice Airport",
   "Moxy Verona",
   "Le Geant, Courmayeur, Apartments by Marriott Bonvoy",
   "Residence Inn by Marriott Milano Linate",
   "Inn Naples Airport",
+  "citizenM Rome Isola Tiberina",
 ];
 
-const italyAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  "Bvlgari Hotel Milano": [contains("BULGARI HOTEL MILANO")],
-  "Bvlgari Hotel Roma": [contains("BULGARI HOTEL ROMA")],
-  "Ortea Palace Hotel, Sicily, Autograph Collection": [
-    contains("ORTEA LUXURY PALACE"),
-    contains("ORTEA PALACE"),
-  ],
-};
-
-export const italyMarriottProperties: MarriottProperty[] =
-  italyOfficialNames.map((officialName) => ({
-    id: propertyId("IT", officialName),
-    country: "IT",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    brandGroup: high.brandGroup,
-    confidence: high.confidence,
-    status: high.status,
-    aliases: italyAliasOverrides[officialName] ?? [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 이탈리아 호텔입니다.`,
-  }));
+export const italyMarriottProperties: MarriottPropertySeed[] =
+  italyOfficialNames.map((officialName) =>
+    applyCuratedMarriottPropertyAliases({
+      id: propertyId("IT", officialName),
+      country: "IT",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      brandGroup: high.brandGroup,
+      confidence: high.confidence,
+      status: high.status,
+      aliases: [],
+      reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 이탈리아 호텔입니다.`,
+    })
+  );

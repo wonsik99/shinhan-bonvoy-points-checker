@@ -23,6 +23,7 @@ function property(
 ): MarriottProperty {
   return {
     id: propertyId("US", officialName),
+    propertyCode: "TEST01",
     country: "US",
     region: "overseas",
     officialName,
@@ -125,6 +126,8 @@ describe("inferBrand", () => {
     ["City Express Cancun", "City Express by Marriott"],
     ["Delta Hotel Toronto", "Delta Hotels by Marriott"],
     ["Element Detroit", "Element Hotels"],
+    ["citizenM Paris Opera", "citizenM"],
+    ["StudioRes Riga Old Town", "StudioRes"],
     ["Gaylord Rockies", "Gaylord Hotels"],
     ["Moxy Seoul", "Moxy"],
     ["Protea Cape Town", "Protea Hotels"],

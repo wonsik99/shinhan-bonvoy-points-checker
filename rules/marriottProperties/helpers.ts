@@ -136,6 +136,9 @@ export function inferBrand(officialName: string): string {
   if (upperName.includes("AUTOGRAPH")) return "Autograph Collection";
   if (upperName.includes("TRIBUTE PORTFOLIO")) return "Tribute Portfolio";
   if (upperName.includes("DESIGN HOTELS")) return "Design Hotels";
+  if (upperName.includes("OUTDOOR COLLECTION")) {
+    return "Outdoor Collection by Marriott Bonvoy";
+  }
   if (upperName.includes("FOUR POINTS FLEX")) return "Four Points Flex by Sheraton";
   if (upperName.includes("FOUR POINTS")) return "Four Points by Sheraton";
   if (upperName.includes("FAIRFIELD")) return "Fairfield by Marriott";
@@ -146,6 +149,8 @@ export function inferBrand(officialName: string): string {
   if (upperName.includes("CITY EXPRESS")) return "City Express by Marriott";
   if (upperName.includes("DELTA HOTEL")) return "Delta Hotels by Marriott";
   if (upperName.includes("ELEMENT")) return "Element Hotels";
+  if (upperName.includes("CITIZENM")) return "citizenM";
+  if (upperName.includes("STUDIORES")) return "StudioRes";
   if (upperName.includes("GAYLORD")) return "Gaylord Hotels";
   if (upperName.includes("MOXY")) return "Moxy";
   if (upperName.includes("PROTEA")) return "Protea Hotels";

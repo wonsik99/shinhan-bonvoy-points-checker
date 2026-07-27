@@ -23,6 +23,7 @@ import { haitiMarriottProperties } from "./ht";
 import { hondurasMarriottProperties } from "./hn";
 import { jamaicaMarriottProperties } from "./jm";
 import { mexicoMarriottProperties } from "./mx";
+import { nicaraguaMarriottProperties } from "./ni";
 import { panamaMarriottProperties } from "./pa";
 import { paraguayMarriottProperties } from "./py";
 import { peruMarriottProperties } from "./pe";
@@ -62,6 +63,7 @@ export { haitiMarriottProperties } from "./ht";
 export { hondurasMarriottProperties } from "./hn";
 export { jamaicaMarriottProperties } from "./jm";
 export { mexicoMarriottProperties } from "./mx";
+export { nicaraguaMarriottProperties } from "./ni";
 export { panamaMarriottProperties } from "./pa";
 export { paraguayMarriottProperties } from "./py";
 export { peruMarriottProperties } from "./pe";
@@ -102,6 +104,7 @@ export const americasMarriottProperties = [
   ...hondurasMarriottProperties,
   ...jamaicaMarriottProperties,
   ...mexicoMarriottProperties,
+  ...nicaraguaMarriottProperties,
   ...panamaMarriottProperties,
   ...paraguayMarriottProperties,
   ...peruMarriottProperties,

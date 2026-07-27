@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const newZealandMarriottOfficialRows = [
@@ -7,7 +7,7 @@ const newZealandMarriottOfficialRows = [
   { id: "AKLFP", officialName: "Four Points by Sheraton Auckland" },
 ] as const;
 
-export const newZealandMarriottProperties: MarriottProperty[] = newZealandMarriottOfficialRows.map(
+export const newZealandMarriottProperties: MarriottPropertySeed[] = newZealandMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "NZ",

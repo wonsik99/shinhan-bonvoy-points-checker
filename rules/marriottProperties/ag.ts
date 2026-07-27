@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const antiguaBarbudaMarriottOfficialRows = [
@@ -7,7 +7,7 @@ const antiguaBarbudaMarriottOfficialRows = [
   { id: "ANURC", officialName: "Royalton CHIC Antigua, an Autograph Collection All-Inclusive Resort - Adults Only" },
 ] as const;
 
-export const antiguaBarbudaMarriottProperties: MarriottProperty[] = antiguaBarbudaMarriottOfficialRows.map(
+export const antiguaBarbudaMarriottProperties: MarriottPropertySeed[] = antiguaBarbudaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "AG",

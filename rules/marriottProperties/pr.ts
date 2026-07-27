@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const puertoRicoMarriottOfficialRows = [
@@ -18,9 +18,14 @@ const puertoRicoMarriottOfficialRows = [
   { id: "SJUFP", officialName: "Four Points by Sheraton Caguas Real Hotel & Casino" },
   { id: "SJUTJ", officialName: "Casa Costera, Isla Verde Beach, Apartments by Marriott Bonvoy" },
   { id: "SJURV", officialName: "Residence Inn by Marriott San Juan Isla Verde" },
+  { id: "PSECX", officialName: "City Centro by Marriott Ponce Plaza Puerto Rico" },
+  { id: "SJUIS", officialName: "Marriott Isla Verde Beach Resort" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "SJUDB", officialName: "Residences at Dorado Beach, a Ritz-Carlton Reserve" },
+  { id: "SJUDO", officialName: "Dorado Beach, a Ritz-Carlton Reserve" },
 ] as const;
 
-export const puertoRicoMarriottProperties: MarriottProperty[] = puertoRicoMarriottOfficialRows.map(
+export const puertoRicoMarriottProperties: MarriottPropertySeed[] = puertoRicoMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "PR",

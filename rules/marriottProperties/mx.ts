@@ -1,8 +1,9 @@
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottOfficialRow, MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
-const mexicoMarriottOfficialRows = [
+const mexicoMarriottOfficialRows: readonly MarriottOfficialRow[] = [
   { id: "CUNEK", officialName: "The Riviera Maya EDITION at Kanai" },
   { id: "CUNPB", officialName: "Paraiso de la Bonita, a Luxury Collection Resort, Riviera Maya, Adult All-Inclusive" },
   { id: "CUNIM", officialName: "Almare, a Luxury Collection Resort, Isla Mujeres Cancun, Adult All-Inclusive" },
@@ -76,7 +77,12 @@ const mexicoMarriottOfficialRows = [
   { id: "VSAMC", officialName: "Villahermosa Marriott Hotel" },
   { id: "CUNWL", officialName: "The Westin Lagunamar Ocean Resort Villas & Spa, Cancun" },
   { id: "CUNWV", officialName: "The Westin Cancun Resort Villas & Spa" },
-  { id: "CUNWO", officialName: "The Westin Resort & Spa, Cancun" },
+  {
+    id: "CUNWO",
+    propertyCode: "CUNWA",
+    formerPropertyCodes: ["CUNWO"],
+    officialName: "The Westin Cancun Resort & Spa",
+  },
   { id: "SJDWV", officialName: "The Westin Los Cabos Resort Villas" },
   { id: "SJDWB", officialName: "The Westin Los Cabos Resort Villas - Baja Point" },
   { id: "CUNBR", officialName: "Renaissance Cancun Resort & Marina" },
@@ -88,12 +94,15 @@ const mexicoMarriottOfficialRows = [
   { id: "CUNMH", officialName: "Mystique Holbox by Royalton, A Tribute Portfolio Resort" },
   { id: "CUNAN", officialName: "Casa Nizuc, a Tribute Portfolio Resort" },
   { id: "CZMWI", officialName: "The Westin Cozumel" },
-  { id: "CUNWA", officialName: "The Westin Cancun Resort & Spa" },
   { id: "GDLWI", officialName: "The Westin Guadalajara" },
   { id: "MEXWS", officialName: "The Westin Santa Fe, Mexico City" },
   { id: "MTYWI", officialName: "The Westin Monterrey Valle" },
-  { id: "PVRWI", officialName: "The Westin Resort & Spa, Puerto Vallarta" },
-  { id: "PVRWA", officialName: "The Westin Playa Vallarta, an All-Inclusive Resort" },
+  {
+    id: "PVRWI",
+    propertyCode: "PVRWA",
+    formerPropertyCodes: ["PVRWI"],
+    officialName: "The Westin Playa Vallarta, an All-Inclusive Resort",
+  },
   { id: "GDLAC", officialName: "AC Hotel Guadalajara, Mexico" },
   { id: "GDLAR", officialName: "AC Hotel Guadalajara Expo, Mexico" },
   { id: "MEXAC", officialName: "AC Hotel Santa Fe" },
@@ -306,11 +315,20 @@ const mexicoMarriottOfficialRows = [
   { id: "CUNRI", officialName: "Residence Inn by Marriott Cancun Hotel Zone" },
   { id: "GDLCR", officialName: "Residence Inn by Marriott Guadalajara Country Club" },
   { id: "MIDRI", officialName: "Residence Inn by Marriott Merida" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "MEXRR", officialName: "The Ritz-Carlton Residences Mexico City" },
+  { id: "MEXRZ", officialName: "The Ritz-Carlton, Mexico City" },
+  { id: "PVRCC", officialName: "Siari Riviera Nayarit, a Ritz-Carlton Reserve" },
+  { id: "SJDRR", officialName: "Zadun Los Cabos, a Ritz-Carlton Reserve Residence" },
+  { id: "SJDZR", officialName: "Zadun Los Cabos, a Ritz-Carlton Reserve" },
 ] as const;
 
-export const mexicoMarriottProperties: MarriottProperty[] = mexicoMarriottOfficialRows.map(
-  ({ id, officialName }) => ({
+export const mexicoMarriottProperties: MarriottPropertySeed[] = mexicoMarriottOfficialRows.map(
+  ({ id, propertyCode, formerPropertyCodes, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
     id,
+    propertyCode,
+    formerPropertyCodes,
     country: "MX",
     region: "overseas",
     officialName,

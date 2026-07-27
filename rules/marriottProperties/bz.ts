@@ -1,12 +1,12 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const belizeMarriottOfficialRows = [
   { id: "SPRAK", officialName: "Alaia Belize, Autograph Collection" },
 ] as const;
 
-export const belizeMarriottProperties: MarriottProperty[] = belizeMarriottOfficialRows.map(
+export const belizeMarriottProperties: MarriottPropertySeed[] = belizeMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "BZ",
