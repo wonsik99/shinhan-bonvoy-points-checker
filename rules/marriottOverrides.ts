@@ -1,14 +1,20 @@
 import type { MerchantRule } from "@/types/transaction";
 
 /**
- * Overseas merchant overrides used to live here (TIAD, Hotel 55, etc.).
- * Those now live as:
- * - derived property aliases (e.g. TIAD from "TIAD, Autograph Collection")
- * - `us.ts` alias: Hotel 55 Chicago
- * - brand keywords: POSTCARD CABINS
- * Keep this export empty so older imports keep working.
+ * Exact overseas operator descriptors that cannot identify one property.
+ * Property-specific statement names belong in the property alias database.
  */
-export const knownMerchantRules: MerchantRule[] = [];
+export const knownMerchantRules: MerchantRule[] = [
+  {
+    pattern: "PRINCE HOTELS",
+    normalizedName: "Prince Hotels 운영 호텔 — 정확한 호텔 확인 필요",
+    brandGroup: "marriott_candidate",
+    confidence: "medium",
+    status: "needs_review",
+    reason:
+      "Prince Hotels는 Marriott Bonvoy 참여 호텔과 비참여 호텔을 함께 운영하므로 이 공용 가맹점명만으로는 정확한 호텔 확인이 필요합니다.",
+  },
+];
 
 /** Known domestic Marriott-family properties whose names carry no brand keyword. */
 export const koreanKnownMerchantRules: MerchantRule[] = [

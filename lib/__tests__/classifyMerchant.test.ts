@@ -784,6 +784,52 @@ describe("classifyMerchant", () => {
     });
   });
 
+  it.each(["PRINCE HOTELS", "Prince-Hotels", "PRINCE.HOTELS"])(
+    "keeps the shared Prince operator merchant in review (%s)",
+    (merchantName) => {
+      expect(classifyMerchant(merchantName)).toMatchObject({
+        isLikelyMarriott: false,
+        confidence: "medium",
+        status: "needs_review",
+        region: "overseas",
+        normalizedName:
+          "Prince Hotels 운영 호텔 — 정확한 호텔 확인 필요",
+        matchedPattern: "PRINCE HOTELS",
+      });
+    }
+  );
+
+  it("does not broaden the exact Prince operator rule", () => {
+    expect(
+      classifyMerchant("PRINCE HOTELS TOKYO").matchedPattern
+    ).not.toBe("PRINCE HOTELS");
+  });
+
+  it.each([
+    [
+      "THE PRINCE GALLERY TOKYO KIOICHO",
+      "The Prince Gallery Tokyo Kioicho, a Luxury Collection Hotel",
+    ],
+    [
+      "THE PRINCE SAKURA TOWER TOKYO",
+      "The Prince Sakura Tower Tokyo, Autograph Collection",
+    ],
+    [
+      "THE PRINCE KYOTO TAKARAGAIKE",
+      "The Prince Kyoto Takaragaike, Autograph Collection",
+    ],
+    ["DELTA HOTELS PRINCE EDWARD", "Delta Hotels Prince Edward"],
+  ])(
+    "preserves the specific property match for %s",
+    (merchantName, normalizedName) => {
+      expect(classifyMerchant(merchantName)).toMatchObject({
+        isLikelyMarriott: true,
+        status: "active",
+        normalizedName,
+      });
+    }
+  );
+
   it.each([
     "FOH PRINCESA PLAZA MADRID",
     "PRINCESA FOH PLAZA MADRID",

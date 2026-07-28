@@ -1,6 +1,7 @@
 import type { MerchantClassification } from "@/types/transaction";
 import {
   hotelLikeKeywords,
+  knownMerchantRules,
   koreanKnownMerchantRules,
   koreanMarriottKeywords,
   marriottContextualKeywords,
@@ -87,6 +88,16 @@ function compactMatchKeyFromNormalized(normalized: string): string {
 
 function aliasKey(value: string): string {
   return compactMatchKeyFromNormalized(normalizeMerchantName(value));
+}
+
+/**
+ * Full-string key for exact operator descriptors. Case, spacing, and
+ * punctuation vary in statement exports, but added words must not match.
+ */
+function exactMerchantRuleKey(value: string): string {
+  return normalizeMerchantName(value)
+    .replace(/&/g, " AND ")
+    .replace(/[^\p{L}\p{N}]+/gu, "");
 }
 
 function propertyAliasToClassification(
@@ -683,12 +694,13 @@ const matchPropertyTokens = createMarriottPropertyTokenMatcher(
  * Deterministic classification pipeline:
  * 1. Korean Marriott brand keywords → certain domestic
  * 2. Shared merchant rules (one statement merchant for multiple properties)
- * 3. Global property alias DB (exact/contains, pre-indexed)
- * 4. Existing English brand evidence + official/local property candidates
+ * 3. Exact overseas operator descriptors → needs_review
+ * 4. Global property alias DB (exact/contains, pre-indexed)
+ * 5. Existing English brand evidence + official/local property candidates
  *    → certain, contextual-brand high, or conservative review
- * 5. Country-specific Korean rules, including operator names → needs_review
- * 6. Hotel-like keywords → low-confidence review candidate
- * 7. Otherwise not Marriott-related
+ * 6. Country-specific Korean rules, including operator names → needs_review
+ * 7. Hotel-like keywords → low-confidence review candidate
+ * 8. Otherwise not Marriott-related
  */
 export function classifyMerchant(merchantName: string): MerchantClassification {
   const normalized = normalizeMerchantName(merchantName);
@@ -719,6 +731,21 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
   const sharedMerchantMatch = matchSharedMerchantRule(normalized);
   if (sharedMerchantMatch) {
     return sharedMerchantMatch;
+  }
+
+  const exactMerchantKey = exactMerchantRuleKey(normalized);
+  for (const rule of knownMerchantRules) {
+    if (exactMerchantKey === exactMerchantRuleKey(rule.pattern)) {
+      return {
+        isLikelyMarriott: rule.brandGroup === "marriott",
+        confidence: rule.confidence,
+        status: rule.status,
+        normalizedName: rule.normalizedName,
+        matchedPattern: rule.pattern,
+        reason: rule.reason,
+        region: "overseas",
+      };
+    }
   }
 
   const propertyMatch = matchPropertyAlias(normalized);
