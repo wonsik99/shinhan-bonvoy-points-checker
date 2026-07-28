@@ -203,6 +203,37 @@ describe("analyzeTransactions", () => {
     }
   );
 
+  it("treats an L5 Prince operator charge as normally credited without naming a property", () => {
+    const [result] = analyzeTransactions([
+      tx({
+        merchantName: "PRINCE HOTELS",
+        pointType: "L5",
+        actualPoints: 1049,
+      }),
+    ]);
+
+    expect(result.analysisStatus).toBe("ok_l5");
+    expect(result.gradeConfirmedMarriott).toBe(true);
+    expect(result.classification).toMatchObject({
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: "Prince Hotels 운영 호텔 — 정확한 호텔 확인 필요",
+    });
+  });
+
+  it("keeps an L2 Prince operator charge in review instead of treating it as a specific hotel", () => {
+    const [result] = analyzeTransactions([
+      tx({ merchantName: "PRINCE HOTELS", pointType: "L2" }),
+    ]);
+
+    expect(result.classification.normalizedName).toBe(
+      "Prince Hotels 운영 호텔 — 정확한 호텔 확인 필요"
+    );
+    expect(result.analysisStatus).toBe("needs_review");
+    expect(result.effectiveIncluded).toBe(false);
+  });
+
   it.each([
     "ANN ARBOR NORTH CAMPUS UMICH",
     "DETROIT AIRPORT PARKING",

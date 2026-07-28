@@ -864,6 +864,52 @@ describe("classifyMerchant", () => {
     });
   });
 
+  it.each(["PRINCE HOTELS", "Prince-Hotels", "PRINCE.HOTELS"])(
+    "keeps the shared Prince operator merchant in review (%s)",
+    (merchantName) => {
+      expect(classifyMerchant(merchantName)).toMatchObject({
+        isLikelyMarriott: false,
+        confidence: "medium",
+        status: "needs_review",
+        region: "overseas",
+        normalizedName:
+          "Prince Hotels 운영 호텔 — 정확한 호텔 확인 필요",
+        matchedPattern: "PRINCE HOTELS",
+      });
+    }
+  );
+
+  it("does not broaden the exact Prince operator rule", () => {
+    expect(
+      classifyMerchant("PRINCE HOTELS TOKYO").matchedPattern
+    ).not.toBe("PRINCE HOTELS");
+  });
+
+  it.each([
+    [
+      "THE PRINCE GALLERY TOKYO KIOICHO",
+      "The Prince Gallery Tokyo Kioicho, a Luxury Collection Hotel",
+    ],
+    [
+      "THE PRINCE SAKURA TOWER TOKYO",
+      "The Prince Sakura Tower Tokyo, Autograph Collection",
+    ],
+    [
+      "THE PRINCE KYOTO TAKARAGAIKE",
+      "The Prince Kyoto Takaragaike, Autograph Collection",
+    ],
+    ["DELTA HOTELS PRINCE EDWARD", "Delta Hotels Prince Edward"],
+  ])(
+    "preserves the specific property match for %s",
+    (merchantName, normalizedName) => {
+      expect(classifyMerchant(merchantName)).toMatchObject({
+        isLikelyMarriott: true,
+        status: "active",
+        normalizedName,
+      });
+    }
+  );
+
   it.each([
     "FOH PRINCESA PLAZA MADRID",
     "PRINCESA FOH PLAZA MADRID",
@@ -986,6 +1032,49 @@ describe("classifyMerchant", () => {
     expect(classifyMerchant("THE RITZ-CARLTON SEOUL").confidence).toBe("certain");
     expect(classifyMerchant("ST. REGIS NEW YORK").confidence).toBe("certain");
     expect(classifyMerchant("W HOTEL HOLLYWOOD").confidence).toBe("certain");
+  });
+
+  // Shinhan statements sometimes print the merchant with a single-T "MARRIOT"
+  // spelling. The catalog derives that variant for every MARRIOTT keyword so
+  // the whole family stays recognized.
+  it.each([
+    "MARRIOT HOTELS",
+    "DELTA HOTELS BY MARRIOT",
+    "MARRIOT VACATION CLUB",
+  ])("classifies the one-T MARRIOT spelling as certain Marriott (%s)", (name) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("certain");
+  });
+
+  it.each([
+    ["JW MARRIOT HOTEL KL", "JW Marriott Hotel Kuala Lumpur"],
+    [
+      "FPF NAGOYA STATION",
+      "Four Points Flex by Sheraton Nagoya Station",
+    ],
+  ])("maps verified statement alias %s to %s", (merchantName, propertyName) => {
+    const result = classifyMerchant(merchantName);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
+    expect(result.normalizedName).toBe(propertyName);
+    expect(result.region).toBe("overseas");
+  });
+
+  it("still matches the canonical JW MARRIOTT spelling", () => {
+    // Full official name resolves via the property alias DB (high); the
+    // abbreviated form falls through to the brand keyword (certain). Both are
+    // confident Marriott matches — the variant must not disturb either.
+    expect(classifyMerchant("JW MARRIOTT HOTEL KUALA LUMPUR").confidence).toBe(
+      "high"
+    );
+    expect(classifyMerchant("JW MARRIOTT HOTEL KL").confidence).toBe("certain");
+  });
+
+  it("does not treat unrelated MARIO/FRITZ names as MARRIOT", () => {
+    expect(classifyMerchant("MARIO PIZZA").confidence).toBe("none");
+    expect(classifyMerchant("FRITZ CAFE").confidence).toBe("none");
   });
 
   it.each([

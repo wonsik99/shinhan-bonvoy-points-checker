@@ -1,3 +1,4 @@
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
 import { high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
 
@@ -72,15 +73,17 @@ const malaysiaOfficialRows = [
 ];
 
 export const malaysiaMarriottProperties: MarriottPropertySeed[] =
-  malaysiaOfficialRows.map(({ id, officialName }) => ({
-    id: `my-${id.toLowerCase()}`,
-    country: "MY",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    brandGroup: high.brandGroup,
-    confidence: high.confidence,
-    status: high.status,
-    aliases: [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 말레이시아 호텔입니다.`,
-  }));
+  malaysiaOfficialRows.map(({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id: `my-${id.toLowerCase()}`,
+      country: "MY",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      brandGroup: high.brandGroup,
+      confidence: high.confidence,
+      status: high.status,
+      aliases: [],
+      reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 말레이시아 호텔입니다.`,
+    })
+  );

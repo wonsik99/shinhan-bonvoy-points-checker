@@ -33,7 +33,10 @@ export const curatedMarriottPropertyAliases: Readonly<
   ISTDC: [contains("DECAMONDO HOTEL", high)],
   // Truncated/glued and former Japanese statement names.
   "jp-ctscy": [contains("CYMARRIOTTSAPPOR", high)],
+  "jp-ngoxf": [exact("FPF NAGOYA STATION", high)],
   "jp-osaoo": [exact("MOXY OSAKA SHIN UMEDA", high)],
+  // Verified Malaysian Shinhan overseas statement spelling.
+  "my-kuldt": [exact("JW MARRIOT HOTEL KL", high)],
   // Confirmed Chinese hotel/operator statement names.
   "cn-dlcdp": [contains("LKL*DALIANFUMAOJIUDIAN", high)],
   "cn-taoqs": [contains("QING DAO LV CHENG HUA CHU", high)],
