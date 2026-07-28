@@ -3,10 +3,12 @@ import { angolaMarriottProperties } from "./ao";
 import { bahrainMarriottProperties } from "./bh";
 import { botswanaMarriottProperties } from "./bw";
 import { djiboutiMarriottProperties } from "./dj";
+import { democraticRepublicCongoMarriottProperties } from "./cd";
 import { egyptMarriottProperties } from "./eg";
 import { ethiopiaMarriottProperties } from "./et";
 import { ghanaMarriottProperties } from "./gh";
 import { ivoryCoastMarriottProperties } from "./ci";
+import { madagascarMarriottProperties } from "./mg";
 import { israelMarriottProperties } from "./il";
 import { jordanMarriottProperties } from "./jo";
 import { kenyaMarriottProperties } from "./ke";
@@ -14,6 +16,7 @@ import { kuwaitMarriottProperties } from "./kw";
 import { lebanonMarriottProperties } from "./lb";
 import { malawiMarriottProperties } from "./mw";
 import { mauritiusMarriottProperties } from "./mu";
+import { mauritaniaMarriottProperties } from "./mr";
 import { moroccoMarriottProperties } from "./ma";
 import { namibiaMarriottProperties } from "./na";
 import { nigeriaMarriottProperties } from "./ng";
@@ -23,6 +26,7 @@ import { rwandaMarriottProperties } from "./rw";
 import { saudiArabiaMarriottProperties } from "./sa";
 import { senegalMarriottProperties } from "./sn";
 import { seychellesMarriottProperties } from "./sc";
+import { capeVerdeMarriottProperties } from "./cv";
 import { southAfricaMarriottProperties } from "./za";
 import { tunisiaMarriottProperties } from "./tn";
 import { ugandaMarriottProperties } from "./ug";
@@ -35,10 +39,12 @@ export { angolaMarriottProperties } from "./ao";
 export { bahrainMarriottProperties } from "./bh";
 export { botswanaMarriottProperties } from "./bw";
 export { djiboutiMarriottProperties } from "./dj";
+export { democraticRepublicCongoMarriottProperties } from "./cd";
 export { egyptMarriottProperties } from "./eg";
 export { ethiopiaMarriottProperties } from "./et";
 export { ghanaMarriottProperties } from "./gh";
 export { ivoryCoastMarriottProperties } from "./ci";
+export { madagascarMarriottProperties } from "./mg";
 export { israelMarriottProperties } from "./il";
 export { jordanMarriottProperties } from "./jo";
 export { kenyaMarriottProperties } from "./ke";
@@ -46,6 +52,7 @@ export { kuwaitMarriottProperties } from "./kw";
 export { lebanonMarriottProperties } from "./lb";
 export { malawiMarriottProperties } from "./mw";
 export { mauritiusMarriottProperties } from "./mu";
+export { mauritaniaMarriottProperties } from "./mr";
 export { moroccoMarriottProperties } from "./ma";
 export { namibiaMarriottProperties } from "./na";
 export { nigeriaMarriottProperties } from "./ng";
@@ -55,6 +62,7 @@ export { rwandaMarriottProperties } from "./rw";
 export { saudiArabiaMarriottProperties } from "./sa";
 export { senegalMarriottProperties } from "./sn";
 export { seychellesMarriottProperties } from "./sc";
+export { capeVerdeMarriottProperties } from "./cv";
 export { southAfricaMarriottProperties } from "./za";
 export { tunisiaMarriottProperties } from "./tn";
 export { ugandaMarriottProperties } from "./ug";
@@ -68,10 +76,12 @@ export const middleEastAfricaMarriottProperties = [
   ...bahrainMarriottProperties,
   ...botswanaMarriottProperties,
   ...djiboutiMarriottProperties,
+  ...democraticRepublicCongoMarriottProperties,
   ...egyptMarriottProperties,
   ...ethiopiaMarriottProperties,
   ...ghanaMarriottProperties,
   ...ivoryCoastMarriottProperties,
+  ...madagascarMarriottProperties,
   ...israelMarriottProperties,
   ...jordanMarriottProperties,
   ...kenyaMarriottProperties,
@@ -79,6 +89,7 @@ export const middleEastAfricaMarriottProperties = [
   ...lebanonMarriottProperties,
   ...malawiMarriottProperties,
   ...mauritiusMarriottProperties,
+  ...mauritaniaMarriottProperties,
   ...moroccoMarriottProperties,
   ...namibiaMarriottProperties,
   ...nigeriaMarriottProperties,
@@ -88,6 +99,7 @@ export const middleEastAfricaMarriottProperties = [
   ...saudiArabiaMarriottProperties,
   ...senegalMarriottProperties,
   ...seychellesMarriottProperties,
+  ...capeVerdeMarriottProperties,
   ...southAfricaMarriottProperties,
   ...tunisiaMarriottProperties,
   ...ugandaMarriottProperties,

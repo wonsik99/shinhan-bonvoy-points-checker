@@ -11,7 +11,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:watch": "vitest",
-    "fixture": "node scripts/make-fixture.mjs"
+    "fixture": "node scripts/make-fixture.mjs",
+    "hotels:check": "node scripts/marriott/check.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

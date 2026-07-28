@@ -1,7 +1,8 @@
-import { contains, high, inferBrand } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
+import { high, inferBrand } from "./helpers";
+import type { MarriottPropertySeed } from "./types";
 
-// Marriott displays 6,329 U.S. hotel cards; 6,308 unique property codes are kept after removing pagination overlap.
+// Source: Marriott HWS property XML; 6,338 unique U.S. property codes, July 2026.
 const unitedStatesOfficialRows = [
   { id: "ABRTS", officialName: "TownePlace Suites by Marriott Aberdeen" },
   { id: "ABRFI", officialName: "Fairfield by Marriott Inn & Suites Aberdeen, SD" },
@@ -1489,7 +1490,6 @@ const unitedStatesOfficialRows = [
   { id: "DALBR", officialName: "Renaissance Dallas Hotel" },
   { id: "CHADL", officialName: "Courtyard by Marriott Dalton" },
   { id: "CHAFL", officialName: "Fairfield by Marriott Inn & Suites Dalton" },
-  { id: "AQAOA", officialName: "TEST-The Ritz-Carlton, Laguna Niguel" },
   { id: "SNARZ", officialName: "The Ritz-Carlton, Laguna Niguel" },
   { id: "SNADP", officialName: "Laguna Cliffs Marriott Resort & Spa" },
   { id: "DXRRI", officialName: "Residence Inn by Marriott Danbury" },
@@ -5862,7 +5862,7 @@ const unitedStatesOfficialRows = [
   { id: "SNATU", officialName: "Residence Inn by Marriott Tustin Orange County" },
   { id: "SNATF", officialName: "Fairfield by Marriott Inn & Suites Tustin Orange County" },
   { id: "PSPHW", officialName: "Hotel Wren, a Member of Design Hotels™" },
-  { id: "PSPHR", officialName: "Hotel RESET Twentynine Palms Joshua Tree National Park" },
+  { id: "PSPHR", officialName: "RESET Hotel Joshua Tree National Park, Outdoor Collection by Marriott Bonvoy" },
   { id: "PSPTN", officialName: "Fairfield by Marriott Inn & Suites Twentynine Palms-Joshua Tree National Park" },
   { id: "TWFTS", officialName: "TownePlace Suites by Marriott Twin Falls" },
   { id: "TWFTW", officialName: "Fairfield by Marriott Inn & Suites Twin Falls" },
@@ -6311,29 +6311,51 @@ const unitedStatesOfficialRows = [
   { id: "YUMFI", officialName: "Fairfield by Marriott Inn & Suites Yuma" },
   { id: "YUMFP", officialName: "Four Points by Sheraton Yuma" },
   { id: "YUMRI", officialName: "Residence Inn by Marriott Yuma" },
+  { id: "ALSSH", officialName: "SpringHill Suites Alamosa" },
+  { id: "ATLHF", officialName: "Fairfield Inn & Suites Bethlehem" },
+  { id: "AUSCD", officialName: "Courtyard Austin Downtown Convention Center" },
+  { id: "AUSDS", officialName: "Austin Proper Hotel a Member of Design Hotels™" },
+  { id: "AUSED", officialName: "Element Austin Downtown" },
+  { id: "AUSFW", officialName: "Fairfield Inn & Suites Austin West" },
+  { id: "AUSLA", officialName: "Residence Inn Austin Lake Travis River Place" },
+  { id: "AUSTE", officialName: "TownePlace Suites Austin Northwest The Domain Area" },
+  { id: "BPTBT", officialName: "TownePlace Suites Beaumont" },
+  { id: "BTVWP", officialName: "Sugar House Hotel Winooski Burlington a Tribute Portfolio Hotel" },
+  { id: "BUFDT", officialName: "Courtyard Buffalo Downtown Canalside" },
+  { id: "CAESN", officialName: "SpringHill Suites Columbia North" },
+  { id: "CCRFI", officialName: "Fairfield Inn & Suites Concord Walnut Creek" },
+  { id: "DALRR", officialName: "Residence Inn Roanoke" },
+  { id: "DENHT", officialName: "Apiary Hotel Belleview Station Denver" },
+  { id: "DENWI", officialName: "The Westin Denver Downtown" },
+  { id: "EWRCA", officialName: "Courtyard Newark Liberty International Airport" },
+  { id: "NYCHA", officialName: "Residence Inn New York Manhattan Midtown East" },
+  { id: "NYCME", officialName: "Courtyard New York Manhattan Midtown East" },
+  { id: "NYCMP", officialName: "Courtyard New York Downtown Manhattan Financial District" },
+  { id: "NYCMT", officialName: "Courtyard New York Manhattan Soho" },
+  { id: "NYCMX", officialName: "The London, a Luxury Collection Hotel, New York City" },
+  { id: "NYCPK", officialName: "Courtyard New York Manhattan Central Park" },
+  { id: "NYCRL", officialName: "Residence Inn New York Downtown Manhattan World Trade Center Area" },
+  { id: "NYCSG", officialName: "Renaissance New York Midtown Hotel" },
+  { id: "NYCSL", officialName: "SpringHill Suites New York Manhattan Chelsea" },
+  { id: "NYCTL", officialName: "TownePlace Suites New York Manhattan Chelsea" },
+  { id: "PVDAP", officialName: "Courtyard Providence Warwick" },
+  { id: "RICSE", officialName: "Element Short Pump" },
+  { id: "RSWTE", officialName: "TownePlace Suites Fort Myers Southeast" },
+  { id: "SWFWC", officialName: "Courtyard Harriman Woodbury" },
 ];
 
-const unitedStatesAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  // Statement often drops "Downtown".
-  "Hotel 55 Chicago Downtown": [
-    contains("HOTEL 55 CHICAGO", high),
-  ],
-  // Shinhan overseas statement merchant for Sky Rock Sedona
-  "Sky Rock Sedona, a Tribute Portfolio Hotel": [
-    contains("SKY ROCK INN OF SEDONA", high),
-  ],
-};
-
-export const unitedStatesMarriottProperties: MarriottProperty[] =
-  unitedStatesOfficialRows.map(({ id, officialName }) => ({
-    id: `us-${id.toLowerCase()}`,
-    country: "US",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    brandGroup: high.brandGroup,
-    confidence: high.confidence,
-    status: high.status,
-    aliases: unitedStatesAliasOverrides[officialName] ?? [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 미국 호텔입니다.`,
-  }));
+export const unitedStatesMarriottProperties: MarriottPropertySeed[] =
+  unitedStatesOfficialRows.map(({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id: `us-${id.toLowerCase()}`,
+      country: "US",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      brandGroup: high.brandGroup,
+      confidence: high.confidence,
+      status: high.status,
+      aliases: [],
+      reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 미국 호텔입니다.`,
+    })
+  );

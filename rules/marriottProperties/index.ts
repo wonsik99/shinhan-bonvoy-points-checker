@@ -9,13 +9,18 @@ import { europeMarriottProperties } from "./europe";
 import { koreaMarriottProperties } from "./kr";
 import { middleEastAfricaMarriottProperties } from "./middleEastAfrica";
 import { unitedStatesMarriottProperties } from "./us";
-import type { SharedMarriottMerchantRule } from "./types";
+import { attachMarriottPropertyCodes } from "../marriottPropertyCodes";
+import type {
+  MarriottPropertySeed,
+  SharedMarriottMerchantRule,
+} from "./types";
 
 export type {
   BrandGroup,
   MarriottProperty,
   MarriottPropertyAlias,
   MarriottPropertyAliasSource,
+  MarriottPropertySeed,
   MatchMode,
   SharedMarriottMerchantRule,
 } from "./types";
@@ -27,7 +32,7 @@ export { koreaMarriottProperties } from "./kr";
 export * from "./middleEastAfrica";
 export { unitedStatesMarriottProperties } from "./us";
 
-const rawMarriottProperties = [
+const rawMarriottProperties: MarriottPropertySeed[] = [
   ...koreaMarriottProperties,
   ...asiaPacificMarriottProperties,
   ...europeMarriottProperties,
@@ -37,7 +42,9 @@ const rawMarriottProperties = [
   ...unitedStatesMarriottProperties,
 ];
 
-export const marriottProperties = buildSafeDerivedAliases(rawMarriottProperties);
+export const marriottProperties = buildSafeDerivedAliases(
+  attachMarriottPropertyCodes(rawMarriottProperties)
+);
 
 export const sharedMarriottMerchantRules: SharedMarriottMerchantRule[] = [
   ...chinaSharedMerchantRules,

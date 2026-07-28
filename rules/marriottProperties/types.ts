@@ -38,8 +38,10 @@ export interface SharedMarriottMerchantRule {
   reason: string;
 }
 
-export interface MarriottProperty {
+interface MarriottPropertyBase {
   id: string;
+  /** Previous Marriott reservation codes retained for audit/history only. */
+  formerPropertyCodes?: readonly string[];
   country: string;
   region: "domestic" | "overseas";
   officialName: string;
@@ -50,4 +52,29 @@ export interface MarriottProperty {
   status?: RuleStatus;
   aliases: MarriottPropertyAlias[];
   reason?: string;
+}
+
+/**
+ * Source row used while the country catalogs are assembled.
+ *
+ * `id` is the app's stable identity and must not change when a hotel is
+ * renamed. `propertyCode` is Marriott's separate official hotel code. Most
+ * generated country files can derive the code from their historical ID, while
+ * hand-curated/legacy rows use the explicit override table.
+ */
+export interface MarriottPropertySeed extends MarriottPropertyBase {
+  propertyCode?: string;
+}
+
+/** Compact source row used by generated country catalogs. */
+export interface MarriottOfficialRow {
+  id: string;
+  officialName: string;
+  propertyCode?: string;
+  formerPropertyCodes?: readonly string[];
+}
+
+/** A fully resolved property used by the classifier and update monitor. */
+export interface MarriottProperty extends MarriottPropertyBase {
+  propertyCode: string;
 }

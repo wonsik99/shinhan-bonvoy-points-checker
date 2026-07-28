@@ -1,5 +1,6 @@
-import { contains, high, inferBrand } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
+import { high, inferBrand } from "./helpers";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const turkiyeMarriottOfficialRows = [
@@ -69,22 +70,21 @@ const turkiyeMarriottOfficialRows = [
   { id: "AYTRI", officialName: "Residence Inn by Marriott Antalya" },
   { id: "ISTRI", officialName: "Residence Inn by Marriott Istanbul Atasehir" },
   { id: "TZXRI", officialName: "Residence Inn by Marriott Trabzon" },
+  { id: "ADBXT", officialName: "Moxy Izmir" },
+  { id: "DIYFP", officialName: "Four Points Diyarbakir" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "ISTRZ", officialName: "The Ritz-Carlton, Istanbul" },
 ];
 
-const turkiyeAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  // Shinhan overseas statement names for DeCamondo Galata
-  "DeCamondo Galata, a Tribute Portfolio Hotel": [
-    contains("DECAMONDO HOTEL", high)
-  ],
-};
-
-export const turkiyeMarriottProperties: MarriottProperty[] =
-  turkiyeMarriottOfficialRows.map(({ id, officialName }) => ({
-    id,
-    country: "TR",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    ...high,
-    aliases: turkiyeAliasOverrides[officialName] ?? [],
-  }));
+export const turkiyeMarriottProperties: MarriottPropertySeed[] =
+  turkiyeMarriottOfficialRows.map(({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id,
+      country: "TR",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      ...high,
+      aliases: [],
+    })
+  );

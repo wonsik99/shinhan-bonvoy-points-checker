@@ -5,12 +5,14 @@ import {
   koreanKnownMerchantRules,
   koreanMarriottKeywords,
   marriottContextualKeywords,
+  marriottPropertyReviewHolds,
   marriottProperties,
   marriottKeywords,
   sharedMarriottMerchantRules,
   type MarriottProperty,
   type MarriottPropertyAlias,
   type MarriottPropertyAliasSource,
+  type MarriottPropertyReviewHold,
   type SharedMarriottMerchantRule,
 } from "@/rules/marriott";
 import { defaultPropertyAliasMatch } from "@/rules/marriottProperties/helpers";
@@ -98,6 +100,50 @@ function exactMerchantRuleKey(value: string): string {
   return normalizeMerchantName(value)
     .replace(/&/g, " AND ")
     .replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
+interface CompiledPropertyReviewHold {
+  hold: MarriottPropertyReviewHold;
+  pattern: string;
+  compact: string;
+}
+
+function createPropertyReviewHoldMatcher(
+  holds: MarriottPropertyReviewHold[]
+): (normalized: string) => MerchantClassification | undefined {
+  const compiled = holds.flatMap((hold) =>
+    [...new Set([hold.officialName, ...hold.aliases])].map(
+      (pattern): CompiledPropertyReviewHold => ({
+        hold,
+        pattern,
+        compact: aliasKey(pattern),
+      })
+    )
+  );
+
+  return (normalized) => {
+    const compact = compactMatchKeyFromNormalized(normalized);
+    const selected = compiled
+      .filter((candidate) => compact.includes(candidate.compact))
+      .sort(
+        (left, right) =>
+          right.compact.length - left.compact.length ||
+          compareText(left.hold.propertyCode, right.hold.propertyCode)
+      )[0];
+    if (!selected) {
+      return undefined;
+    }
+
+    return {
+      isLikelyMarriott: false,
+      confidence: "medium",
+      status: "needs_review",
+      normalizedName: selected.hold.officialName,
+      matchedPattern: selected.pattern,
+      reason: `${selected.hold.officialName}은 활성 등록 보류 목록에 있습니다. ${selected.hold.reason} 실제 운영 및 Marriott 특별 적립 대상 여부를 확인해야 합니다.`,
+      region: selected.hold.region,
+    };
+  };
 }
 
 function propertyAliasToClassification(
@@ -683,6 +729,9 @@ export function createSharedMerchantRuleMatcher(
 }
 
 const matchPropertyAlias = createPropertyAliasMatcher(marriottProperties);
+const matchPropertyReviewHold = createPropertyReviewHoldMatcher(
+  marriottPropertyReviewHolds
+);
 const matchSharedMerchantRule = createSharedMerchantRuleMatcher(
   sharedMarriottMerchantRules
 );
@@ -692,15 +741,16 @@ const matchPropertyTokens = createMarriottPropertyTokenMatcher(
 
 /**
  * Deterministic classification pipeline:
- * 1. Korean Marriott brand keywords → certain domestic
- * 2. Shared merchant rules (one statement merchant for multiple properties)
- * 3. Exact overseas operator descriptors → needs_review
- * 4. Global property alias DB (exact/contains, pre-indexed)
- * 5. Existing English brand evidence + official/local property candidates
+ * 1. Operator-reviewed registration holds → needs_review
+ * 2. Korean Marriott brand keywords → certain domestic
+ * 3. Shared merchant rules (one statement merchant for multiple properties)
+ * 4. Exact overseas operator descriptors → needs_review
+ * 5. Global property alias DB (exact/contains, pre-indexed)
+ * 6. Existing English brand evidence + official/local property candidates
  *    → certain, contextual-brand high, or conservative review
- * 6. Country-specific Korean rules, including operator names → needs_review
- * 7. Hotel-like keywords → low-confidence review candidate
- * 8. Otherwise not Marriott-related
+ * 7. Country-specific Korean rules, including operator names → needs_review
+ * 8. Hotel-like keywords → low-confidence review candidate
+ * 9. Otherwise not Marriott-related
  */
 export function classifyMerchant(merchantName: string): MerchantClassification {
   const normalized = normalizeMerchantName(merchantName);
@@ -713,6 +763,11 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
       status: "rejected",
       reason: "가맹점명이 비어 있습니다.",
     };
+  }
+
+  const reviewHoldMatch = matchPropertyReviewHold(normalized);
+  if (reviewHoldMatch) {
+    return reviewHoldMatch;
   }
 
   for (const keyword of koreanMarriottKeywords) {

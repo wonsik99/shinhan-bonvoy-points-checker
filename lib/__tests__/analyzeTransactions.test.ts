@@ -126,6 +126,24 @@ describe("analyzeTransactions", () => {
     expect(result.expectedPoints).toBe(1049);
   });
 
+  it.each([
+    "MOXY VENICE AIRPORT",
+    "ORAYA SINDALAH",
+    "THE SYANNE SINDALAH",
+    "SERATORO SINDALAH",
+    "CORAMAR SINDALAH",
+  ])(
+    "does not auto-count a held property as suspected missing (%s)",
+    (merchantName) => {
+      const [result] = analyzeTransactions([tx({ merchantName })]);
+
+      expect(result.classification.isLikelyMarriott).toBe(false);
+      expect(result.classification.status).toBe("needs_review");
+      expect(result.analysisStatus).toBe("needs_review");
+      expect(result.effectiveIncluded).toBe(false);
+    }
+  );
+
   it("does not flag missing when difference is not positive", () => {
     const [result] = analyzeTransactions([
       tx({ pointType: "L2", actualPoints: 2000 }),

@@ -1,5 +1,6 @@
-import { exact, high, inferBrand } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
+import { high, inferBrand } from "./helpers";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const malaysiaOfficialRows = [
@@ -68,25 +69,21 @@ const malaysiaOfficialRows = [
   { id: "KULPG", officialName: "Putrajaya Marriott Hotel" },
   { id: "KULSC", officialName: "Courtyard by Marriott Setia Alam" },
   { id: "KULSY", officialName: "Courtyard By Marriott Subang" },
+  { id: "JHBJW", officialName: "JW Marriott Hotel Johor Bahru" },
 ];
 
-const malaysiaAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  // Verified Shinhan overseas statement spelling for property code KULDT.
-  "JW Marriott Hotel Kuala Lumpur": [
-    exact("JW MARRIOT HOTEL KL", high),
-  ],
-};
-
-export const malaysiaMarriottProperties: MarriottProperty[] =
-  malaysiaOfficialRows.map(({ id, officialName }) => ({
-    id: `my-${id.toLowerCase()}`,
-    country: "MY",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    brandGroup: high.brandGroup,
-    confidence: high.confidence,
-    status: high.status,
-    aliases: malaysiaAliasOverrides[officialName] ?? [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 말레이시아 호텔입니다.`,
-  }));
+export const malaysiaMarriottProperties: MarriottPropertySeed[] =
+  malaysiaOfficialRows.map(({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id: `my-${id.toLowerCase()}`,
+      country: "MY",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      brandGroup: high.brandGroup,
+      confidence: high.confidence,
+      status: high.status,
+      aliases: [],
+      reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 말레이시아 호텔입니다.`,
+    })
+  );

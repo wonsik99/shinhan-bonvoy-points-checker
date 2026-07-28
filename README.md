@@ -23,8 +23,9 @@
 - 실제 적립 포인트와 예상 포인트의 차이 계산
 - 해외 거래에서 채널명보다 `해외가맹점명`을 우선 사용
 - Marriott 브랜드, 공식 호텔명, 현지명, 검증된 alias 및 운영사 규칙 대조
-- 전 세계 143개 국가·지역, 10,148개 Marriott 호텔 seed 기반 탐색
+- 전 세계 149개 국가·지역, 10,287개 운영 확인 Marriott 호텔 seed 기반 탐색
 - 공식명·현지명 토큰을 이용한 보수적인 미등록 호텔 후보 탐색
+- Marriott·Ritz-Carlton·Bvlgari 공식 property code 소스와 로컬 seed의 주간 변경 확인 보고서
 - `포함` / `제외` / `모르겠음`으로 확인 필요 거래 직접 검토
 - 앱이 놓친 거래를 사용자가 Marriott로 표시하는 false-negative 보정
 - 카드사 문의 문구 생성·복사 및 전화/1:1문의/공유 채널 연결
@@ -136,7 +137,11 @@ npm run test:e2e     # Playwright 브라우저 흐름
 npm run lint
 npm run build        # 정적 프로덕션 빌드
 npm run fixture      # docs/_local/sample.xlsx 생성 (gitignore)
+npm run hotels:check # Marriott 공식 호텔 DB 변경 확인(읽기 전용)
 ```
+
+호텔 DB 모니터의 실행 방법과 안전 정책은
+[`docs/hotel-db-maintenance.md`](docs/hotel-db-maintenance.md)를 참고하세요.
 
 ### 프로젝트 구조
 
@@ -146,6 +151,8 @@ components/                     업로드, 진행 단계, 결과 표, 문의 UI
 lib/                            파싱, 정규화, 분류, 분석, 피드백
 lib/marriottPropertyTokenIndex  공식명·현지명 토큰 후보 인덱스
 rules/                          카드 프로필, Marriott 브랜드·호텔·alias 규칙
+data/marriott/                  공식 code 메타데이터, 등록 보류·소스 누락 예외, 승인 snapshot
+scripts/marriott/               공식 XML/code 수집·비교·보고서 모니터
 google-apps-script/             선택적 Google Sheets 피드백 수집기
 e2e/                            Playwright 브라우저 테스트
 next.config.ts                  CSP 등 보안 헤더
@@ -172,7 +179,7 @@ npm run test:e2e
 
 - 더 클래식 카드 프로필과 카드 선택 UI
 - 사용자 피드백 집계·후보화·수동 검토용 운영 도구
-- Marriott 호텔 seed와 가맹점 alias의 지속적인 업데이트 절차
+- Marriott 공식 호텔 seed 주간 변경 모니터와 수동 검토 절차 (완료)
 - 수동 검증 alias가 충분히 쌓였을 때만 선택적 비공개 alias 조회 API 검토
 
 사용자 앱의 판정·계산 경로에는 LLM을 넣지 않습니다.
@@ -203,8 +210,9 @@ Bonvoy L4/L5 Checker analyzes a Shinhan Card **points accrual statement in Excel
 - Calculates the difference between credited and expected points
 - Prefers the overseas merchant field over a generic payment-channel name
 - Matches Marriott brands, official names, local names, verified aliases, and operator rules
-- Searches a seed of 10,148 Marriott properties across 143 countries and regions
+- Searches 10,287 verified-operating Marriott property seeds across 149 countries and regions
 - Finds conservative unregistered-property candidates using official/local name tokens
+- Produces a weekly read-only change report against Marriott, Ritz-Carlton, and Bvlgari official property-code sources
 - Lets users mark review items as include, exclude, or unsure
 - Lets users manually mark a missed transaction as Marriott for the current session
 - Generates and copies a card issuer inquiry message and links to phone, online inquiry, and OS sharing options
@@ -316,7 +324,11 @@ npm run test:e2e     # Playwright browser flow
 npm run lint
 npm run build        # Static production build
 npm run fixture      # Creates docs/_local/sample.xlsx (gitignored)
+npm run hotels:check # Read-only official Marriott property DB check
 ```
+
+See [`docs/hotel-db-maintenance.md`](docs/hotel-db-maintenance.md) for the
+monitor workflow and safety policy.
 
 ### Project structure
 
@@ -326,6 +338,8 @@ components/                     Upload, progress, result tables, inquiry UI
 lib/                            Parsing, normalization, classification, analysis, feedback
 lib/marriottPropertyTokenIndex  Official/local property-name token candidates
 rules/                          Card profile and Marriott brand/property/alias rules
+data/marriott/                  Official-code mappings, registration holds, source-gap exceptions, approved snapshot
+scripts/marriott/               Official XML/code collector, diff, and report monitor
 google-apps-script/             Optional Google Sheets feedback collector
 e2e/                            Playwright browser tests
 next.config.ts                  CSP and other security headers
@@ -352,7 +366,7 @@ If the collector URL changes, verify the feedback button, network payload, and C
 
 - The Classic card profile and a card-selection UI
 - An operator tool for aggregating, reviewing, and approving feedback candidates
-- A sustainable update process for the Marriott property seed and merchant aliases
+- Weekly Marriott official-property monitoring with manual review
 - An optional private-alias lookup API only if enough high-value verified aliases accumulate
 
 No LLM will be added to the user-facing classification or calculation path.

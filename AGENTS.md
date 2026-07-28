@@ -53,7 +53,10 @@ lib/classifyMerchant    한글 브랜드 → 호텔 alias DB(인덱스) → 영�
 lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_marriott/canceled), 피드백 적용, 요약
 lib/inquiryMessage      카드사 문의 문구 생성
 lib/feedback            (선택) 익명 피드백 + 파싱 실패 원클릭 제보 — 기본은 Google Sheets(Apps Script), env 없으면 no-op
-rules/marriott*.ts      브랜드 키워드·호텔 alias DB(143개 국가·지역 10,148개 seed)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
+rules/marriott*.ts      브랜드 키워드·호텔 alias DB(149개 국가·지역 10,287개 운영 확인 seed)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
+rules/marriottPropertyOverrides.ts 사람이 검증한 가맹점 alias(공식 seed와 분리)
+data/marriott/          안정 ID↔공식 code 메타데이터, 등록 보류·소스 누락 예외, 승인 snapshot
+scripts/marriott/       Marriott/Ritz HWS XML+Bvlgari 공식 code 수집·비교·보고서 생성(읽기 전용)
 components/             GuidedProgress(3단계 레일·모바일 진행바), FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, InquirySend(전화/1:1문의/OS공유 채널 연결 — 네트워크 전송 없음), Disclaimer
 app/globals.css         디자인 색 토큰(@theme: ember/ink/muted/hairline 등) — 색은 반드시 토큰 클래스(text-ember 등)로 사용, hex 하드코딩 금지(OG 이미지 제외)
 google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내
@@ -74,6 +77,7 @@ npm run test:coverage # 핵심 로직 커버리지 + 하한선 검증
 npm run test:e2e  # Playwright 합성 XLSX 업로드·피드백·반응형 흐름
 npm run lint && npm run build
 npm run fixture   # docs/_local/sample.xlsx 생성 (실제 레이아웃 모사, gitignore)
+npm run hotels:check # 공식 property-code 소스 변경 확인(자동 수정/merge 없음)
 ```
 
 fixture 기대값: 16건 / Marriott 13 / 정상 2 / 누락 의심 9 / 확인 필요 1(해외 L1) / 예상 추가 6,005P (SAMMAEBONG을 메리어트로 표시 시 +1,200P). 실물 파일 검증 방법은 `docs/_local/HANDOFF.md` 참고. UI 변경 시 Playwright로 업로드→요약 수치→피드백 버튼→문의 문구까지 실제로 확인할 것.
@@ -87,7 +91,7 @@ fixture 기대값: 16건 / Marriott 13 / 정상 2 / 누락 의심 9 / 확인 필
 
 1. **수집 활성화** — Google Sheets(Apps Script) 기반. 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보. 켜지면 페이지 하단 수집 고지가 자동 표시됨. (완료)
 2. **더 클래식 카드 지원** — cardProfiles에 프로필 추가 + 카드 선택 UI.
-3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties/`에 Marriott 공식 hotel sitemap 기준 전세계 143개 국가·지역 10,148개 호텔을 seed로 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다. 미국 주 단위 sitemap은 `us.ts`와 중복되므로 제외하고, Antarctica sitemap의 테스트 호텔 데이터도 제외한다.
+3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties/`에 전세계 149개 국가·지역 10,287개 운영 확인 호텔을 활성 seed로 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다. 운영 전이거나 공식 페이지에서 예약이 아직 제공되지 않는 호텔은 `data/marriott/property-review-holds.json`에 두어 자동 누락 의심 및 신규 등록 후보에서 제외한다. 공식 페이지로 운영을 확인했지만 현재 수집하는 XML 묶음에 없는 호텔은 `data/marriott/property-source-exceptions.json`에 근거와 검토일을 기록한다. 미국 주 단위 sitemap은 `us.ts`와 중복되므로 제외하고, Antarctica sitemap의 테스트 호텔 데이터와 공식 제휴 종료 항목은 제외한다.
 4. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.
 5. **조건부 하이브리드 백엔드 (v2.x)** — 비공개로 유지할 가치가 있는 수동 검증 alias가 충분히 쌓인 경우에만, 파일 로컬 처리를 유지하면서 비공개 alias 조회 API를 추가하는 방안을 재검토한다. 상세 계획은 아래 참고.
 

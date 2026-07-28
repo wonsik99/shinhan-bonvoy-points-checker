@@ -12,6 +12,7 @@ function property(
 ): MarriottProperty {
   return {
     id,
+    propertyCode: id.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8),
     country: "US",
     region: "overseas",
     officialName,

@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "properties": [
+    {
+      "propertyCode": "BJVDE",
+      "officialName": "Delta Hotels Bodrum",
+      "status": "verified_active_source_gap",
+      "reason": "운영사 공식 사이트에서 Delta Hotels by Marriott 명칭과 예약 가능한 운영 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://deltahotelsmarriottbodrum.com/en",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "BRCTX",
+      "officialName": "Arelauquen Lodge, a Tribute Portfolio Hotel, San Carlos de Bariloche",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지에서 객실 검색과 현재 호텔 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/es/hotels/brctx-arelauquen-lodge-a-tribute-portfolio-hotel-san-carlos-de-bariloche/reviews/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "CGNBO",
+      "officialName": "Bonn Marriott Hotel",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지에서 객실·식음·이벤트와 예약 경로를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/cgnbo-bonn-marriott-hotel/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "CGNLD",
+      "officialName": "Delta Hotels Leverkusen",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔·레스토랑 페이지를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/cgnld-delta-hotels-leverkusen/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "CMBMC",
+      "officialName": "Weligama Bay Marriott Resort & Spa",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 숙박 프로모션에서 CMBMC 코드와 현재 호텔 운영을 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/offers/sri-lanka-member-save-10-and-more-OFF-220992/CMBMC-weligama-bay-marriott-resort-and-spa",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "CUNWV",
+      "officialName": "The Westin Cancun Resort Villas & Spa",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 갤러리와 Marriott Vacation Club 안내를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/es/hotels/cunwv-the-westin-cancun-resort-villas-and-spa/photos/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "DPSUJ",
+      "officialName": "JW Marriott Bali Ubud Resort & Spa",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지와 객실 예약 화면이 현재 제공되지만 이번 공식 XML 코드 묶음에서만 사라졌습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-gb/hotels/dpsuj-jw-marriott-bali-ubud-resort-and-spa/",
+      "lastReviewedAt": "2026-07-26"
+    },
+    {
+      "propertyCode": "HERLC",
+      "officialName": "Blue Palace Elounda, a Luxury Collection Resort, Crete",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 식음 페이지에서 호텔명·주소·전화번호와 운영 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/dining/restaurant-bar/herlc-blue-palace-elounda-a-luxury-collection-resort-crete/5967051-blue-door.mi",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "JKTPR",
+      "officialName": "The Residences at The Ritz-Carlton Jakarta, Pacific Place",
+      "status": "verified_active_source_gap",
+      "reason": "Ritz-Carlton 공식 페이지에서 현재 레지던스 운영을 확인했지만 별도 JKTPR 코드는 현재 수집하는 공식 코드 묶음에 없습니다.",
+      "evidenceUrl": "https://www.ritzcarlton.com/en/hotels/jktrt-the-ritz-carlton-jakarta-pacific-place/rooms/residences/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "JMKAK",
+      "officialName": "Aegon Mykonos, Autograph Collection",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔·식음 페이지에서 예약과 운영 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/jmkak-aegon-mykonos-autograph-collection/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "LGWFP",
+      "officialName": "Four Points by Sheraton London Gatwick Airport",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔·식음 페이지를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/lgwfp-four-points-london-gatwick-airport/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "MDZAV",
+      "officialName": "Auberge du Vin, a Tribute Portfolio Hotel, Tupungato",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 페이지에서 객실 검색·편의시설·현지 연락처를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/mdzav-auberge-du-vin-a-tribute-portfolio-hotel-tupungato/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "MEDMC",
+      "officialName": "Madinah Marriott Hotel",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지와 국가별 공식 디렉터리에서 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/medmc-madinah-marriott-hotel/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "MTYDS",
+      "officialName": "Habita Monterrey, a Member of Design Hotels™",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지에서 객실·식음·연락처를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/mtyds-habita-monterrey-a-member-of-design-hotels/reviews/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "NASHB",
+      "officialName": "Harborside Resort at Atlantis",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔·리뷰 페이지에서 현재 호텔 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/nashb-harborside-resort-at-atlantis/reviews/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "RHOKB",
+      "officialName": "Aphi Aura, Rhodes, Autograph Collection",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 페이지에서 예약 검색·객실·식음·현지 연락처를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/rhokb-aphi-aura-rhodes-autograph-collection/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "SJUIV",
+      "officialName": "Courtyard by Marriott Isla Verde Beach Resort",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지와 현재 숙박 프로모션을 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/sjuiv-courtyard-isla-verde-beach-resort/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "SOUWX",
+      "officialName": "Four Points Flex by Sheraton Winchester South",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔·사진 페이지와 목적지 검색에서 현재 호텔을 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-gb/hotels/souwx-four-points-flex-winchester-south/photos/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "STNCD",
+      "officialName": "Delta Hotels Cheshunt",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 페이지에서 객실·식음·이벤트와 호텔 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/stncd-delta-hotels-cheshunt/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "STXBR",
+      "officialName": "Carambola Beach Resort St. Croix, US Virgin Islands",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지와 현재 숙박 프로모션을 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/stxbr-carambola-beach-resort-st-croix-us-virgin-islands/overview/",
+      "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "VSAFI",
+      "officialName": "Fairfield by Marriott Inn & Suites Villahermosa Tabasco",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 페이지와 프로모션에서 동일 호텔과 코드를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
+      "evidenceUrl": "https://www.marriott.com/es/hotels/vsafi-fairfield-inn-and-suites-villahermosa-tabasco/reviews/",
+      "lastReviewedAt": "2026-07-22"
+    }
+  ]
+}

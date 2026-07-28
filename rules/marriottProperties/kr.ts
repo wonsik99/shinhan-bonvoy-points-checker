@@ -5,7 +5,7 @@ import {
   high,
   needsReviewReason,
 } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import type { MarriottPropertySeed, MarriottPropertyAlias } from "./types";
 
 const korea = (
   id: string,
@@ -13,10 +13,10 @@ const korea = (
   brand: string,
   aliases: MarriottPropertyAlias[],
   options?: Pick<
-    MarriottProperty,
+    MarriottPropertySeed,
     "localName" | "brandGroup" | "confidence" | "status" | "reason"
   >
-): MarriottProperty => ({
+): MarriottPropertySeed => ({
   id,
   country: "KR",
   region: "domestic",
@@ -32,7 +32,7 @@ const korea = (
     `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 국내 호텔입니다.`,
 });
 
-export const koreaMarriottProperties: MarriottProperty[] = [
+export const koreaMarriottProperties: MarriottPropertySeed[] = [
   korea("kr-le-meridien-seoul-myeongdong", "Le Meridien Seoul, Myeongdong", "Le Meridien", [
     contains("LE MERIDIEN SEOUL"),
     contains("LE MERIDIEN SEOUL MYEONGDONG"),

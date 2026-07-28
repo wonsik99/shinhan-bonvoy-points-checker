@@ -1,5 +1,6 @@
-import { exact, high, inferBrand } from "./helpers";
-import type { MarriottProperty, MarriottPropertyAlias } from "./types";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
+import { high, inferBrand } from "./helpers";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const spainMarriottOfficialRows = [
@@ -124,23 +125,20 @@ const spainMarriottOfficialRows = [
   { id: "AGPXF", officialName: "Four Points Flex by Sheraton Malaga Centre" },
   { id: "MADAX", officialName: "Four Points Flex by Sheraton Madrid Atocha" },
   { id: "BCNOX", officialName: "Moxy Barcelona" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "BCNRZ", officialName: "Hotel Arts Barcelona" },
+  { id: "TFSRZ", officialName: "The Ritz-Carlton Tenerife, Abama" },
 ] as const;
 
-const spainAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  // Confirmed Shinhan statement merchant for Madrid Marriott Princesa Plaza.
-  "Madrid Marriott Hotel Princesa Plaza": [
-    exact("PRINCESA PLAZA MADRID FOH", high),
-  ],
-};
-
-export const spainMarriottProperties: MarriottProperty[] = spainMarriottOfficialRows.map(
-  ({ id, officialName }) => ({
-    id,
-    country: "ES",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    ...high,
-    aliases: spainAliasOverrides[officialName] ?? [],
-  })
+export const spainMarriottProperties: MarriottPropertySeed[] = spainMarriottOfficialRows.map(
+  ({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id,
+      country: "ES",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      ...high,
+      aliases: [],
+    })
 );

@@ -1,7 +1,7 @@
-import { contains, high, inferBrand } from "./helpers";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
+import { high, inferBrand } from "./helpers";
 import type {
-  MarriottProperty,
-  MarriottPropertyAlias,
+  MarriottPropertySeed,
   SharedMarriottMerchantRule,
 } from "./types";
 
@@ -353,6 +353,7 @@ const chinaOfficialRows = [
   { id: "CTULW", officialName: "Four Points by Sheraton Leshan" },
   { id: "LXAXR", officialName: "The St. Regis Lhasa Resort" },
   { id: "LJGAL", officialName: "The ArcadiaPlace, Lugu Lake, a Member of Design Hotels" },
+  { id: "LJGJP", officialName: "Jinmao Pureal Mountain Lijiang, a Member of Design Hotels™" },
   { id: "LYGDP", officialName: "Four Points by Sheraton Lianyungang Downtown" },
   { id: "LYGFP", officialName: "Four Points by Sheraton Lianyungang" },
   { id: "TNAFD", officialName: "Fairfield by Marriott Liaocheng Dongchangfu" },
@@ -431,6 +432,7 @@ const chinaOfficialRows = [
   { id: "TAOCE", officialName: "Four Points by Sheraton Qingdao, Chengyang East" },
   { id: "TAOXR", officialName: "The St. Regis Qingdao" },
   { id: "TAOAK", officialName: "Flow and Co. Qingdao, Autograph Collection" },
+  { id: "TAOZY", officialName: "Qingdao Zhanqiao Yours Hotel, a Member of Design Hotels™" },
   { id: "TAOMD", officialName: "Le Méridien Qingdao" },
   { id: "TAOFP", officialName: "Four Points by Sheraton Qingdao, Chengyang" },
   { id: "TAODM", officialName: "Le Méridien Qingdao West Coast" },
@@ -797,22 +799,12 @@ const chinaOfficialRows = [
   { id: "TNAZZ", officialName: "Four Points by Sheraton Zibo Zichuan" },
   { id: "TNAZF", officialName: "Fairfield by Marriott Zibo" },
   { id: "TNASI", officialName: "Sheraton Zibo Hotel" },
+  { id: "BJSHS", officialName: "Sheraton Beijing Haidian" },
+  { id: "CTUBX", officialName: "Renaissance Chengdu Tianfu New Area Hotel" },
+  { id: "SYXSH", officialName: "Sheraton Sanya Bay Resort" },
+  { id: "TSNBP", officialName: "Four Points Tianjin Binhai New Area" },
+  { id: "YTYSP", officialName: "Four Points by Sheraton Yangzhou, Slender West Lake Road" },
 ];
-
-const chinaAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
-  // Shinhan overseas statement merchant for Four Points by Sheraton Dalian Donggang
-  "Four Points by Sheraton Dalian Donggang": [
-    contains("LKL*DALIANFUMAOJIUDIAN", high),
-  ],
-  // Shinhan overseas statement merchant for Sheraton Qingdao Licang Hotel
-  "Sheraton Qingdao Licang Hotel": [
-    contains("QING DAO LV CHENG HUA CHU", high),
-  ],
-  // Shinhan overseas statement merchant for Moxy Xi'an Beilin
-  "Moxy Xi'an Beilin": [
-    contains("Y P H Y HOTEL MANAGEMENT", high),
-  ],
-};
 
 /**
  * Some Chinese hotel operators use one statement merchant name for multiple
@@ -834,16 +826,18 @@ export const chinaSharedMerchantRules: SharedMarriottMerchantRule[] = [
   },
 ];
 
-export const chinaMarriottProperties: MarriottProperty[] =
-  chinaOfficialRows.map(({ id, officialName }) => ({
-    id: `cn-${id.toLowerCase()}`,
-    country: "CN",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    brandGroup: high.brandGroup,
-    confidence: high.confidence,
-    status: high.status,
-    aliases: chinaAliasOverrides[officialName] ?? [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 중국 호텔입니다.`,
-  }));
+export const chinaMarriottProperties: MarriottPropertySeed[] =
+  chinaOfficialRows.map(({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id: `cn-${id.toLowerCase()}`,
+      country: "CN",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      brandGroup: high.brandGroup,
+      confidence: high.confidence,
+      status: high.status,
+      aliases: [],
+      reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 중국 호텔입니다.`,
+    })
+  );

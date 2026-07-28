@@ -1,13 +1,15 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const caymanIslandsMarriottOfficialRows = [
   { id: "GCMGC", officialName: "Grand Cayman Marriott Resort" },
   { id: "GCMMI", officialName: "The Westin Grand Cayman Seven Mile Beach Resort & Spa" },
+  // Ritz-Carlton HWS XML property codes, July 2026.
+  { id: "GCMRZ", officialName: "The Ritz-Carlton, Grand Cayman" },
 ] as const;
 
-export const caymanIslandsMarriottProperties: MarriottProperty[] = caymanIslandsMarriottOfficialRows.map(
+export const caymanIslandsMarriottProperties: MarriottPropertySeed[] = caymanIslandsMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "KY",

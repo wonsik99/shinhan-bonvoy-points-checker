@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const southAfricaMarriottOfficialRows = [
@@ -50,9 +50,10 @@ const southAfricaMarriottOfficialRows = [
   { id: "RCBUM", officialName: "Protea Hotel Umfolozi River" },
   { id: "UTNUP", officialName: "Protea Hotel Upington" },
   { id: "JNBER", officialName: "Marriott Executive Apartments Johannesburg, Melrose Arch" },
+  { id: "CPTEB", officialName: "The Cape Town EDITION" },
 ] as const;
 
-export const southAfricaMarriottProperties: MarriottProperty[] = southAfricaMarriottOfficialRows.map(
+export const southAfricaMarriottProperties: MarriottPropertySeed[] = southAfricaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "ZA",

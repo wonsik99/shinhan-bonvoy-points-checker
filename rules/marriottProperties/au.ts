@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const australiaOfficialRows = [
@@ -40,7 +40,7 @@ const australiaOfficialRows = [
   { id: "SYDSI", officialName: "Sheraton Grand Sydney Hyde Park" },
 ];
 
-export const australiaMarriottProperties: MarriottProperty[] =
+export const australiaMarriottProperties: MarriottPropertySeed[] =
   australiaOfficialRows.map(({ id, officialName }) => ({
     id: `au-${id.toLowerCase()}`,
     country: "AU",

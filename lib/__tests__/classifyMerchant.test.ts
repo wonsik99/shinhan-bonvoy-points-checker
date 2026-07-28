@@ -12,12 +12,14 @@ import {
   europeMarriottProperties,
   koreaMarriottProperties,
   marriottBrandCatalog,
+  marriottPropertyReviewHolds,
   marriottProperties,
   middleEastAfricaMarriottProperties,
   unitedStatesMarriottProperties,
 } from "@/rules/marriott";
 import type {
   MarriottProperty,
+  MarriottPropertySeed,
   SharedMarriottMerchantRule,
 } from "@/rules/marriott";
 
@@ -38,7 +40,7 @@ const shortAsciiContainsAllowlist = new Set(["LESCAPE"]);
 
 const propertySeedExpectations: Array<{
   countryName: string;
-  properties: MarriottProperty[];
+  properties: MarriottPropertySeed[];
   count: number;
   region: "domestic" | "overseas";
 }> = [
@@ -51,37 +53,37 @@ const propertySeedExpectations: Array<{
   {
     countryName: "Asia-Pacific",
     properties: asiaPacificMarriottProperties,
-    count: 768,
+    count: 776,
     region: "overseas",
   },
   {
     countryName: "Europe",
     properties: europeMarriottProperties,
-    count: 1042,
+    count: 1087,
     region: "overseas",
   },
   {
     countryName: "Americas",
     properties: americasMarriottProperties,
-    count: 866,
+    count: 890,
     region: "overseas",
   },
   {
     countryName: "Middle East & Africa",
     properties: middleEastAfricaMarriottProperties,
-    count: 333,
+    count: 358,
     region: "overseas",
   },
   {
     countryName: "China",
     properties: chinaMarriottProperties,
-    count: 790,
+    count: 797,
     region: "overseas",
   },
   {
     countryName: "United States",
     properties: unitedStatesMarriottProperties,
-    count: 6308,
+    count: 6338,
     region: "overseas",
   },
 ];
@@ -170,6 +172,21 @@ describe("classifyMerchant", () => {
           `${alias.value} is duplicated by ${property.id}; already used by ${owner}`
         ).toBeUndefined();
         seen.set(key, property.id);
+      }
+    }
+  });
+
+  it("keeps held properties in review even when their names contain a Marriott brand", () => {
+    for (const hold of marriottPropertyReviewHolds) {
+      for (const merchantName of [hold.officialName, ...hold.aliases]) {
+        const result = classifyMerchant(merchantName);
+
+        expect(result.isLikelyMarriott, merchantName).toBe(false);
+        expect(result.confidence, merchantName).toBe("medium");
+        expect(result.status, merchantName).toBe("needs_review");
+        expect(result.normalizedName, merchantName).toBe(hold.officialName);
+        expect(result.region, merchantName).toBe(hold.region);
+        expect(result.reason, merchantName).toContain("활성 등록 보류 목록");
       }
     }
   });
@@ -370,6 +387,64 @@ describe("classifyMerchant", () => {
   });
 
   it.each([
+    ["Bvlgari Resort Dubai", "DXBBG"],
+    ["Bvlgari Hotel London", "LONBG"],
+    ["Bvlgari Hotel Paris", "PARBG"],
+  ])("catches newly verified Bvlgari property %s (%s)", (name, propertyCode) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.region).toBe("overseas");
+    expect(
+      marriottProperties.find((property) => property.officialName === name)
+        ?.propertyCode
+    ).toBe(propertyCode);
+  });
+
+  it.each([
+    ["Moxy Izmir", "ADBXT"],
+    ["citizenM Paris Opera", "PAROP"],
+    ["Le Domaine Oro, Series by Marriott", "ILPSE"],
+    ["Four Points by Sheraton São Vicente Resort", "VXEFP"],
+    ["StudioRes by Marriott Riga Old Town", "RIXRO"],
+  ])("catches newly approved Marriott property %s (%s)", (name, propertyCode) => {
+    const result = classifyMerchant(name);
+    expect(result.isLikelyMarriott || result.status === "needs_review").toBe(
+      true
+    );
+    expect(result.region).toBe("overseas");
+    expect(
+      marriottProperties.find((property) => property.propertyCode === propertyCode)
+        ?.officialName
+    ).toBe(name);
+  });
+
+  it.each([
+    [
+      "Turtle Beach by Elegant Hotels - All-Inclusive",
+      "Turtle Beach, Barbados, A Tribute Portfolio All-Inclusive Resort",
+    ],
+    ["The Westin Resort & Spa, Cancun", "The Westin Cancun Resort & Spa"],
+    ["Le Méridien Ile des Pins", "Le Domaine Oro, Series by Marriott"],
+    [
+      "Le Meridien Noumea Resort & Spa",
+      "Le Domaine Nouméa, Series by Marriott",
+    ],
+    [
+      "Sheraton New Caledonia Deva Spa & Golf Resort",
+      "Le Domaine Deva, Series by Marriott",
+    ],
+    [
+      "The Westin Resort & Spa, Puerto Vallarta",
+      "The Westin Playa Vallarta, an All-Inclusive Resort",
+    ],
+  ])("maps former hotel name %s to current property %s", (formerName, currentName) => {
+    const result = classifyMerchant(formerName);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.status).toBe("active");
+    expect(result.normalizedName).toBe(currentName);
+  });
+
+  it.each([
     "W Sydney",
     "ITC Mughal",
     "JW Marriott Maldives Resort",
@@ -480,6 +555,7 @@ describe("classifyMerchant", () => {
   it("keeps property selection independent of source array order", () => {
     const broadProperty: MarriottProperty = {
       id: "broad-moxy",
+      propertyCode: "TEST01",
       country: "KR",
       region: "domestic",
       officialName: "Moxy Seoul, Myeongdong",
@@ -494,6 +570,7 @@ describe("classifyMerchant", () => {
     };
     const specificProperty: MarriottProperty = {
       id: "specific-moxy",
+      propertyCode: "TEST02",
       country: "KR",
       region: "domestic",
       officialName: "Moxy Seoul Insadong",
@@ -521,6 +598,7 @@ describe("classifyMerchant", () => {
   it("handles multiple equal aliases for the same property deterministically", () => {
     const property: MarriottProperty = {
       id: "same-property",
+      propertyCode: "TEST03",
       country: "KR",
       region: "domestic",
       officialName: "Alpha Hotel",
@@ -552,6 +630,7 @@ describe("classifyMerchant", () => {
   it("keeps a cross-region same-priority property tie in review", () => {
     const alpha: MarriottProperty = {
       id: "alpha",
+      propertyCode: "TEST04",
       country: "KR",
       region: "domestic",
       officialName: "Alpha Hotel",
@@ -567,6 +646,7 @@ describe("classifyMerchant", () => {
     const omega: MarriottProperty = {
       ...alpha,
       id: "omega",
+      propertyCode: "TEST05",
       country: "US",
       region: "overseas",
       officialName: "Omega Hotel",

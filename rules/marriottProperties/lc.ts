@@ -1,5 +1,5 @@
 import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const saintLuciaMarriottOfficialRows = [
@@ -7,7 +7,7 @@ const saintLuciaMarriottOfficialRows = [
   { id: "UVFRO", officialName: "Royalton Saint Lucia, An Autograph Collection All-Inclusive Resort" },
 ] as const;
 
-export const saintLuciaMarriottProperties: MarriottProperty[] = saintLuciaMarriottOfficialRows.map(
+export const saintLuciaMarriottProperties: MarriottPropertySeed[] = saintLuciaMarriottOfficialRows.map(
   ({ id, officialName }) => ({
     id,
     country: "LC",
