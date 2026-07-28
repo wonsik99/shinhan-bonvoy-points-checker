@@ -1,5 +1,5 @@
-import { high, inferBrand } from "./helpers";
-import type { MarriottProperty } from "./types";
+import { exact, high, inferBrand } from "./helpers";
+import type { MarriottProperty, MarriottPropertyAlias } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
 const malaysiaOfficialRows = [
@@ -70,6 +70,13 @@ const malaysiaOfficialRows = [
   { id: "KULSY", officialName: "Courtyard By Marriott Subang" },
 ];
 
+const malaysiaAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  // Verified Shinhan overseas statement spelling for property code KULDT.
+  "JW Marriott Hotel Kuala Lumpur": [
+    exact("JW MARRIOT HOTEL KL", high),
+  ],
+};
+
 export const malaysiaMarriottProperties: MarriottProperty[] =
   malaysiaOfficialRows.map(({ id, officialName }) => ({
     id: `my-${id.toLowerCase()}`,
@@ -80,6 +87,6 @@ export const malaysiaMarriottProperties: MarriottProperty[] =
     brandGroup: high.brandGroup,
     confidence: high.confidence,
     status: high.status,
-    aliases: [],
+    aliases: malaysiaAliasOverrides[officialName] ?? [],
     reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 말레이시아 호텔입니다.`,
   }));

@@ -134,6 +134,10 @@ const japanOfficialRows = [
 ];
 
 const japanAliasOverrides: Record<string, MarriottPropertyAlias[]> = {
+  // Verified Shinhan overseas statement merchant for property code NGOXF.
+  "Four Points Flex by Sheraton Nagoya Station": [
+    exact("FPF NAGOYA STATION", high),
+  ],
   // Truncated/glued Shinhan overseas statement name (word-boundary MARRIOTT misses this)
   "Courtyard by Marriott Sapporo": [
     contains("CYMARRIOTTSAPPOR", high),

@@ -909,10 +909,9 @@ describe("classifyMerchant", () => {
   });
 
   // Shinhan statements sometimes print the merchant with a single-T "MARRIOT"
-  // spelling (real report: "JW MARRIOT HOTEL KL"). The catalog derives that
-  // variant for every MARRIOTT keyword so the whole family stays recognized.
+  // spelling. The catalog derives that variant for every MARRIOTT keyword so
+  // the whole family stays recognized.
   it.each([
-    "JW MARRIOT HOTEL KL",
     "MARRIOT HOTELS",
     "DELTA HOTELS BY MARRIOT",
     "MARRIOT VACATION CLUB",
@@ -920,6 +919,21 @@ describe("classifyMerchant", () => {
     const result = classifyMerchant(name);
     expect(result.isLikelyMarriott).toBe(true);
     expect(result.confidence).toBe("certain");
+  });
+
+  it.each([
+    ["JW MARRIOT HOTEL KL", "JW Marriott Hotel Kuala Lumpur"],
+    [
+      "FPF NAGOYA STATION",
+      "Four Points Flex by Sheraton Nagoya Station",
+    ],
+  ])("maps verified statement alias %s to %s", (merchantName, propertyName) => {
+    const result = classifyMerchant(merchantName);
+    expect(result.isLikelyMarriott).toBe(true);
+    expect(result.confidence).toBe("high");
+    expect(result.status).toBe("active");
+    expect(result.normalizedName).toBe(propertyName);
+    expect(result.region).toBe("overseas");
   });
 
   it("still matches the canonical JW MARRIOTT spelling", () => {
