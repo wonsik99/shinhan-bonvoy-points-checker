@@ -1,22 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { AnalysisResult, UserFeedbackAction } from "@/types/transaction";
-import { parseShinhanExcel, ShinhanParseError } from "@/lib/parseShinhanExcel";
-import {
-  analyzeTransactions,
-  applyFeedback,
-  summarizeResults,
-} from "@/lib/analyzeTransactions";
-import { buildInquiryMessage } from "@/lib/inquiryMessage";
-import { formatNumber } from "@/lib/format";
-import {
-  buildAutomaticAliasFeedback,
-  isAutomaticAliasFeedbackCandidate,
-  isFeedbackPersistenceEnabled,
-  submitJudgments,
-} from "@/lib/feedback";
+import { useAnalysisSession } from "@/hooks/useAnalysisSession";
 import FileUpload from "@/components/FileUpload";
+import FileSessionBar from "@/components/FileSessionBar";
 import SummaryCards from "@/components/SummaryCards";
 import MissingTransactionsTable from "@/components/MissingTransactionsTable";
 import OkAccrualTransactions from "@/components/OkAccrualTransactions";
@@ -30,195 +16,40 @@ import {
   MobileProgress,
   type GuidedStep,
 } from "@/components/GuidedProgress";
+import { formatNumber } from "@/lib/format";
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<GuidedStep>(1);
-  const [baseResults, setBaseResults] = useState<AnalysisResult[]>([]);
-  const [feedbackById, setFeedbackById] = useState<
-    Record<string, UserFeedbackAction>
-  >({});
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [isParsing, setIsParsing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [errorDiagnostic, setErrorDiagnostic] = useState<string | null>(null);
-  const [columnWarning, setColumnWarning] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [sendState, setSendState] = useState<
-    "idle" | "sending" | "sent" | "failed"
-  >("idle");
-  const [sentSnapshot, setSentSnapshot] = useState<string | null>(null);
-
-  const results = useMemo(
-    () => applyFeedback(baseResults, feedbackById),
-    [baseResults, feedbackById]
-  );
-  const summary = useMemo(() => summarizeResults(results), [results]);
-  const missingRows = useMemo(
-    () => results.filter((row) => row.analysisStatus === "missing_suspected"),
-    [results]
-  );
-  const reviewRows = useMemo(
-    () => results.filter((row) => row.analysisStatus === "needs_review"),
-    [results]
-  );
-  const okRows = useMemo(
-    () => results.filter((row) => row.analysisStatus === "ok_l5"),
-    [results]
-  );
-  const inquiryMessage = useMemo(
-    () => buildInquiryMessage(results.filter((row) => row.effectiveIncluded)),
-    [results]
-  );
-
-  const hasResults = baseResults.length > 0;
-  const collectionEnabled = isFeedbackPersistenceEnabled();
-  const judgedReviewCount = reviewRows.filter((row) => row.userFeedback).length;
-  const pendingReviewCount = Math.max(0, reviewRows.length - judgedReviewCount);
-
-  const judgmentSnapshot = useMemo(
-    () =>
-      Object.keys(feedbackById)
-        .sort()
-        .map((id) => `${id}:${feedbackById[id]}`)
-        .join("|"),
-    [feedbackById]
-  );
-  const judgmentCount = Object.keys(feedbackById).length;
-  const automaticAliasFeedbackCount = useMemo(
-    () =>
-      results.filter(
-        (result) =>
-          isAutomaticAliasFeedbackCandidate(result) &&
-          result.userFeedback === "include"
-      ).length,
-    [results]
-  );
-  const alreadySent = sendState === "sent" && sentSnapshot === judgmentSnapshot;
-
-  const moveToStep = (step: GuidedStep) => {
-    if (step > 1 && !hasResults) return;
-    setCurrentStep(step);
-    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
-  };
-
-  const handleFile = async (file: File) => {
-    setIsParsing(true);
-    setError(null);
-    setErrorDiagnostic(null);
-    setCopied(false);
-    try {
-      const { transactions, columnWarning: warning } =
-        await parseShinhanExcel(file);
-      const analyzedResults = analyzeTransactions(transactions);
-      setBaseResults(analyzedResults);
-      setFeedbackById(
-        collectionEnabled ? buildAutomaticAliasFeedback(analyzedResults) : {}
-      );
-      setFileName(file.name);
-      setColumnWarning(warning ?? null);
-      setSendState("idle");
-      setSentSnapshot(null);
-      setCurrentStep(2);
-      window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
-    } catch (caught) {
-      setBaseResults([]);
-      setFeedbackById({});
-      setFileName(null);
-      setColumnWarning(null);
-      setCurrentStep(1);
-      setError(
-        caught instanceof Error
-          ? caught.message
-          : "알 수 없는 오류가 발생했습니다."
-      );
-      setErrorDiagnostic(
-        caught instanceof ShinhanParseError ? caught.diagnostic : null
-      );
-    } finally {
-      setIsParsing(false);
-    }
-  };
-
-  const handleReset = () => {
-    setCurrentStep(1);
-    setBaseResults([]);
-    setFeedbackById({});
-    setFileName(null);
-    setError(null);
-    setErrorDiagnostic(null);
-    setColumnWarning(null);
-    setCopied(false);
-    setSendState("idle");
-    setSentSnapshot(null);
-    window.requestAnimationFrame(() => window.scrollTo({ top: 0 }));
-  };
-
-  // Judgments and alias candidates stay local until the explicit service-help
-  // button is pressed. Only inquiry judgments can change totals/message text.
-  const handleFeedback = (row: AnalysisResult, action: UserFeedbackAction) => {
-    setCopied(false);
-    setFeedbackById((previous) => {
-      const next = { ...previous };
-      if (next[row.id] === action) delete next[row.id];
-      else next[row.id] = action;
-      return next;
-    });
-  };
-
-  const handleSubmitJudgments = async () => {
-    if (judgmentCount === 0 || sendState === "sending") return;
-
-    const items = results
-      .filter((result) => feedbackById[result.id])
-      .map((result) => ({ result, action: feedbackById[result.id] }));
-    setSendState("sending");
-    const ok = await submitJudgments(items);
-    if (ok) {
-      setSentSnapshot(judgmentSnapshot);
-      setSendState("sent");
-    } else {
-      setSendState("failed");
-    }
-  };
-
-  const copyInquiryMessage = async () => {
-    if (!inquiryMessage) return;
-    try {
-      await navigator.clipboard.writeText(inquiryMessage);
-      setCopied(true);
-    } catch {
-      // The message remains visible for manual selection.
-    }
-  };
-
-  const goNext = () => {
-    if (currentStep === 1 && hasResults) moveToStep(2);
-    else if (currentStep === 2) moveToStep(3);
-    // Step 3's footer CTA is copy-only (never destructive). Starting over lives
-    // in the labeled "다른 파일 업로드" button so a stray footer tap — e.g. right
-    // after a channel link flipped `copied` — can never wipe the analysis.
-    else if (currentStep === 3) void copyInquiryMessage();
-  };
-
-  const nextDisabled =
-    (currentStep === 1 && !hasResults) ||
-    (currentStep === 3 && !inquiryMessage);
-  const nextLabel =
-    currentStep === 1
-      ? hasResults
-        ? "결과 보기"
-        : "파일을 올리면 계속돼요"
-      : currentStep === 2
-        ? "문의 문구 만들기"
-        : copied
-          ? "문구 다시 복사"
-          : "문구 복사";
-  const footerStatus =
-    currentStep === 1
-      ? "1544-7000에서 파일을 받을 수 있어요"
-      : `문의 반영 ${formatNumber(summary.includedCount)}건 · +${formatNumber(summary.totalExpectedAdditionalPoints)}P${
-          pendingReviewCount > 0 ? ` · 미판정 ${pendingReviewCount}건` : ""
-        }`;
+  const {
+    currentStep,
+    fileName,
+    isParsing,
+    error,
+    errorDiagnostic,
+    columnWarning,
+    copied,
+    sendState,
+    results,
+    summary,
+    missingRows,
+    reviewRows,
+    okRows,
+    inquiryMessage,
+    hasResults,
+    collectionEnabled,
+    judgmentCount,
+    automaticAliasFeedbackCount,
+    alreadySent,
+    nextDisabled,
+    nextLabel,
+    footerStatus,
+    moveToStep,
+    handleFile,
+    handleReset,
+    handleFeedback,
+    handleSubmitJudgments,
+    copyInquiryMessage,
+    goNext,
+  } = useAnalysisSession();
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas text-ink">
@@ -300,23 +131,7 @@ export default function Home() {
 
           {currentStep === 2 && hasResults && (
             <div className="space-y-7">
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-hairline bg-white px-4 py-3">
-                <div className="min-w-0">
-                  <p className="break-words text-sm font-medium text-ink">
-                    {fileName}
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted" role="status">
-                    분석이 완료되었습니다.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="min-h-11 rounded-full border border-line bg-white px-4 text-xs font-medium text-ink-soft"
-                >
-                  다른 파일 업로드
-                </button>
-              </div>
+              <FileSessionBar fileName={fileName} onReset={handleReset} />
 
               <section aria-label="분석 요약">
                 <SummaryCards summary={summary} />
@@ -380,23 +195,7 @@ export default function Home() {
 
           {currentStep === 3 && hasResults && (
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-hairline bg-white px-4 py-3">
-                <div className="min-w-0">
-                  <p className="break-words text-sm font-medium text-ink">
-                    {fileName}
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted" role="status">
-                    분석이 완료되었습니다.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="min-h-11 rounded-full border border-line bg-white px-4 text-xs font-medium text-ink-soft"
-                >
-                  다른 파일 업로드
-                </button>
-              </div>
+              <FileSessionBar fileName={fileName} onReset={handleReset} />
               <section aria-label="신한카드 문의 문구" className="mt-3">
                 <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
                   문의 보내기
