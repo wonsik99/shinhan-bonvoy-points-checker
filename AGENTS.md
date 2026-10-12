@@ -21,6 +21,17 @@ This version has breaking changes — APIs, conventions, and file structure may 
 5. **커밋 메시지에 AI co-author 트레일러를 넣지 말 것** (사용자가 명시적으로 금지함).
 6. **단정 표현 금지**: "누락 의심"·"확인 필요"만 사용, "누락 확정"·"보장" 금지. 이 앱은 카드사 문의를 돕는 참고 자료다.
 7. 사용자와는 한국어로 소통한다.
+8. **브랜치 흐름은 작업 브랜치 → `dev` → `main`으로 유지한다.** 새 코드 작업은 `dev`를 기준으로 분리하며, 작업 브랜치에서 `main`으로 바로 반영하지 않는다.
+9. **커밋 메시지의 제목·본문은 항상 영어로 작성한다.** 사용자 설명과 승인 요청은 계속 한국어로 하며, AI co-author 트레일러는 넣지 않는다. (사용자 지정, 2026-10-11)
+10. **Snapshot 관찰과 호텔 등록 승인을 분리한다.** 7월 승인본 `data/marriott/official-property-snapshot.json`은 보존하고, 주간 비교는 별도 `data/marriott/official-monitor-snapshot.json`을 사용한다. 모니터 기준은 명시 승인 후에만 갱신하며, CI에서 자동 갱신·커밋·호텔 등록하지 않는다.
+
+## 작업 브랜치 흐름 (사용자 지정, 2026-10-11)
+
+- **작업 브랜치**: 최신 `dev` 상태를 확인한 뒤 작업별로 분리해 수정·테스트한다. `dev`가 아직 없거나 기존 미커밋 변경이 있으면 먼저 상태와 기준점을 확인하고, 기존 작업을 덮어쓰거나 임의로 옮기지 않는다.
+- **작업 브랜치 → `dev`**: 변경안과 검증 결과를 사용자에게 보고하고 승인받은 뒤 통합한다. PR을 준비하는 경우 기본 대상 브랜치는 `dev`다.
+- **`dev` → `main`**: 통합 검증 후 사용자가 승인한 변경만 운영 반영 대상으로 승격한다. 작업 브랜치에서 `main`으로 직접 PR·병합하지 않는다.
+- 이 흐름 지정은 커밋·push·PR 생성·병합·배포의 포괄 승인이 아니다. 각 외부 반영과 커밋은 사전에 사용자에게 한국어로 승인받는다.
+- GitHub 브랜치 보호, CI 트리거, Vercel 배포 설정은 별도 요청 없이 변경하지 않는다. 기존 미커밋 패치는 보존한다.
 
 ## 도메인 지식 (사용자=카드 소유자가 확인해준 사실)
 
@@ -53,9 +64,9 @@ lib/classifyMerchant    한글 브랜드 → 호텔 alias DB(인덱스) → 영�
 lib/analyzeTransactions 상태 판정(ok_l5/missing_suspected/needs_review/not_marriott/canceled), 피드백 적용, 요약
 lib/inquiryMessage      카드사 문의 문구 생성
 lib/feedback            (선택) 익명 피드백 + 파싱 실패 원클릭 제보 — 기본은 Google Sheets(Apps Script), env 없으면 no-op
-rules/marriott*.ts      브랜드 키워드·호텔 alias DB(149개 국가·지역 10,287개 운영 확인 seed)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
+rules/marriott*.ts      브랜드 키워드·호텔 alias DB(149개 국가·지역 10,309개 보존 seed, 현재 운영 전수 확인 수치 아님)·후보/운영사 룰 / rules/cardProfiles.ts 카드 프로필
 rules/marriottPropertyOverrides.ts 사람이 검증한 가맹점 alias(공식 seed와 분리)
-data/marriott/          안정 ID↔공식 code 메타데이터, 등록 보류·소스 누락 예외, 승인 snapshot
+data/marriott/          안정 ID↔공식 code 메타데이터, 등록 보류·소스 누락 예외, 고정 승인 이력·별도 모니터 기준 snapshot
 scripts/marriott/       Marriott/Ritz HWS XML+Bvlgari 공식 code 수집·비교·보고서 생성(읽기 전용)
 components/             GuidedProgress(3단계 레일·모바일 진행바), FileUpload(제보 UI 포함), SummaryCards, 3개 테이블, InquiryMessage, InquirySend(전화/1:1문의/OS공유 채널 연결 — 네트워크 전송 없음), Disclaimer
 app/globals.css         디자인 색 토큰(@theme: ember/ink/muted/hairline 등) — 색은 반드시 토큰 클래스(text-ember 등)로 사용, hex 하드코딩 금지(OG 이미지 제외)
@@ -91,7 +102,7 @@ fixture 기대값: 16건 / Marriott 13 / 정상 2 / 누락 의심 9 / 확인 필
 
 1. **수집 활성화** — Google Sheets(Apps Script) 기반. 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보. 켜지면 페이지 하단 수집 고지가 자동 표시됨. (완료)
 2. **더 클래식 카드 지원** — cardProfiles에 프로필 추가 + 카드 선택 UI.
-3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties/`에 전세계 149개 국가·지역 10,287개 운영 확인 호텔을 활성 seed로 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다. 운영 전이거나 공식 페이지에서 예약이 아직 제공되지 않는 호텔은 `data/marriott/property-review-holds.json`에 두어 자동 누락 의심 및 신규 등록 후보에서 제외한다. 공식 페이지로 운영을 확인했지만 현재 수집하는 XML 묶음에 없는 호텔은 `data/marriott/property-source-exceptions.json`에 근거와 검토일을 기록한다. 미국 주 단위 sitemap은 `us.ts`와 중복되므로 제외하고, Antarctica sitemap의 테스트 호텔 데이터와 공식 제휴 종료 항목은 제외한다.
+3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties/`에 전세계 149개 국가·지역 10,309개 보존 호텔 seed를 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다. 이 수치는 현재 운영을 전수 확인한 호텔 수가 아니며, 제휴 전환·운영 불확실성은 별도 확인 필요 규칙으로 보호한다. 운영 전이거나 공식 페이지에서 예약이 아직 제공되지 않는 호텔은 `data/marriott/property-review-holds.json`에 두어 자동 누락 의심 및 신규 등록 후보에서 제외한다. 공식 페이지로 운영을 확인했지만 현재 수집하는 XML 묶음에 없는 호텔은 `data/marriott/property-source-exceptions.json`에 근거와 검토일을 기록한다. 미국 주 단위 sitemap은 `us.ts`와 중복되므로 제외하고, Antarctica sitemap의 테스트 호텔 데이터와 공식 제휴 종료 항목은 제외한다.
 4. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.
 5. **조건부 하이브리드 백엔드 (v2.x)** — 비공개로 유지할 가치가 있는 수동 검증 alias가 충분히 쌓인 경우에만, 파일 로컬 처리를 유지하면서 비공개 alias 조회 API를 추가하는 방안을 재검토한다. 상세 계획은 아래 참고.
 
