@@ -14,6 +14,18 @@ const REVIEW_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const PROPERTY_REVIEW_HOLD_STATUSES = new Set([
   "not_yet_open",
   "reservations_unavailable",
+  "verification_required",
+]);
+// Shared booking widgets on these non-hotel roots may expose a hotel's code.
+// Exclude the routes, not a fixed city allowlist, so new destinations still surface.
+const BVLGARI_NON_HOTEL_ROUTES = new Set([
+  "bvlgari-tokyo-ginza-bar-cafe",
+  "contact-us",
+  "il-ristorante-niko-romito-reservation",
+  "meta",
+  "reservation",
+  "reservation-the-bulgari-bar-and-bulgari-lounge",
+  "the-bulgari-lounge-london-reservation",
 ]);
 const PROPERTY_SOURCE_EXCEPTION_STATUSES = new Set([
   "verified_active_source_gap",
@@ -181,7 +193,8 @@ export function extractBvlgariDestinationEntries(xml) {
     if (
       url.hostname !== "www.bulgarihotels.com" ||
       segments.length !== 2 ||
-      segments[0] !== "en_US"
+      segments[0] !== "en_US" ||
+      BVLGARI_NON_HOTEL_ROUTES.has(segments[1].toLowerCase())
     ) {
       continue;
     }
@@ -920,6 +933,7 @@ function reviewHoldStatusLabel(status) {
   return {
     not_yet_open: "운영 전",
     reservations_unavailable: "예약 미개시",
+    verification_required: "확인 필요",
   }[status] ?? status;
 }
 

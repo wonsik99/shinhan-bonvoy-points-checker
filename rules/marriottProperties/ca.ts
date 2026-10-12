@@ -1,7 +1,8 @@
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
 import { high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
 
-// Source: Marriott hotel sitemap property codes, July 2026.
+// Source: Marriott hotel sitemap property codes, reviewed August 2026.
 const canadaMarriottOfficialRows = [
   { id: "YYZLD", officialName: "BISHA, a Luxury Collection Hotel, Toronto" },
   { id: "YHZLC", officialName: "Muir, a Luxury Collection Hotel, Halifax" },
@@ -129,7 +130,7 @@ const canadaMarriottOfficialRows = [
   { id: "YULAL", officialName: "Aloft by Marriott Montreal Airport" },
   { id: "YYCUL", officialName: "Aloft by Marriott Calgary University" },
   { id: "YYZAL", officialName: "Aloft by Marriott Vaughan Mills" },
-  { id: "YYZPX", officialName: "City Express by Marriott Port Hope" },
+  { id: "YYZPX", officialName: "City Express by Marriott Port Hope Cobourg" },
   { id: "IAGCY", officialName: "Courtyard by Marriott Niagara Falls" },
   { id: "YYCAP", officialName: "Courtyard by Marriott Calgary Airport" },
   { id: "YYZCY", officialName: "Courtyard by Marriott Toronto Downtown" },
@@ -314,14 +315,15 @@ const canadaMarriottOfficialRows = [
   { id: "YYZRZ", officialName: "The Ritz-Carlton, Toronto" },
 ] as const;
 
-export const canadaMarriottProperties: MarriottPropertySeed[] = canadaMarriottOfficialRows.map(
-  ({ id, officialName }) => ({
-    id,
-    country: "CA",
-    region: "overseas",
-    officialName,
-    brand: inferBrand(officialName),
-    ...high,
-    aliases: [],
-  })
-);
+export const canadaMarriottProperties: MarriottPropertySeed[] =
+  canadaMarriottOfficialRows.map(({ id, officialName }) =>
+    applyCuratedMarriottPropertyAliases({
+      id,
+      country: "CA",
+      region: "overseas",
+      officialName,
+      brand: inferBrand(officialName),
+      ...high,
+      aliases: [],
+    })
+  );

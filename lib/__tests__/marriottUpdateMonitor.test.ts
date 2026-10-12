@@ -2,6 +2,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { marriottProperties } from "@/rules/marriottProperties";
 import { curatedMarriottPropertyAliases } from "@/rules/marriottPropertyOverrides";
+import septemberReview from "@/data/marriott/reviews/2026-09-06.json";
+import octoberReview from "@/data/marriott/reviews/2026-10-03-verification.json";
 import {
   findDuplicateLocalPropertyCodes,
   loadLocalMarriottCatalog,
@@ -171,6 +173,56 @@ describe("Marriott hotel DB update monitor", () => {
     expect(result.quarantined.map((item) => item.propertyCode)).toEqual([
       "AQAXN",
     ]);
+  });
+
+  it("ignores Bvlgari utility roots even when a shared widget exposes a hotel code", () => {
+    const utilityRoutes = [
+      "bvlgari-tokyo-ginza-bar-cafe", "contact-us",
+      "il-ristorante-niko-romito-reservation", "meta", "reservation",
+      "reservation-the-bulgari-bar-and-bulgari-lounge",
+      "the-bulgari-lounge-london-reservation",
+    ];
+    const routes = [...utilityRoutes, "CONTACT-US/", "dubai", "future-destination"];
+    const xml = `<urlset>${routes.map((route) =>
+      `<url><loc>https://www.bulgarihotels.com/en_US/${route}</loc></url>`
+    ).join("")}</urlset>`;
+    const destinations = extractBvlgariDestinationEntries(xml);
+    expect(destinations.map((entry: { city: string }) => entry.city)).toEqual([
+      "dubai", "future-destination",
+    ]);
+    // The contact page's single shared DXBBG widget must never win deduplication.
+    const htmlByCity: Record<string, string> = {
+      "contact-us": '{"hotelCode":"DXBBG"}',
+      dubai: '{"hotelCode":"DXBBG"}',
+      "future-destination": "Opening soon",
+    };
+    const properties = destinations.flatMap((entry: { city: string; officialUrl: string }) => {
+      const code = propertyCodeFromBvlgariHtml(htmlByCity[entry.city]);
+      return code ? [{ ...officialProperty(code, `bvlgari-${entry.city}`, "bvlgari"), officialUrl: entry.officialUrl }] : [];
+    });
+    expect(deduplicateOfficialProperties(properties).properties).toMatchObject([
+      { propertyCode: "DXBBG", officialUrl: "https://www.bulgarihotels.com/en_US/dubai" },
+    ]);
+  });
+
+  it("keeps inconclusive hotel evidence in review without claiming the hotel is closed", () => {
+    const hold = {
+      propertyCode: "VIESI", officialName: "Hotel Savoyen Vienna",
+      country: "AT", region: "overseas", aliases: ["Savoyen Vienna"],
+      status: "verification_required", reason: "현재 운영·예약 개시 확인 필요",
+      officialUrl: "https://www.marriott.com/en-us/hotels/viesi-hotel-savoyen-vienna/overview/",
+      lastReviewedAt: "2026-09-06",
+    };
+    expect(validatePropertyReviewHolds({ version: 1, properties: [hold] }).properties).toEqual([hold]);
+    const result = compareMarriottCatalogs([], collection([
+      officialProperty("VIESI", "hotel-savoyen-vienna"),
+    ]), baseline([]), {
+      minimumMarriottPropertyCount: 0, minimumRitzPropertyCount: 0,
+      minimumBvlgariPropertyCount: 0, propertyReviewHolds: [hold],
+    });
+    expect(result.registrationCandidates).toEqual([]);
+    expect(result.heldProperties[0].status).toBe("verification_required");
+    expect(renderMarriottUpdateReport(result)).toContain("| 확인 필요 |");
   });
 
   it("excludes officially terminated Sonder affiliations from registration candidates", () => {
@@ -523,9 +575,9 @@ describe("Marriott hotel DB update monitor", () => {
     );
 
     expect(records).toHaveLength(marriottProperties.length);
-    expect(records).toHaveLength(10_287);
+    expect(records).toHaveLength(10_309);
     expect(records.filter((record) => record.propertyCode)).toHaveLength(
-      10_287
+      10_309
     );
     expect(findDuplicateLocalPropertyCodes(records)).toEqual([]);
     for (const record of records) {
@@ -547,7 +599,7 @@ describe("Marriott hotel DB update monitor", () => {
     });
   });
 
-  it("registers approved additions and excludes terminated or held hotels", async () => {
+  it("registers reviewed additions and excludes terminated or held hotels", async () => {
     const propertiesByCode = new Map(
       marriottProperties.map((property) => [property.propertyCode, property])
     );
@@ -562,17 +614,79 @@ describe("Marriott hotel DB update monitor", () => {
     for (const code of ["LJGJP", "LONTG", "TAOZY"]) {
       expect(propertiesByCode.has(code), code).toBe(true);
     }
-    for (const code of [
+    const reviewedNewActiveCodes = [
+      "AMDFL",
+      "AMDFO",
+      "BHJRB",
+      "BOMAK",
+      "IXKFG",
+      "JGAFS",
+      "LAXHL",
+      "LAXPE",
+      "LAXPY",
+      "LAXVP",
+      "MEMAM",
+      "MRYCE",
+      "SEAPA",
+      "SZXJQ",
+      "UVFRH",
+    ];
+    const reviewedHoldReleaseCodes = [
       "BEGAC",
+      "CSXPF",
       "ISTXA",
       "MQTTS",
+      "SELSG",
       "SNAAF",
       "SNAAL",
       "WASWF",
-      "XICQP",
+      "XMNXW",
+    ];
+    for (const code of [
+      ...reviewedNewActiveCodes,
+      ...reviewedHoldReleaseCodes,
     ]) {
-      expect(propertiesByCode.has(code), code).toBe(false);
+      expect(propertiesByCode.has(code), code).toBe(true);
     }
+    expect(propertiesByCode.get("ATLHF")?.officialName).toBe(
+      "Fairfield by Marriott Inn & Suites Bethlehem GA"
+    );
+    expect(propertiesByCode.get("CIDWA")?.officialName).toBe(
+      "AC Hotel Cedar Rapids Downtown"
+    );
+    expect(propertiesByCode.get("HOUMD")?.officialName).toBe(
+      "Courtyard By Marriott Houston Medical Center Reliant Park"
+    );
+    expect(propertiesByCode.get("HOURW")?.officialName).toBe(
+      "Residence Inn By Marriott Houston Medical Center Reliant Park"
+    );
+    expect(propertiesByCode.get("MEMAM")?.officialName).toBe(
+      "ARRIVE Memphis Downtown, a Member of Design Hotels™"
+    );
+    expect(propertiesByCode.get("MEXJS")?.officialName).toBe(
+      "City Express Junior by Marriott Ciudad de México Zona Reforma"
+    );
+    expect(propertiesByCode.get("OSAAL")?.officialName).toBe(
+      "Aloft by Marriott Osaka Umeda"
+    );
+    expect(propertiesByCode.get("SAVAK")?.officialName).toBe(
+      "Hotel Orielle, Autograph Collection"
+    );
+    expect(propertiesByCode.get("STLAL")?.officialName).toBe(
+      "Aloft by Marriott St Louis Central West End"
+    );
+    expect(propertiesByCode.get("SZXBR")?.officialName).toBe(
+      "Renaissance Shenzhen Luohu Hotel"
+    );
+    expect(propertiesByCode.get("XNARK")?.officialName).toBe(
+      "Hotel Vin, Rogers-Bentonville, Autograph Collection"
+    );
+    expect(propertiesByCode.get("YYZPX")?.officialName).toBe(
+      "City Express by Marriott Port Hope Cobourg"
+    );
+    expect(propertiesByCode.get("ZHAXP")?.officialName).toBe(
+      "Four Points by Sheraton Zhanjiang City Center"
+    );
     expect(propertiesByCode.get("PSPHR")).toMatchObject({
       officialName:
         "RESET Hotel Joshua Tree National Park, Outdoor Collection by Marriott Bonvoy",
@@ -617,18 +731,84 @@ describe("Marriott hotel DB update monitor", () => {
     const reviewHoldDocument = await loadPropertyReviewHolds(
       path.resolve("data/marriott/property-review-holds.json")
     );
-    expect(reviewHoldDocument.properties).toHaveLength(28);
+    expect(reviewHoldDocument.properties).toHaveLength(88);
     expect(
       reviewHoldDocument.properties.filter(
         (property: { status: string }) => property.status === "not_yet_open"
       )
-    ).toHaveLength(8);
+    ).toHaveLength(4);
     expect(
       reviewHoldDocument.properties.filter(
         (property: { status: string }) =>
           property.status === "reservations_unavailable"
       )
-    ).toHaveLength(20);
+    ).toHaveLength(16);
+    expect(
+      reviewHoldDocument.properties.filter(
+        (property: { status: string }) => property.status === "verification_required"
+      )
+    ).toHaveLength(68);
+
+    const newHoldCodes = [
+      "ANCMT",
+      "ATLDS",
+      "BAHSW",
+      "BHMXT",
+      "BNACR",
+      "CTUHT",
+      "DENFE",
+      "DPSCL",
+      "DXBZR",
+      "FUONJ",
+      "GDLPA",
+      "GGGRI",
+      "GSPEH",
+      "KNOCY",
+      "LASFN",
+      "MGMSS",
+      "MLBCW",
+      "MOBST",
+      "MRYCO",
+      "NGBCH",
+      "OSAKM",
+      "ORHSX",
+      "PARMX",
+      "POZFP",
+      "PQCFI",
+      "PQCOX",
+      "PVRMI",
+      "RDURS",
+      "SANDS",
+      "SDFEI",
+      "SELUI",
+      "SFOPS",
+      "SJOLP",
+      "SRQRS",
+      "SYXAC",
+      "TRIJT",
+      "TSNGP",
+      "UKBCY",
+      "ZNZBM",
+      "ZUHSF",
+    ];
+    const holdsByCode = new Map(
+      reviewHoldDocument.properties.map(
+        (property: { propertyCode: string }) => [property.propertyCode, property]
+      )
+    );
+    for (const code of newHoldCodes) {
+      expect(holdsByCode.has(code), code).toBe(true);
+    }
+    expect(holdsByCode.get("CAEFW")).toMatchObject({
+      officialName:
+        "Fairfield by Marriott Inn & Suites West Columbia Airport",
+      status: "reservations_unavailable",
+    });
+    expect(holdsByCode.get("MYRFI")).toMatchObject({
+      officialName:
+        "Fairfield by Marriott Inn & Suites Myrtle Beach Oceanfront",
+      status: "verification_required",
+    });
 
     for (const property of reviewHoldDocument.properties) {
       expect(propertiesByCode.has(property.propertyCode), property.propertyCode).toBe(
@@ -640,12 +820,83 @@ describe("Marriott hotel DB update monitor", () => {
       path.resolve("data/marriott/property-source-exceptions.json")
     );
     expect(sourceExceptionDocument.properties).toHaveLength(21);
+    const sourceExceptionCodes = new Set(
+      sourceExceptionDocument.properties.map(
+        (property: { propertyCode: string }) => property.propertyCode
+      )
+    );
+    for (const code of ["CHIES", "ISPSH", "OKCOF", "REPMD"]) {
+      expect(sourceExceptionCodes.has(code), code).toBe(true);
+    }
     for (const property of sourceExceptionDocument.properties) {
       expect(
         propertiesByCode.has(property.propertyCode),
         property.propertyCode
       ).toBe(true);
       expect(property.status).toBe("verified_active_source_gap");
+    }
+  });
+
+  it("accounts for every September candidate without activating uncertain evidence", async () => {
+    const local = await loadLocalMarriottCatalog(path.resolve("."));
+    const holds = await loadPropertyReviewHolds(path.resolve("data/marriott/property-review-holds.json"));
+    const exceptions = await loadPropertySourceExceptions(path.resolve("data/marriott/property-source-exceptions.json"));
+    const activeByCode = new Map(marriottProperties.map((property) => [property.propertyCode, property]));
+    const holdsByCode = new Map(holds.properties.map((hold: { propertyCode: string }) => [hold.propertyCode, hold]));
+    const candidateCodes = new Set(septemberReview.newCandidates.map((row) => row.propertyCode));
+    expect(candidateCodes.size).toBe(26);
+    expect(septemberReview.newCandidates.filter((row) => row.decision === "active_patch").map((row) => row.propertyCode)).toEqual(["AMDFL", "BHJRB"]);
+    for (const row of septemberReview.newCandidates) {
+      if (row.decision === "active_patch") {
+        expect(activeByCode.get(row.propertyCode)?.officialName).toBe(row.officialName);
+        expect(holdsByCode.has(row.propertyCode)).toBe(false);
+      } else {
+        expect(activeByCode.has(row.propertyCode), row.propertyCode).toBe(false);
+        const latest = octoberReview.records.find((review) => review.propertyCode === row.propertyCode);
+        expect(latest, row.propertyCode).toBeDefined();
+        const hold = holdsByCode.get(row.propertyCode) as { officialName: string; aliases: string[]; status: string; lastReviewedAt: string };
+        expect(hold).toMatchObject({ status: latest?.proposedStatus, lastReviewedAt: "2026-10-03" });
+        // A reviewed display-name change must retain the September identity.
+        expect([hold.officialName, ...hold.aliases], row.propertyCode).toContain(row.officialName);
+      }
+    }
+    expect(septemberReview.movedToHold).toHaveLength(5);
+    for (const row of septemberReview.movedToHold) {
+      expect(activeByCode.has(row.propertyCode), row.propertyCode).toBe(false);
+      const latest = octoberReview.records.find((review) => review.propertyCode === row.propertyCode);
+      expect(latest, row.propertyCode).toBeDefined();
+      expect(holdsByCode.get(row.propertyCode)).toMatchObject({ status: latest?.proposedStatus, lastReviewedAt: "2026-10-03" });
+      expect(exceptions.properties.some((exception: { propertyCode: string }) => exception.propertyCode === row.propertyCode)).toBe(false);
+    }
+    // A frozen, synthetic collection keeps the review regression offline.
+    const current = collection(septemberReview.newCandidates.map((row) =>
+      officialProperty(row.propertyCode, "reviewed-hotel")
+    ));
+    const result = compareMarriottCatalogs(local.filter((row) => candidateCodes.has(row.propertyCode)), current, baseline([]), {
+      minimumMarriottPropertyCount: 0, minimumRitzPropertyCount: 0,
+      minimumBvlgariPropertyCount: 0, propertyReviewHolds: holds.properties,
+    });
+    expect(result.blockers).toEqual([]);
+    expect(result.registrationCandidates).toEqual([]);
+    expect(result.summary.heldOfficialProperties).toBe(24);
+  });
+
+  it("preserves stable IDs and old aliases for every September display-name change", () => {
+    expect(septemberReview.renames).toHaveLength(13);
+    for (const row of septemberReview.renames) {
+      const property = marriottProperties.find((item) => item.propertyCode === row.propertyCode);
+      expect(property, row.propertyCode).toMatchObject({ id: row.stableId, officialName: row.officialName });
+      expect(property?.aliases.some((alias) => normalizedHotelName(alias.value) === normalizedHotelName(row.previousName)), row.propertyCode).toBe(true);
+    }
+  });
+
+  it("does not silently delete or approve the September source-only disappearances", async () => {
+    const local = await loadLocalMarriottCatalog(path.resolve("."));
+    const exceptions = await loadPropertySourceExceptions(path.resolve("data/marriott/property-source-exceptions.json"));
+    expect(septemberReview.unreviewedSourceGaps).toHaveLength(16);
+    for (const row of septemberReview.unreviewedSourceGaps) {
+      expect(local.some((property) => property.propertyCode === row.propertyCode), row.propertyCode).toBe(true);
+      expect(exceptions.properties.some((exception: { propertyCode: string }) => exception.propertyCode === row.propertyCode), row.propertyCode).toBe(false);
     }
   });
 

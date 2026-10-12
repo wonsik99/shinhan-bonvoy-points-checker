@@ -68,7 +68,6 @@ const indonesiaOfficialRows = [
   { id: "DPSWI", officialName: "The Westin Resort Nusa Dua, Bali" },
   { id: "DPSXR", officialName: "The St. Regis Bali Resort" },
   { id: "DPSLC", officialName: "The Laguna, a Luxury Collection Resort & Spa, Nusa Dua, Bali" },
-  { id: "DPSUJ", officialName: "JW Marriott Bali Ubud Resort & Spa" },
   { id: "TKGMC", officialName: "Lampung Marriott Resort & Spa" },
   { id: "DPSUK", officialName: "Cicada Resort Bali Ubud, Autograph Collection" },
   { id: "DPSWH", officialName: "W Bali - Seminyak" },

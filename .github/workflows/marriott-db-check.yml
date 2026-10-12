@@ -26,16 +26,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Compare official property-code sources with the approved snapshot
+      - name: Compare official sources with the acknowledged monitoring snapshot
         id: marriott_check
         continue-on-error: true
-        run: npm run hotels:check -- --fail-on-official-change --output-dir artifacts/marriott-db-check
+        run: npm run hotels:check -- --baseline data/marriott/official-monitor-snapshot.json --fail-on-official-change --output-dir artifacts/marriott-db-check
 
       - name: Add the report to the workflow summary
         if: always()
         run: |
           if [ -f artifacts/marriott-db-check/report.md ]; then
             cat artifacts/marriott-db-check/report.md >> "$GITHUB_STEP_SUMMARY"
+            node --input-type=module -e '
+              import { readFileSync } from "node:fs";
+              const historical = JSON.parse(readFileSync("artifacts/marriott-db-check/approval-history/report.json", "utf8"));
+              const s = historical.summary;
+              console.log("\n## Approval history — informational only\n");
+              console.log(`Compared with ${historical.comparison.baselineGeneratedAt}: +${s.officialAdditions} / disappeared ${s.officialDisappearances} / slug ${s.slugChanges} / source ${s.sourceChanges}.`);
+              console.log("This historical comparison does not gate the run or approve hotel registration. Full reports are included in the artifact.");
+            ' >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Marriott DB monitor did not produce a report." >> "$GITHUB_STEP_SUMMARY"
           fi
@@ -49,6 +57,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Fail when the monitor requires attention
+      - name: Fail for new upstream changes or source-integrity failure
         if: steps.marriott_check.outcome == 'failure'
         run: exit 1

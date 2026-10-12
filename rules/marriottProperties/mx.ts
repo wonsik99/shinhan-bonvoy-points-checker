@@ -2,7 +2,7 @@ import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverride
 import { high, inferBrand } from "./helpers";
 import type { MarriottOfficialRow, MarriottPropertySeed } from "./types";
 
-// Source: Marriott hotel sitemap property codes, July 2026.
+// Source: Marriott hotel sitemap property codes, reviewed August 2026.
 const mexicoMarriottOfficialRows: readonly MarriottOfficialRow[] = [
   { id: "CUNEK", officialName: "The Riviera Maya EDITION at Kanai" },
   { id: "CUNPB", officialName: "Paraiso de la Bonita, a Luxury Collection Resort, Riviera Maya, Adult All-Inclusive" },
@@ -179,7 +179,7 @@ const mexicoMarriottOfficialRows: readonly MarriottOfficialRow[] = [
   { id: "MEXXB", officialName: "City Express by Marriott Ciudad de México Tlalnepantla" },
   { id: "MEXPI", officialName: "City Express Plus by Marriott Ciudad de México Insurgentes Sur" },
   { id: "MTYXO", officialName: "City Express by Marriott Monterrey Aeropuerto" },
-  { id: "MEXJS", officialName: "City Express Junior by Marriott Ciudad de México Sullivan" },
+  { id: "MEXJS", officialName: "City Express Junior by Marriott Ciudad de México Zona Reforma" },
   { id: "MXLXM", officialName: "City Express by Marriott Mexicali" },
   { id: "MEXPT", officialName: "City Express Plus by Marriott Ciudad de Mexico Interlomas" },
   { id: "MEXXP", officialName: "City Express by Marriott Tepotzotlan" },

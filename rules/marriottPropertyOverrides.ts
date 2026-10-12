@@ -28,6 +28,59 @@ export const curatedMarriottPropertyAliases: Readonly<
     contains("SHERATON NEW CALEDONIA DEVA SPA & GOLF RESORT", high),
   ],
   PVRWI: [contains("THE WESTIN RESORT & SPA, PUERTO VALLARTA", high)],
+  // Former display names retained after the August 2026 official rename review.
+  MEXJS: [
+    contains("CITY EXPRESS JUNIOR BY MARRIOTT CIUDAD DE MEXICO SULLIVAN", high),
+  ],
+  YYZPX: [contains("CITY EXPRESS BY MARRIOTT PORT HOPE", high)],
+  "jp-osaal": [contains("ALOFT BY MARRIOTT OSAKA DOJIMA", high)],
+  "cn-zhaxp": [
+    contains("FOUR POINTS BY SHERATON ZHANJIANG XIASHAN", high),
+  ],
+  "cn-szxbr": [contains("RENAISSANCE SHENZHEN LUOHU", high)],
+  "us-atlhf": [contains("FAIRFIELD INN & SUITES BETHLEHEM", high)],
+  "us-cidwa": [contains("AC BY MARRIOTT CEDAR RAPIDS WEST", high)],
+  "us-houmd": [
+    contains("COURTYARD BY MARRIOTT HOUSTON MEDICAL CENTER/NRG PARK", high),
+  ],
+  "us-hourw": [
+    contains("RESIDENCE INN BY MARRIOTT HOUSTON MEDICAL CENTER/NRG PARK", high),
+  ],
+  "us-ilgri": [
+    contains("RESIDENCE INN BY MARRIOTT WILMINGTON BRANDYWINE", high),
+  ],
+  "us-rdmxa": [
+    contains("CITY EXPRESS BY MARRIOTT REDMOND BEND AIRPORT", high),
+  ],
+  "us-savak": [
+    contains("THE BOHEMIAN HOTEL SAVANNAH RIVERFRONT", high),
+    contains("BOHEMIAN HOTEL SAVANNAH RIVERFRONT, AUTOGRAPH COLLECTION", high),
+  ],
+  "us-stlal": [contains("ALOFT BY MARRIOTT ST. LOUIS CORTEX", high)],
+  "us-xnark": [contains("HOTEL VIN, ROGERS, AUTOGRAPH COLLECTION", high)],
+  PUJWH: [contains("W PUNTA CANA ALL-INCLUSIVE", high)],
+  // Former display names retained after the September 2026 official review.
+  "us-abeeh": [contains("SPRINGHILL SUITES BY MARRIOTT EASTON PA", high)],
+  "us-abefa": [contains("FAIRFIELD BY MARRIOTT INN & SUITES BETHLEHEM PA", high)],
+  "us-atllp": [contains("RESIDENCE INN BY MARRIOTT ATLANTA BUCKHEAD/LENOX PARK", high)],
+  "us-ausfw": [contains("FAIRFIELD INN & SUITES AUSTIN WEST", high)],
+  "us-dalfp": [contains("FAIRFIELD BY MARRIOTT INN & SUITES DALLAS PLANO", high)],
+  "us-mcoak": [contains("GRAND BOHEMIAN ORLANDO, AUTOGRAPH COLLECTION", high)],
+  "us-miasp": [contains("UNFRAMED, AUTOGRAPH COLLECTION", high)],
+  "us-phxmr": [contains("STUDIORES BY MARRIOTT MESA", high)],
+  "us-sbyot": [contains("ASHORE OCEANFRONT HOTEL", high)],
+  "us-stfct": [contains("STAMFORD MARRIOTT HOTEL & SPA", high)],
+  PSECX: [contains("CITY CENTRO BY MARRIOTT PONCE PLAZA PUERTO RICO", high)],
+  SZKAK: [contains("LEOPARD SANDS, KRUGER PARK", high)],
+  // Aliases carried forward when reviewed July holds became active.
+  BEGAC: [contains("AC HOTEL BELGRADE AIRPORT CITY", high)],
+  ISTXA: [contains("FOUR POINTS FLEX ISTANBUL AIRPORT", high)],
+  "cn-csxpf": [contains("FOUR POINTS CHANGSHA SOUTH STATION", high)],
+  "cn-xmnxw": [contains("WESTIN XIAMEN XIANG'AN", high)],
+  "us-mqtts": [contains("TOWNEPLACE SUITES MARQUETTE", high)],
+  "us-snaaf": [exact("FAIRFIELD INN & SUITES ANAHEIM RESORT", high)],
+  "us-snaal": [exact("SPRINGHILL SUITES ANAHEIM RESORT", high)],
+  "us-waswf": [contains("THE POTOMAC HOTEL", high)],
   // Confirmed Shinhan overseas statement merchants.
   MADPP: [exact("PRINCESA PLAZA MADRID FOH", high)],
   ISTDC: [contains("DECAMONDO HOTEL", high)],

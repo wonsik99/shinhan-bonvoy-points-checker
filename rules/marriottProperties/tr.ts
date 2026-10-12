@@ -2,7 +2,7 @@ import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverride
 import { high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
 
-// Source: Marriott hotel sitemap property codes, July 2026.
+// Source: Marriott hotel sitemap property codes, reviewed August 2026.
 const turkiyeMarriottOfficialRows = [
   { id: "BJVEB", officialName: "The Bodrum EDITION" },
   { id: "ADBLC", officialName: "Reges, a Luxury Collection Resort & Spa, Cesme" },
@@ -72,6 +72,7 @@ const turkiyeMarriottOfficialRows = [
   { id: "TZXRI", officialName: "Residence Inn by Marriott Trabzon" },
   { id: "ADBXT", officialName: "Moxy Izmir" },
   { id: "DIYFP", officialName: "Four Points Diyarbakir" },
+  { id: "ISTXA", officialName: "Four Points Flex by Sheraton Istanbul Airport" },
   // Ritz-Carlton HWS XML property codes, July 2026.
   { id: "ISTRZ", officialName: "The Ritz-Carlton, Istanbul" },
 ];

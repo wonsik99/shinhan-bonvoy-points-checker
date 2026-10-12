@@ -23,7 +23,7 @@
 - 실제 적립 포인트와 예상 포인트의 차이 계산
 - 해외 거래에서 채널명보다 `해외가맹점명`을 우선 사용
 - Marriott 브랜드, 공식 호텔명, 현지명, 검증된 alias 및 운영사 규칙 대조
-- 전 세계 149개 국가·지역, 10,287개 운영 확인 Marriott 호텔 seed 기반 탐색
+- 전 세계 149개 국가·지역, 10,309개 Marriott 호텔 seed 기반 탐색 (제휴 전환 근거가 있는 항목은 거래일·확인 필요 규칙으로 별도 처리)
 - 공식명·현지명 토큰을 이용한 보수적인 미등록 호텔 후보 탐색
 - Marriott·Ritz-Carlton·Bvlgari 공식 property code 소스와 로컬 seed의 주간 변경 확인 보고서
 - `포함` / `제외` / `모르겠음`으로 확인 필요 거래 직접 검토
@@ -151,7 +151,7 @@ components/                     업로드, 진행 단계, 결과 표, 문의 UI
 lib/                            파싱, 정규화, 분류, 분석, 피드백
 lib/marriottPropertyTokenIndex  공식명·현지명 토큰 후보 인덱스
 rules/                          카드 프로필, Marriott 브랜드·호텔·alias 규칙
-data/marriott/                  공식 code 메타데이터, 등록 보류·소스 누락 예외, 승인 snapshot
+data/marriott/                  공식 code 메타데이터, 등록 보류·소스 누락 예외, 고정 승인 이력·모니터 기준 snapshot
 scripts/marriott/               공식 XML/code 수집·비교·보고서 모니터
 google-apps-script/             선택적 Google Sheets 피드백 수집기
 e2e/                            Playwright 브라우저 테스트
@@ -210,7 +210,7 @@ Bonvoy L4/L5 Checker analyzes a Shinhan Card **points accrual statement in Excel
 - Calculates the difference between credited and expected points
 - Prefers the overseas merchant field over a generic payment-channel name
 - Matches Marriott brands, official names, local names, verified aliases, and operator rules
-- Searches 10,287 verified-operating Marriott property seeds across 149 countries and regions
+- Searches 10,309 Marriott property seeds across 149 countries and regions; affiliation transitions are handled separately with transaction-date and review-only rules
 - Finds conservative unregistered-property candidates using official/local name tokens
 - Produces a weekly read-only change report against Marriott, Ritz-Carlton, and Bvlgari official property-code sources
 - Lets users mark review items as include, exclude, or unsure
@@ -338,7 +338,7 @@ components/                     Upload, progress, result tables, inquiry UI
 lib/                            Parsing, normalization, classification, analysis, feedback
 lib/marriottPropertyTokenIndex  Official/local property-name token candidates
 rules/                          Card profile and Marriott brand/property/alias rules
-data/marriott/                  Official-code mappings, registration holds, source-gap exceptions, approved snapshot
+data/marriott/                  Official-code mappings, registration holds, source-gap exceptions, approval archive and monitoring baseline
 scripts/marriott/               Official XML/code collector, diff, and report monitor
 google-apps-script/             Optional Google Sheets feedback collector
 e2e/                            Playwright browser tests

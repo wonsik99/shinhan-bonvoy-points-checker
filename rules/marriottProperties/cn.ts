@@ -5,7 +5,7 @@ import type {
   SharedMarriottMerchantRule,
 } from "./types";
 
-// Source: Marriott destination page property codes, July 2026.
+// Source: Marriott destination page property codes, reviewed August 2026.
 const chinaOfficialRows = [
   { id: "AATFF", officialName: "Fairfield by Marriott Altay Fuhai" },
   { id: "AATJP", officialName: "Four Points by Sheraton Altay City" },
@@ -554,7 +554,7 @@ const chinaOfficialRows = [
   { id: "SHEMR", officialName: "Shenyang Marriott Hotel" },
   { id: "SZXDF", officialName: "Fairfield by Marriott Shenzhen Dameisha" },
   { id: "SZXCY", officialName: "Courtyard by Marriott Shenzhen Bao'an" },
-  { id: "SZXBR", officialName: "Renaissance Shenzhen Luohu" },
+  { id: "SZXBR", officialName: "Renaissance Shenzhen Luohu Hotel" },
   { id: "SZXBA", officialName: "JW Marriott Hotel Shenzhen Bao'an" },
   { id: "SZXFL", officialName: "Fairfield by Marriott Shenzhen Longgang" },
   { id: "SZXWT", officialName: "Shenzhen Marriott Hotel Nanshan" },
@@ -761,7 +761,7 @@ const chinaOfficialRows = [
   { id: "DYGNF", officialName: "Four Points by Sheraton Zhangjiajie National Forest Park" },
   { id: "ZQZEL", officialName: "Element Chongli" },
   { id: "ZQZCY", officialName: "Courtyard by Marriott Chongli" },
-  { id: "ZHAXP", officialName: "Four Points by Sheraton Zhanjiang Xiashan" },
+  { id: "ZHAXP", officialName: "Four Points by Sheraton Zhanjiang City Center" },
   { id: "ZHASI", officialName: "Sheraton Zhanjiang Hotel" },
   { id: "FUOSZ", officialName: "Sheraton Zhaoqing Dinghu" },
   { id: "CGOBF", officialName: "Fairfield by Marriott Zhengzhou Beilonghu" },
@@ -804,6 +804,10 @@ const chinaOfficialRows = [
   { id: "SYXSH", officialName: "Sheraton Sanya Bay Resort" },
   { id: "TSNBP", officialName: "Four Points Tianjin Binhai New Area" },
   { id: "YTYSP", officialName: "Four Points by Sheraton Yangzhou, Slender West Lake Road" },
+  // Reviewed additions and releases from the July/August 2026 change sets.
+  { id: "CSXPF", officialName: "Four Points by Sheraton Changsha South Station" },
+  { id: "SZXJQ", officialName: "JW Marriott Hotel Shenzhen Snow World" },
+  { id: "XMNXW", officialName: "The Westin Xiamen Xiang'an" },
 ];
 
 /**

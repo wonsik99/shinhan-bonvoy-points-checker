@@ -1,4 +1,4 @@
-import { high, inferBrand } from "./helpers";
+import { candidate, contains, exact, high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
 
 // Source: Marriott destination page property codes, July 2026.
@@ -73,6 +73,8 @@ const thailandOfficialRows = [
   { id: "HHQPS", officialName: "Sheraton Hua Hin Pranburi Villas" },
   { id: "BKKRR", officialName: "Rayong Marriott Resort & Spa" },
   { id: "HKTMK", officialName: "Khao Lak Marriott Beach Resort & Spa" },
+  // October 11, 2026: local registration approved after property-specific review.
+  { id: "UTPMA", officialName: "MASON, a Member of Design Hotels™" },
 ];
 
 export const thailandMarriottProperties: MarriottPropertySeed[] =
@@ -85,6 +87,21 @@ export const thailandMarriottProperties: MarriottPropertySeed[] =
     brandGroup: high.brandGroup,
     confidence: high.confidence,
     status: high.status,
-    aliases: [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 태국 호텔입니다.`,
+    aliases:
+      id === "UTPMA"
+        ? [
+            contains("MASON, A MEMBER OF DESIGN HOTELS", high),
+            contains("MASON A MEMBER OF DESIGN HOTELS", high),
+            contains("MASON PATTAYA", high),
+            // Suppress the generic high-confidence derived MASON alias.
+            exact("MASON", {
+              ...candidate,
+              reason: "MASON 단독 상호는 일반 단어·다른 지역의 상호와 겹칠 수 있어 태국 파타야의 해당 Design Hotels 호텔인지 확인해야 합니다.",
+            }),
+          ]
+        : [],
+    reason:
+      id === "UTPMA"
+        ? "MASON은 태국 파타야의 Design Hotels 호텔로 Marriott Bonvoy 연계 근거를 확인했습니다. 일부 Bonvoy 혜택에는 제한이 있으며 카드 특별적립 대상 여부는 카드사 확인이 필요합니다."
+        : `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 태국 호텔입니다.`,
   }));

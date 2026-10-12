@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "approvedAt": "2026-10-11",
+  "appliedLocallyAt": "2026-10-11",
+  "timeZone": "America/Detroit",
+  "approval": {
+    "source": "explicit_human_user_request",
+    "request": "좋아 그렇게 하자",
+    "scope": "SHAFO의 운영 불확실성 보호만 로컬 적용. 호텔 기록 유지, 해당 호텔로 식별되는 거래는 확인 필요. 신규 등록·보류 해제·삭제·커밋·push·배포 없음."
+  },
+  "records": [
+    {
+      "propertyCode": "SHAFO",
+      "localId": "cn-shafo",
+      "officialName": "Fairfield by Marriott Shanghai Hongqiao NECC",
+      "country": "CN",
+      "region": "overseas",
+      "manuallyApproved": true,
+      "appliedLocally": true,
+      "retainedRegistryState": "active",
+      "effectiveClassificationState": "needs_review",
+      "defaultIncludedInPointTotals": false,
+      "explicitLocalInclusionAllowed": true,
+      "closureStartDate": null,
+      "reopeningDate": null,
+      "marriottAffiliationEndDate": null,
+      "permanentClosureConfirmed": false,
+      "liveOperatingStatusVerified": false,
+      "evidence": {
+        "checkedAt": "2026-10-11",
+        "type": "official_page_search_cache",
+        "cacheFreshness": "개요는 약 3주 전, 객실 안내는 약 1개월 전 수집된 검색 캐시입니다.",
+        "urls": [
+          "https://www.marriott.com/en-us/hotels/shafo-fairfield-shanghai-hongqiao-necc/overview/",
+          "https://www.marriott.com/en-us/hotels/shafo-fairfield-shanghai-hongqiao-necc/rooms/"
+        ],
+        "finding": "공식 페이지 검색 캐시의 휴업 안내는 보호 규칙의 단서입니다. 현재 실제 휴업·영구 폐업·제휴 종료·재개를 확인한 것은 아닙니다."
+      },
+      "policy": "휴업 시작·재개 시점이 미확인이라 과거·현재·날짜 없는 거래를 모두 확인 필요로 유지. 명세서 L4/L5 정상 판정과 취소 우선순위는 유지. 포인트 합계와 문의 문구는 사용자가 명시적으로 포함할 때만 반영."
+    }
+  ],
+  "registryBefore": {
+    "retainedHotels": 10309,
+    "heldHotels": 88,
+    "identitySha256": "b97b64559720923d22e7419d827227f6636995203d1315b57bf0a985519bf466"
+  },
+  "registryAfter": {
+    "retainedHotels": 10309,
+    "heldHotels": 88,
+    "newRegistrations": 0,
+    "newFormalHolds": 0,
+    "holdReleases": 0,
+    "deletions": 0
+  },
+  "unchangedClassificationAudit": {
+    "propertyCount": 10308,
+    "transactionDate": "2026-10-11",
+    "projection": "propertyCode plus classifyMerchant(officialName, transactionDate), registry order",
+    "beforeSha256": "7e70344f70ab29de5ba2fab49b65c58cfa2b8b4e58597c983eaeb033d5f98bce"
+  },
+  "approvedCodeChanges": [
+    {
+      "path": "lib/classifyMerchant.ts",
+      "beforeSha256": "d9505a6bfc5b7884bd853b801655e120f20a172eb2eebee616de7fa0fd5fedc2",
+      "afterSha256": "a7005223bf0994174a1ec4c911236ef5370355ef4bc07b821ad837e5cc7ad415"
+    }
+  ],
+  "runtimeFileSha256": {
+    "lib/classifyMerchant.ts": "a7005223bf0994174a1ec4c911236ef5370355ef4bc07b821ad837e5cc7ad415",
+    "lib/marriottPropertyOperatingReviews.ts": "070464540ee2824b2ff57b77022f444a77abe194c0e5c364415f6e67b49d33ef",
+    "rules/marriottPropertyOperatingReviews.ts": "7ef0285cb2abc7a51965a9ca996f9cf082435f631cf0c4fdf3b7a9328c95e2b1"
+  },
+  "protectedFileSha256": {
+    "data/marriott/official-property-snapshot.json": "d383fa1d6c8e9520ad704aa657c9b3aaffcc6a2f01644ba3e886be71dc12c1d8",
+    "data/marriott/property-review-holds.json": "2f8272dbc5c91beed9857212af2ea31b1e0b05b5452f95f5d9031a15c2248a4c",
+    "data/marriott/property-source-exceptions.json": "4574b5423d0d33da55e870a91e56daede95f0e765f408def5ff7d20ab34472d4",
+    "data/marriott/property-code-overrides.json": "e410ff5d81cbf790717b334fcd57d99dd401272e8fa77606e233fb16f01fd858",
+    "rules/marriottProperties/cn.ts": "97f9a8472767601527ab4e4e82793d8dfb3c5023cefd6078ea44bd04edd9e293",
+    "rules/marriottProperties/in.ts": "0483a2e39e743481d6764b7d234aa8819784fd707e232d59045322c5db9b56ff",
+    "rules/marriottProperties/th.ts": "21739ebb2206a16d3ad0007d980b4df7619632c4e4b3e067b573163fc7381b2e",
+    "rules/marriottProperties/helpers.ts": "e946b90a6aa4fa1e7ef2b3add43355221a639367b87d9b481217223d1b53b3f1",
+    "rules/marriottPropertyOverrides.ts": "6ee65bf0aeb1a3e4928815638682472fe7bb8cd636c1d5e3f2e93a35a3e648dc",
+    "rules/marriottPropertyReviewHolds.ts": "a0b8ccc0a397f76f57415ded61720e6bf961d98acb0b2b06d8070259de39999f",
+    "rules/marriottPropertyTransitions.ts": "9221bc02e1661e8202580e4118eeb2668d72d619b638e230cdc50fb6ba0e45b8",
+    "lib/marriottPropertyTransitions.ts": "7b06703834cbcc7d38ca677f305edafdaeb8db79cc27dce41db72941d521ac03",
+    "lib/analyzeTransactions.ts": "a29c23361ceaead720485ade03dc190c0a1e46295cea5cf1d0512fea1d4c9e19",
+    "lib/normalizeTransaction.ts": "c6532b4b311c67b13e3351677539926eab1f8a16d2ac2366e4b10f6ef195ec10",
+    "lib/parseShinhanExcel.ts": "d398c7d46251aa5be678bb2d5dcf9c11f0740c81cc53d7d1c5d139dc69bfd930",
+    "lib/feedback.ts": "a07880e7ed46cd2d90161cd3797052db9c908207f0d9208dfb660cf30a298ff3",
+    "lib/inquiryMessage.ts": "e4e3e47e236a6bff9875d01d27d485fa0748379390b329d69616c95136e7ffc5",
+    "app/page.tsx": "9c6e93bef345f56db32b1b24d017ff0f9e799a518c260887828110c34a0443f2",
+    "next.config.ts": "b1929d73601bdd79fedaf923d61f47cb799b3b9cfc076075fa3a6fd70911582c",
+    "google-apps-script/Code.gs": "42aa333f20f8dead692d441869d00a74bdda5a3650eb889db4237b94a939ed28",
+    "scripts/marriott/monitor.mjs": "d44f192f9f375d283925e6887b1d23bbecbec193ae3b0338bd61743caddf94d2",
+    "package.json": "221657cf788f34728a2d8f5986f9a69d6273c7efec8235301c45d52e07f6eafa",
+    "package-lock.json": "dc0b9472b210342bc6b2ffdd3a6a261b50ab994e82bb83b7db2eec44e2b96d4c",
+    "playwright.config.ts": "ff0a4fa4af2636ddb3a33d6a96e228c7063e9949c057e2a14575a90b3dcb5d5f",
+    "vitest.config.ts": "58279f11f63d23c03704ccab853951ecdad1cc6abd8db5cf5ff000f89d33c2b3",
+    "data/marriott/reviews/2026-09-06.json": "b56015264d034de8a6e79199e8d447abcfd8a1ec5c1e0576ca6f753b432c80ab",
+    "data/marriott/reviews/2026-09-07-verification.json": "ec71f11594f60469f2ddc9a1eae6ce86fb75a166928ae91a2fc32d9cf9fd3ae2",
+    "data/marriott/reviews/2026-10-01-new-candidates.json": "88abbc349cd7de00c5b049ce47b91560d073bcaad6059183c94fe62d5081d761",
+    "data/marriott/reviews/2026-10-03-verification.json": "43f1505a4b5ea02f0e8326bb19ccfbf8c084105586f7a1eae0373698e00cdd7e",
+    "data/marriott/reviews/2026-10-04-approval-queue.json": "b8a01544e5b0fd6444eadb7615c88eedf3471abf78952e985289edeb220ce8a8",
+    "data/marriott/reviews/2026-10-04-new-candidates-a.json": "7dc68965d3f44f564aa80d86f8211485de17380f98d868dfc5783889f987705b",
+    "data/marriott/reviews/2026-10-04-new-candidates-b.json": "3f1a40c6660213955cdce084de4d94b78867bd2ce9dfb28f2f0ee8543b090fef",
+    "data/marriott/reviews/2026-10-04-priority-evidence.json": "a2ef9766f7256a85b1b3bb573cf857e5882dc270e403c2c9daab098fbe3b8875",
+    "data/marriott/reviews/2026-10-11-local-approved-three.json": "f071382a4bdd30dc3d563db1545689ddaf79c09217dd5f39ba3e6ae287548d0f",
+    "data/marriott/reviews/2026-10-11-new-candidates.json": "97d186739db64d648c64459e0a17cd602ecf1f733298be54099a90cba473ed54"
+  },
+  "mutationPolicy": {
+    "automaticRegistration": false,
+    "humanApprovedOperatingReview": true,
+    "automaticHoldRelease": false,
+    "automaticDeletion": false,
+    "approvedBaselineUpdated": false,
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "collectorChanged": false,
+    "uploadPrivacyChanged": false
+  }
+}
+

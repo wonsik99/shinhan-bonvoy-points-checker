@@ -49,7 +49,7 @@ export function analyzeTransactions(
   transactions: NormalizedTransaction[]
 ): AnalysisResult[] {
   return transactions.map((tx) => {
-    const classification = classifyMerchant(tx.merchantName);
+    const classification = classifyMerchant(tx.merchantName, tx.transactionDate);
 
     if (tx.isCanceled) {
       return {
