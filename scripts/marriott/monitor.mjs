@@ -683,8 +683,8 @@ export function compareMarriottCatalogs(
     minimumRitzPropertyCount = 100,
     minimumBvlgariPropertyCount = 6,
     maximumOfficialDropRatio = 0.02,
-    propertyReviewHolds = [],
-    propertySourceExceptions = [],
+    propertyReviewHolds = /** @type {typeof import("../../data/marriott/property-review-holds.json").properties} */ ([]),
+    propertySourceExceptions = /** @type {typeof import("../../data/marriott/property-source-exceptions.json").properties} */ ([]),
   } = {}
 ) {
   const quarantinedCodes = new Set(
