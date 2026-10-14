@@ -1,3 +1,4 @@
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
 import { high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
 
@@ -31,7 +32,7 @@ const dominicanRepublicMarriottOfficialRows = [
 ] as const;
 
 export const dominicanRepublicMarriottProperties: MarriottPropertySeed[] = dominicanRepublicMarriottOfficialRows.map(
-  ({ id, officialName }) => ({
+  ({ id, officialName }) => applyCuratedMarriottPropertyAliases({
     id,
     country: "DO",
     region: "overseas",

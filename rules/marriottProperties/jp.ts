@@ -2,7 +2,7 @@ import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverride
 import { high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
 
-// Source: Marriott destination page property codes, July 2026.
+// Source: Marriott destination page property codes, reviewed August 2026.
 const japanOfficialRows = [
   { id: "KMJFI", officialName: "Fairfield by Marriott Kumamoto Aso" },
   { id: "UKBFI", officialName: "Fairfield by Marriott Hyogo Awaji Higashiura" },
@@ -80,7 +80,7 @@ const japanOfficialRows = [
   { id: "OSACO", officialName: "Courtyard by Marriott Osaka Honmachi" },
   { id: "OSAMC", officialName: "Osaka Marriott Miyako Hotel" },
   { id: "OSACY", officialName: "Courtyard by Marriott Shin-Osaka Station" },
-  { id: "OSAAL", officialName: "Aloft by Marriott Osaka Dojima" },
+  { id: "OSAAL", officialName: "Aloft by Marriott Osaka Umeda" },
   { id: "OSAXN", officialName: "City Express By Marriott Osaka Namba South" },
   { id: "OSAXI", officialName: "City Express By Marriott Osaka Shin-Imamiya" },
   { id: "OSAKO", officialName: "Hotel Koo Otsu Hyakucho, a Member of Design Hotels™" },

@@ -1,7 +1,7 @@
-import { high, inferBrand } from "./helpers";
+import { candidate, contains, exact, high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
 
-// Source: Marriott destination page property codes, July 2026.
+// Source: Marriott destination page property codes, reviewed August 2026.
 const indiaOfficialRows = [
   { id: "AGRLC", officialName: "ITC Mughal, a Luxury Collection Resort & Spa, Agra" },
   { id: "AGRCY", officialName: "Courtyard by Marriott Agra" },
@@ -229,6 +229,17 @@ const indiaOfficialRows = [
   { id: "BDQFV", officialName: "The Fern Vadodara, Series by Marriott" },
   { id: "VTZFP", officialName: "Four Points by Sheraton Visakhapatnam" },
   { id: "VTZFI", officialName: "Fairfield by Marriott Visakhapatnam" },
+  // Reviewed additions from the August 2026 official HWS change set.
+  { id: "AMDFO", officialName: "The Fern Sattva Resort Polo Forest, Series by Marriott" },
+  { id: "BOMAK", officialName: "Athiva Pulse Navi Mumbai, Autograph Collection" },
+  { id: "IXKFG", officialName: "The Fern Gir Forest Resort, Sasan Gir, Series by Marriott" },
+  { id: "JGAFS", officialName: "The Fern Sattva Resort Dwarka, Series by Marriott" },
+  // September 2026 review: official destination listings expose numeric rates.
+  { id: "AMDFL", officialName: "The Fern Sattva Resort Little Rann of Kutch, Series by Marriott" },
+  { id: "BHJRB", officialName: "The Fern Residency Bhuj, Series by Marriott" },
+  // October 11, 2026: three-candidate local patch explicitly approved by the user.
+  { id: "BLRXR", officialName: "Artezia Bengaluru" },
+  { id: "IXKRS", officialName: "The Fern Residency Somnath, Series by Marriott" },
 ];
 
 export const indiaMarriottProperties: MarriottPropertySeed[] =
@@ -237,10 +248,31 @@ export const indiaMarriottProperties: MarriottPropertySeed[] =
     country: "IN",
     region: "overseas",
     officialName,
-    brand: inferBrand(officialName),
+    // Independent is an internal label, not a claimed Marriott hotel brand.
+    brand: id === "BLRXR" ? "Independent" : inferBrand(officialName),
     brandGroup: high.brandGroup,
     confidence: high.confidence,
     status: high.status,
-    aliases: [],
-    reason: `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 인도 호텔입니다.`,
+    aliases:
+      id === "BLRXR"
+        ? [
+            exact("ARTEZIA", {
+              ...candidate,
+              reason: "ARTEZIA 단독 상호는 호텔 위치와 전환 중 Marriott 혜택 조건을 확인해야 합니다.",
+            }),
+          ]
+        : id === "IXKRS"
+          ? [
+              contains("THE FERN RESIDENCY SOMNATH, SERIES BY MARRIOTT", high),
+              contains("THE FERN RESIDENCY SOMNATH SERIES BY MARRIOTT", high),
+              contains("THE FERN RESIDENCY SOMNATH", {
+                ...candidate,
+                reason: "기존 Fern Somnath 상호만으로 Marriott 참여 시점을 확인할 수 없어 확인 필요입니다. 실제 거래일의 제휴·적립 대상 여부를 확인해야 합니다.",
+              }),
+            ]
+          : [],
+    reason:
+      id === "BLRXR"
+        ? "Artezia Bengaluru는 독립호텔로 표기하며 Marriott Bonvoy 연계 근거를 확인했습니다. 정규 브랜드와 전환 중 혜택 조건은 확인 필요이며 카드 특별적립 대상 여부는 카드사 확인이 필요합니다."
+        : `${officialName}은 Marriott Bonvoy 계열 호텔로 확인된 인도 호텔입니다.`,
   }));

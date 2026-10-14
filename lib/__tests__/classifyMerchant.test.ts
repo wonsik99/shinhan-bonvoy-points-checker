@@ -47,25 +47,25 @@ const propertySeedExpectations: Array<{
   {
     countryName: "Korea",
     properties: koreaMarriottProperties,
-    count: 41,
+    count: 42,
     region: "domestic",
   },
   {
     countryName: "Asia-Pacific",
     properties: asiaPacificMarriottProperties,
-    count: 776,
+    count: 784,
     region: "overseas",
   },
   {
     countryName: "Europe",
     properties: europeMarriottProperties,
-    count: 1087,
+    count: 1086,
     region: "overseas",
   },
   {
     countryName: "Americas",
     properties: americasMarriottProperties,
-    count: 890,
+    count: 891,
     region: "overseas",
   },
   {
@@ -77,13 +77,13 @@ const propertySeedExpectations: Array<{
   {
     countryName: "China",
     properties: chinaMarriottProperties,
-    count: 797,
+    count: 800,
     region: "overseas",
   },
   {
     countryName: "United States",
     properties: unitedStatesMarriottProperties,
-    count: 6338,
+    count: 6348,
     region: "overseas",
   },
 ];

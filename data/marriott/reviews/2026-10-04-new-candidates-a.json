@@ -1,0 +1,973 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-04",
+  "timezone": "America/Detroit",
+  "scope": {
+    "input": "data/marriott/reviews/2026-10-01-new-candidates.json",
+    "startIndex": 0,
+    "endIndex": 22,
+    "count": 23,
+    "purpose": "신규 후보 공식 URL 개별 재조회; 등록·보류·예외·snapshot 변경 없음"
+  },
+  "summary": {
+    "total": 23,
+    "individualOfficialUrlAttempts": 23,
+    "officialPropertyBodiesReturned": 20,
+    "individualOfficialUrlAccessFailures": 3,
+    "approvalCandidates": 0,
+    "reservationsUnavailable": 11,
+    "verificationRequired": 12,
+    "automaticallyApplied": 0
+  },
+  "limitations": [
+    "본문 반환·문구 검색은 공식 캐시/색인 검토이며 실시간 날짜별 객실 예약 확인이 아닙니다.",
+    "checkedAt은 America/Detroit 기준 검토일입니다. 원래 XML 수집일·lastmod 및 이전 근거 날짜는 previousEvidence에 보존합니다.",
+    "오래된 개장 계획과 현재 완료일을 혼동하지 않으며 확인하지 못한 일정은 null로 둡니다.",
+    "중단된 병렬 작업의 미저장 결과 대신 주 작업자가 23개 공식 URL을 다시 조회해 기록했습니다."
+  ],
+  "records": [
+    {
+      "sourceIndex": 0,
+      "propertyCode": "ATQFM",
+      "officialName": "The Fern Amritsar, GT Road, Series by Marriott",
+      "observedName": "The Fern Amritsar, GT Road, Series by Marriott",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/atqfm-the-fern-amritsar-gt-road-series/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-08",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "last week",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/atqfm-the-fern-amritsar-gt-road-series/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "last week",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 1,
+      "propertyCode": "BHMAC",
+      "officialName": "AC Hotels by Marriott Downtown Birmingham",
+      "observedName": "AC Hotels by Marriott Downtown Birmingham",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bhmac-ac-hotels-downtown-birmingham/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-11",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다. 현재 반환된 주소는 2000 1st Ave North입니다. 과거 주소 105 20th Street North와의 불일치는 보존하고 코드만으로 동일 운영 상태를 단정하지 않습니다.",
+      "sourceFreshness": "yesterday",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/bhmac-ac-hotels-downtown-birmingham/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "yesterday",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 2,
+      "propertyCode": "BHMLD",
+      "officialName": "Element by Marriott Birmingham Downtown",
+      "observedName": "Element by Marriott Birmingham Downtown",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bhmld-element-birmingham-downtown/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-11",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+      "sourceFreshness": "4 days ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/bhmld-element-birmingham-downtown/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "4 days ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 3,
+      "propertyCode": "BLRXR",
+      "officialName": "Artezia Bengaluru",
+      "observedName": "ARTEZIA",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/blrxr-artezia-bengaluru/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-25",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다. 현재 공식 페이지 제목은 ARTEZIA입니다. 이전 Artezia Bengaluru 표기와 구분해 명칭 검토 대상으로 남깁니다.",
+      "sourceFreshness": "today",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/blrxr-artezia-bengaluru/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "today",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 4,
+      "propertyCode": "BNAOG",
+      "officialName": "StudioRes by Marriott Oak Grove",
+      "observedName": "StudioRes by Marriott Oak Grove",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bnaog-studiores-oak-grove/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-16",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "last week",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/bnaog-studiores-oak-grove/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "last week",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 5,
+      "propertyCode": "BZEFG",
+      "officialName": "Fort George, Belize, Autograph Collection",
+      "observedName": "Fort George, Belize, Autograph Collection",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bzefg-fort-george-belize-autograph-collection/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-14",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+      "sourceFreshness": "6 days ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/bzefg-fort-george-belize-autograph-collection/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "6 days ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 6,
+      "propertyCode": "BZNFW",
+      "officialName": "Fairfield by Marriott Inn & Suites Bozeman West",
+      "observedName": "Fairfield by Marriott Inn & Suites Bozeman West",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bznfw-fairfield-inn-and-suites-bozeman-west/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-23",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "last week",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/bznfw-fairfield-inn-and-suites-bozeman-west/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "last week",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 7,
+      "propertyCode": "CGOSM",
+      "officialName": "Zhengzhou Marriott Hotel Shuanghe Lake",
+      "observedName": "Zhengzhou Marriott Hotel Shuanghe Lake",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/cgosm-zhengzhou-marriott-hotel-shuanghe-lake/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-20",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "last week",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/cgosm-zhengzhou-marriott-hotel-shuanghe-lake/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "last week",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 8,
+      "propertyCode": "CKGDS",
+      "officialName": "Sheraton Chongqing West",
+      "observedName": "Sheraton Chongqing West",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ckgds-sheraton-chongqing-west/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-11",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "last week",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ckgds-sheraton-chongqing-west/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "last week",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 9,
+      "propertyCode": "CLEHM",
+      "officialName": "The Legacy, Medina, a Tribute Portfolio Hotel",
+      "observedName": "The Legacy, Medina, a Tribute Portfolio Hotel",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/clehm-the-legacy-medina-a-tribute-portfolio-hotel/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-18",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+      "sourceFreshness": "3 days ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/clehm-the-legacy-medina-a-tribute-portfolio-hotel/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "3 days ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 10,
+      "propertyCode": "CRPNW",
+      "officialName": "Fairfield Inn & Suites Corpus Christi Northwest",
+      "observedName": "Fairfield Inn & Suites Corpus Christi Northwest",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/crpnw-fairfield-inn-and-suites-corpus-christi-northwest/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-25",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "5 days ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/crpnw-fairfield-inn-and-suites-corpus-christi-northwest/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "5 days ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 11,
+      "propertyCode": "CTGAC",
+      "officialName": "AC Hotel by Marriott Cartagena Colombia",
+      "observedName": "AC Hotel by Marriott Cartagena Colombia",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ctgac-ac-hotel-cartagena-colombia/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-15",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+      "sourceFreshness": "yesterday",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ctgac-ac-hotel-cartagena-colombia/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "yesterday",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 12,
+      "propertyCode": "CUNRA",
+      "officialName": "BlueBay Grand Esmeralda, Riviera Maya, An All Inclusive Resort",
+      "observedName": "BlueBay Grand Esmeralda, Riviera Maya, An All Inclusive Resort",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/cunra-bluebay-grand-esmeralda-riviera-maya-an-all-inclusive-resort/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-12",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "yesterday",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/cunra-bluebay-grand-esmeralda-riviera-maya-an-all-inclusive-resort/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "yesterday",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 13,
+      "propertyCode": "DALDN",
+      "officialName": "TownePlace Suites by Marriott Denton",
+      "observedName": "TownePlace Suites by Marriott Denton",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/daldn-towneplace-suites-denton/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-09",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "2 weeks ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/daldn-towneplace-suites-denton/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "2 weeks ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 14,
+      "propertyCode": "DOYBP",
+      "officialName": null,
+      "observedName": null,
+      "officialUrl": "https://www.marriott.com/en-us/hotels/doybp-four-points-binzhou/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-16",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "개별 공식 URL 조회가 실패해 호텔 본문을 새로 확인하지 못했습니다. 접근 오류를 폐업·제휴 종료로 해석하지 않습니다.",
+      "sourceFreshness": "not_available",
+      "method": "web_open_failed",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "개별 공식 페이지 본문·명칭·주소 재확인",
+        "실제 운영·Marriott 참여 효력일·객실 판매 확인",
+        "사람의 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/doybp-four-points-binzhou/overview/",
+          "type": "official_property_page",
+          "observation": "개별 공식 URL 조회가 실패해 호텔 본문을 새로 확인하지 못했습니다. 접근 오류를 폐업·제휴 종료로 해석하지 않습니다.",
+          "freshness": "not_available",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_failed",
+          "retrievalStatus": "fetch_error"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 15,
+      "propertyCode": "DPSRB",
+      "officialName": "The Royal Beach Seminyak Bali",
+      "observedName": "The Royal Beach Seminyak Bali",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/dpsrb-the-royal-beach-seminyak-bali/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-08",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "5 days ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/dpsrb-the-royal-beach-seminyak-bali/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "5 days ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 16,
+      "propertyCode": "DSABF",
+      "officialName": "Four Points Flex by Sheraton Doncaster",
+      "observedName": "Four Points Flex by Sheraton Doncaster",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/dsabf-four-points-flex-doncaster/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-1.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-23",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+      "sourceFreshness": "last week",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/dsabf-four-points-flex-doncaster/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "last week",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 17,
+      "propertyCode": "ECPER",
+      "officialName": "StudioRes by Marriott Panama City East",
+      "observedName": "StudioRes by Marriott Panama City East",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ecper-studiores-panama-city-east/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-2.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-10",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "last week",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ecper-studiores-panama-city-east/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "last week",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 18,
+      "propertyCode": "EJHAZ",
+      "officialName": "The Ritz-Carlton, AMAALA",
+      "observedName": "The Ritz-Carlton, AMAALA",
+      "officialUrl": "https://www.ritzcarlton.com/en/hotels/ejhaz-the-ritz-carlton-amaala/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.ritzcarlton.com/content/dam/marriott-hws/sitemap-xmls/trc-en-sitemap-hws-2.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-12",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다. 공식 Ritz-Carlton 소개·예약 UI가 반환됐으나 날짜별 객실 재고나 개장 완료일을 확인하지 못했습니다.",
+      "sourceFreshness": "3 days ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.ritzcarlton.com/en/hotels/ejhaz-the-ritz-carlton-amaala/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "3 days ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 19,
+      "propertyCode": "EWRPI",
+      "officialName": "Residence Inn by Marriott Parsippany",
+      "observedName": "Residence Inn by Marriott Parsippany",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ewrpi-residence-inn-parsippany/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-2.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-17",
+        "recommendation": "reservations_unavailable_candidate"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+      "sourceFreshness": "2 days ago",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "reservations_unavailable",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ewrpi-residence-inn-parsippany/overview/",
+          "type": "official_property_page",
+          "observation": "반환된 공식 캐시 본문에 해당 호텔의 예약 미개시 안내가 있습니다. 이는 전 날짜 미운영·폐업 증거가 아니며 실제 개장·제휴 효력일은 미확인입니다.",
+          "freshness": "2 days ago",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 20,
+      "propertyCode": "GPTWF",
+      "officialName": null,
+      "observedName": null,
+      "officialUrl": "https://www.marriott.com/en-us/hotels/gptwf-fairfield-inn-and-suites-waveland/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-2.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-23",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "개별 공식 URL 조회가 실패해 호텔 본문을 새로 확인하지 못했습니다. 접근 오류를 폐업·제휴 종료로 해석하지 않습니다.",
+      "sourceFreshness": "not_available",
+      "method": "web_open_failed",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "개별 공식 페이지 본문·명칭·주소 재확인",
+        "실제 운영·Marriott 참여 효력일·객실 판매 확인",
+        "사람의 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/gptwf-fairfield-inn-and-suites-waveland/overview/",
+          "type": "official_property_page",
+          "observation": "개별 공식 URL 조회가 실패해 호텔 본문을 새로 확인하지 못했습니다. 접근 오류를 폐업·제휴 종료로 해석하지 않습니다.",
+          "freshness": "not_available",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_failed",
+          "retrievalStatus": "fetch_error"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 21,
+      "propertyCode": "GPTWT",
+      "officialName": "TownePlace Suites by Marriott Waveland",
+      "observedName": "TownePlace Suites by Marriott Waveland",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/gptwt-towneplace-suites-waveland/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-2.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-23",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다. 이전에 실패했던 개별 URL에서 TownePlace Suites by Marriott Waveland 소개 본문이 이번에 반환됐습니다. 예약 검색 UI는 객실 재고 증거가 아닙니다.",
+      "sourceFreshness": "yesterday",
+      "method": "web_open_cached_official_page",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "실제 운영·Marriott 참여 효력일 또는 개장 완료 근거",
+        "현재 날짜별 선택 가능한 객실·요금",
+        "기존 코드·주소·별칭 중복 대조와 사용자 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/gptwt-towneplace-suites-waveland/overview/",
+          "type": "official_property_page",
+          "observation": "공식 호텔별 소개 본문이 반환됐습니다. 예약 미개시 문구 검색에서 일치하지 않았으나 배너 부재·예약 UI만으로 실제 운영·객실 판매를 확인할 수 없습니다.",
+          "freshness": "yesterday",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_cached_official_page",
+          "retrievalStatus": "cached_body_returned"
+        }
+      ],
+      "applied": false
+    },
+    {
+      "sourceIndex": 22,
+      "propertyCode": "HFESU",
+      "officialName": null,
+      "observedName": null,
+      "officialUrl": "https://www.marriott.com/en-us/hotels/hfesu-fairfield-hefei-shushan-university-town/overview/",
+      "previousEvidence": {
+        "reviewFile": "data/marriott/reviews/2026-10-01-new-candidates.json",
+        "pageCheckedAt": "2026-10-01",
+        "reviewCompletedAt": "2026-10-03",
+        "sourceUrl": "https://www.marriott.com/content/dam/marriott-hws/sitemap-xmls/us-sitemap-hws-2.xml",
+        "collectedAt": "2026-10-01T04:54:46.970Z",
+        "sourceLastmod": "2026-09-14",
+        "recommendation": "verification_required"
+      },
+      "checkedAt": "2026-10-04",
+      "observation": "개별 공식 URL 조회가 실패해 호텔 본문을 새로 확인하지 못했습니다. 접근 오류를 폐업·제휴 종료로 해석하지 않습니다.",
+      "sourceFreshness": "not_available",
+      "method": "web_open_failed",
+      "openingDate": null,
+      "bonvoyEffectiveDate": null,
+      "currentRoomRateVerified": false,
+      "recommendation": "verification_required",
+      "unresolved": [
+        "개별 공식 페이지 본문·명칭·주소 재확인",
+        "실제 운영·Marriott 참여 효력일·객실 판매 확인",
+        "사람의 등록 승인"
+      ],
+      "evidence": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/hfesu-fairfield-hefei-shushan-university-town/overview/",
+          "type": "official_property_page",
+          "observation": "개별 공식 URL 조회가 실패해 호텔 본문을 새로 확인하지 못했습니다. 접근 오류를 폐업·제휴 종료로 해석하지 않습니다.",
+          "freshness": "not_available",
+          "checkedAt": "2026-10-04",
+          "method": "web_open_failed",
+          "retrievalStatus": "fetch_error"
+        }
+      ],
+      "applied": false
+    }
+  ]
+}

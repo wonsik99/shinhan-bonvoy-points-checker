@@ -296,4 +296,9 @@ export const koreaMarriottProperties: MarriottPropertySeed[] = [
     // Shinhan statement merchant for Courtyard by Marriott Sejong
     contains("세경호텔"),
   ]),
+  korea("kr-anook-signature-seoul-guro", "Anook Signature Hotel Seoul Guro, Series by Marriott", "Series by Marriott", [
+    contains("ANOOK SIGNATURE HOTEL SEOUL GURO"),
+    contains("ANOOK SIGNATURE SEOUL GURO"),
+    contains("아눅시그니처서울구로"),
+  ]),
 ];

@@ -503,3 +503,95 @@ test("resets parse-report state for each new diagnostic", async ({ page }) => {
   await expect.poll(() => reports.length).toBe(2);
   expect(reports[0].diagnostic).not.toBe(reports[1].diagnostic);
 });
+
+test("recognizes the approved three hotels but keeps short and old names review-only without uploading data", async ({ page }) => {
+  const mutationRequests: string[] = [];
+  const pageErrors: string[] = [];
+  page.on("request", (request) => {
+    if (!["GET", "HEAD", "OPTIONS"].includes(request.method())) mutationRequests.push(request.url());
+  });
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  // An accidental collector request must never reach any real collector.
+  await page.route("https://script.google.com/**", async (route) => {
+    await route.fulfill({ status: 204, body: "" });
+  });
+
+  const transactions: Transaction[] = [
+    [1, "VISA해외사용일시불", "ARTEZIA BENGALURU", 100000, "L2", 300, "N"],
+    [2, "VISA해외사용일시불", "THE FERN RESIDENCY SOMNATH SERIES BY MARRIOTT", 100000, "L2", 300, "N"],
+    [3, "VISA해외사용일시불", "MASON PATTAYA", 100000, "L2", 300, "N"],
+    [4, "VISA해외사용일시불", "ARTEZIA", 100000, "L2", 300, "N"],
+    [5, "VISA해외사용일시불", "MASON", 100000, "L2", 300, "N"],
+    [6, "VISA해외사용일시불", "THE FERN RESIDENCY SOMNATH", 100000, "L2", 300, "N"],
+  ];
+  const matrix = statementMatrix(transactions);
+  const serial = (Date.UTC(2026, 9, 11) - Date.UTC(1899, 11, 30)) / 86400000;
+  for (const row of matrix.slice(2)) row[1] = serial;
+
+  await page.goto("/");
+  await upload(page, workbookPayload("approved-three-synthetic.xlsx", matrix));
+  await expectSummaryCard(page, "전체 거래", "6건");
+  await expectSummaryCard(page, "Marriott 추정", "3건");
+  await expectSummaryCard(page, "정상 적립", "0건");
+  await expectSummaryCard(page, "적립 누락 의심", "3건");
+  await expectSummaryCard(page, "확인 필요", "3건");
+  await expectSummaryCard(page, "예상 추가 포인트", "600P");
+  expect(mutationRequests).toHaveLength(0);
+  expect(pageErrors).toHaveLength(0);
+});
+
+test("keeps SHAFO review-only until explicit local inclusion, without changing its neighbor or sending data", async ({ page }) => {
+  const shafo = "Fairfield by Marriott Shanghai Hongqiao NECC";
+  const neighbor = "Fairfield by Marriott Shanghai Hongqiao";
+  const mutationRequests: string[] = [];
+  const pageErrors: string[] = [];
+  page.on("request", (request) => {
+    if (!["GET", "HEAD", "OPTIONS"].includes(request.method())) mutationRequests.push(request.url());
+  });
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  await page.route("https://script.google.com/**", async (route) => {
+    await route.fulfill({ status: 204, body: "" });
+  });
+
+  const transactions: Transaction[] = [
+    [1, "VISA해외사용일시불", shafo, 100000, "L2", 300, "N"],
+    [2, "VISA해외사용일시불", neighbor, 100000, "L2", 300, "N"],
+    [3, "VISA해외사용일시불", shafo, 100000, "L5", 500, "N"],
+    [4, "VISA해외사용일시불", shafo, 100000, "L2", 300, "Y"],
+  ];
+  const matrix = statementMatrix(transactions);
+  const serial = (Date.UTC(2026, 9, 11) - Date.UTC(1899, 11, 30)) / 86400000;
+  for (const row of matrix.slice(2)) row[1] = serial;
+
+  await page.goto("/");
+  await upload(page, workbookPayload("shafo-review-synthetic.xlsx", matrix));
+  await expectSummaryCard(page, "전체 거래", "4건");
+  await expectSummaryCard(page, "Marriott 추정", "2건");
+  await expectSummaryCard(page, "정상 적립", "1건");
+  await expectSummaryCard(page, "적립 누락 의심", "1건");
+  await expectSummaryCard(page, "확인 필요", "1건");
+  await expectSummaryCard(page, "예상 추가 포인트", "200P");
+
+  const reviewRegion = page.getByRole("region", { name: "확인 필요 거래" });
+  await expect(reviewRegion).toContainText(shafo);
+  await expect(reviewRegion).toContainText("검색 캐시에 휴업 안내");
+  const missingRegion = page.getByRole("region", { name: "적립 누락 의심 거래" });
+  await expect(missingRegion).toContainText(neighbor);
+  await expect(missingRegion).not.toContainText(shafo);
+  const feedback = reviewRegion.getByRole("group", { name: `${shafo} 거래 문의 반영` });
+  await feedback.getByRole("button", { name: "문의에 포함" }).click();
+  await expectSummaryCard(page, "예상 추가 포인트", "400P");
+
+  await page.getByRole("button", { name: "문의 보내기 단계로 이동" }).click();
+  const inquiry = page.getByRole("region", { name: "신한카드 문의 문구" });
+  await expect(inquiry).toContainText(shafo);
+  await expect(inquiry).toContainText(neighbor);
+  await page.getByRole("button", { name: "이전", exact: true }).click();
+  await feedback.getByRole("button", { name: "문의에서 제외" }).click();
+  await expectSummaryCard(page, "예상 추가 포인트", "200P");
+  await page.getByRole("button", { name: "문의 보내기 단계로 이동" }).click();
+  await expect(inquiry).not.toContainText(shafo);
+  await expect(inquiry).toContainText(neighbor);
+  expect(mutationRequests).toHaveLength(0);
+  expect(pageErrors).toHaveLength(0);
+});

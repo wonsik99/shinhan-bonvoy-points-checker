@@ -1,11 +1,12 @@
 import { high, inferBrand } from "./helpers";
 import type { MarriottPropertySeed } from "./types";
+import { applyCuratedMarriottPropertyAliases } from "../marriottPropertyOverrides";
 
 // Source: Marriott hotel sitemap property codes, July 2026.
 const southAfricaMarriottOfficialRows = [
   { id: "CPTCK", officialName: "Morea House, Autograph Collection" },
   { id: "JNBMA", officialName: "African Pride Melrose Arch, Autograph Collection®" },
-  { id: "SZKAK", officialName: "Leopard Sands, Kruger Park" },
+  { id: "SZKAK", officialName: "Leopard Sands Kruger Park, Autograph Collection" },
   { id: "JNBDS", officialName: "Ten Bompas Hotel, Johannesburg, a Member of Design Hotels™" },
   { id: "CPTCM", officialName: "Cape Town Marriott Hotel Crystal Towers" },
   { id: "JNBMC", officialName: "Johannesburg Marriott Hotel Melrose Arch" },
@@ -54,7 +55,7 @@ const southAfricaMarriottOfficialRows = [
 ] as const;
 
 export const southAfricaMarriottProperties: MarriottPropertySeed[] = southAfricaMarriottOfficialRows.map(
-  ({ id, officialName }) => ({
+  ({ id, officialName }) => applyCuratedMarriottPropertyAliases({
     id,
     country: "ZA",
     region: "overseas",

@@ -6,7 +6,7 @@ export interface MarriottPropertyReviewHold {
   country: string;
   region: "domestic" | "overseas";
   aliases: readonly string[];
-  status: "not_yet_open" | "reservations_unavailable";
+  status: "not_yet_open" | "reservations_unavailable" | "verification_required";
   reason: string;
   officialUrl: string;
   lastReviewedAt: string;

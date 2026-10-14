@@ -16,6 +16,11 @@ import {
   type SharedMarriottMerchantRule,
 } from "@/rules/marriott";
 import { defaultPropertyAliasMatch } from "@/rules/marriottProperties/helpers";
+import { matchMarriottPropertyTransition } from "@/lib/marriottPropertyTransitions";
+import {
+  matchMarriottPropertyOperatingReview,
+  reviewMarriottPropertyOperatingStatus,
+} from "@/lib/marriottPropertyOperatingReviews";
 import {
   createMarriottPropertyTokenMatcher,
   tokenizeMarriottPropertyText,
@@ -150,6 +155,12 @@ function propertyAliasToClassification(
   compiled: CompiledPropertyAlias
 ): MerchantClassification {
   const { property, alias } = compiled;
+  const operatingReview = reviewMarriottPropertyOperatingStatus(
+    property.propertyCode,
+    alias.value
+  );
+  if (operatingReview) return operatingReview;
+
   const brandGroup = alias.brandGroup ?? property.brandGroup ?? "marriott";
   const confidence = alias.confidence ?? property.confidence ?? "high";
   const status = alias.status ?? property.status ?? "active";
@@ -277,6 +288,12 @@ function propertyTokenReviewClassification(
 
   if (candidates.length === 1) {
     const [candidate] = candidates;
+    const operatingReview = reviewMarriottPropertyOperatingStatus(
+      candidate.property.propertyCode,
+      candidate.matchedTokens.join(" ")
+    );
+    if (operatingReview) return operatingReview;
+
     return {
       isLikelyMarriott: false,
       confidence: "medium",
@@ -328,6 +345,12 @@ function contextualBrandPropertyClassification(
   candidate: MarriottPropertyTokenCandidate,
   brandKeyword: string
 ): MerchantClassification {
+  const operatingReview = reviewMarriottPropertyOperatingStatus(
+    candidate.property.propertyCode,
+    candidate.matchedTokens.join(" ")
+  );
+  if (operatingReview) return operatingReview;
+
   const brandTokens = tokenizeMarriottPropertyText(brandKeyword);
   const propertyTokens = candidate.matchedTokens.filter(
     (token) => !brandTokens.includes(token)
@@ -351,6 +374,12 @@ function standaloneBrandClassification(
   candidate?: MarriottPropertyTokenCandidate
 ): MerchantClassification {
   if (candidate) {
+    const operatingReview = reviewMarriottPropertyOperatingStatus(
+      candidate.property.propertyCode,
+      candidate.matchedTokens.join(" ")
+    );
+    if (operatingReview) return operatingReview;
+
     const brandTokens = tokenizeMarriottPropertyText(brandKeyword);
     const propertyTokens = candidate.matchedTokens.filter(
       (token) => !brandTokens.includes(token)
@@ -741,6 +770,8 @@ const matchPropertyTokens = createMarriottPropertyTokenMatcher(
 
 /**
  * Deterministic classification pipeline:
+ * 0. Operating uncertainty / dated affiliation transitions → needs_review,
+ *    preserving records and verified historical dates
  * 1. Operator-reviewed registration holds → needs_review
  * 2. Korean Marriott brand keywords → certain domestic
  * 3. Shared merchant rules (one statement merchant for multiple properties)
@@ -752,7 +783,10 @@ const matchPropertyTokens = createMarriottPropertyTokenMatcher(
  * 8. Hotel-like keywords → low-confidence review candidate
  * 9. Otherwise not Marriott-related
  */
-export function classifyMerchant(merchantName: string): MerchantClassification {
+export function classifyMerchant(
+  merchantName: string,
+  transactionDate?: string
+): MerchantClassification {
   const normalized = normalizeMerchantName(merchantName);
   const normalizedNoSpace = normalized.replace(/\s+/g, "");
 
@@ -764,6 +798,12 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
       reason: "가맹점명이 비어 있습니다.",
     };
   }
+
+  const operatingReview = matchMarriottPropertyOperatingReview(normalized);
+  if (operatingReview) return operatingReview;
+
+  const transitionMatch = matchMarriottPropertyTransition(normalized, transactionDate);
+  if (transitionMatch) return transitionMatch;
 
   const reviewHoldMatch = matchPropertyReviewHold(normalized);
   if (reviewHoldMatch) {
@@ -828,9 +868,9 @@ export function classifyMerchant(merchantName: string): MerchantClassification {
         ? brandCandidates[0]
         : undefined;
 
-    // Existing standalone brand evidence remains authoritative. Property
-    // tokens only enrich a fully explained unique match; they never replace or
-    // downgrade the established brand rule.
+    // Existing standalone brand evidence remains authoritative unless a fully
+    // identified property has an explicit human-approved operating review.
+    // Property tokens otherwise only enrich the established brand rule.
     return standaloneBrandClassification(
       matchedEnglishBrandKeyword,
       propertyCandidate

@@ -50,14 +50,6 @@
       "lastReviewedAt": "2026-07-22"
     },
     {
-      "propertyCode": "DPSUJ",
-      "officialName": "JW Marriott Bali Ubud Resort & Spa",
-      "status": "verified_active_source_gap",
-      "reason": "Marriott 공식 호텔 페이지와 객실 예약 화면이 현재 제공되지만 이번 공식 XML 코드 묶음에서만 사라졌습니다.",
-      "evidenceUrl": "https://www.marriott.com/en-gb/hotels/dpsuj-jw-marriott-bali-ubud-resort-and-spa/",
-      "lastReviewedAt": "2026-07-26"
-    },
-    {
       "propertyCode": "HERLC",
       "officialName": "Blue Palace Elounda, a Luxury Collection Resort, Crete",
       "status": "verified_active_source_gap",
@@ -79,14 +71,6 @@
       "status": "verified_active_source_gap",
       "reason": "Marriott 공식 호텔·식음 페이지에서 예약과 운영 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
       "evidenceUrl": "https://www.marriott.com/en-us/hotels/jmkak-aegon-mykonos-autograph-collection/overview/",
-      "lastReviewedAt": "2026-07-22"
-    },
-    {
-      "propertyCode": "LGWFP",
-      "officialName": "Four Points by Sheraton London Gatwick Airport",
-      "status": "verified_active_source_gap",
-      "reason": "Marriott 공식 호텔·식음 페이지를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
-      "evidenceUrl": "https://www.marriott.com/en-us/hotels/lgwfp-four-points-london-gatwick-airport/overview/",
       "lastReviewedAt": "2026-07-22"
     },
     {
@@ -138,22 +122,6 @@
       "lastReviewedAt": "2026-07-22"
     },
     {
-      "propertyCode": "SOUWX",
-      "officialName": "Four Points Flex by Sheraton Winchester South",
-      "status": "verified_active_source_gap",
-      "reason": "Marriott 공식 호텔·사진 페이지와 목적지 검색에서 현재 호텔을 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
-      "evidenceUrl": "https://www.marriott.com/en-gb/hotels/souwx-four-points-flex-winchester-south/photos/",
-      "lastReviewedAt": "2026-07-22"
-    },
-    {
-      "propertyCode": "STNCD",
-      "officialName": "Delta Hotels Cheshunt",
-      "status": "verified_active_source_gap",
-      "reason": "Marriott 공식 페이지에서 객실·식음·이벤트와 호텔 정보를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
-      "evidenceUrl": "https://www.marriott.com/en-us/hotels/stncd-delta-hotels-cheshunt/overview/",
-      "lastReviewedAt": "2026-07-22"
-    },
-    {
       "propertyCode": "STXBR",
       "officialName": "Carambola Beach Resort St. Croix, US Virgin Islands",
       "status": "verified_active_source_gap",
@@ -168,6 +136,38 @@
       "reason": "Marriott 공식 페이지와 프로모션에서 동일 호텔과 코드를 확인했지만 현재 수집하는 공식 코드 묶음에는 없습니다.",
       "evidenceUrl": "https://www.marriott.com/es/hotels/vsafi-fairfield-inn-and-suites-villahermosa-tabasco/reviews/",
       "lastReviewedAt": "2026-07-22"
+    },
+    {
+      "propertyCode": "CHIES",
+      "officialName": "Sheraton Suites Chicago Elk Grove",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지에서 현재 객실 검색·호텔 정보와 최근 이용 후기를 확인했지만 2026-08-21 공식 HWS 코드 묶음에서는 사라졌습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/chies-sheraton-suites-chicago-elk-grove/overview/",
+      "lastReviewedAt": "2026-08-21"
+    },
+    {
+      "propertyCode": "ISPSH",
+      "officialName": "SpringHill Suites by Marriott Long Island Brookhaven",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔·객실 페이지에서 현재 호텔 정보와 예약 경로를 확인했지만 2026-08-21 공식 HWS 코드 묶음에서는 사라졌습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/ispsh-springhill-suites-long-island-brookhaven/rooms/",
+      "lastReviewedAt": "2026-08-21"
+    },
+    {
+      "propertyCode": "OKCOF",
+      "officialName": "Four Points by Sheraton Oklahoma City Airport",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 호텔 페이지에서 현재 객실 검색·연락처와 운영 정보를 확인했지만 2026-08-21 공식 HWS 코드 묶음에서는 사라졌습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/okcof-four-points-oklahoma-city-airport/overview/",
+      "lastReviewedAt": "2026-08-21"
+    },
+    {
+      "propertyCode": "REPMD",
+      "officialName": "Le Méridien Angkor",
+      "status": "verified_active_source_gap",
+      "reason": "Marriott 공식 캄보디아 목적지 목록에서 현재 호텔과 예약 경로를 확인했지만 2026-08-21 공식 HWS 코드 묶음에서는 사라졌습니다.",
+      "evidenceUrl": "https://www.marriott.com/en-us/destinations/cambodia/business-center-hotels.mi",
+      "lastReviewedAt": "2026-08-21"
     }
   ]
 }

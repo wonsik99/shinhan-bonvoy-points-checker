@@ -1,0 +1,436 @@
+{
+  "version": 1,
+  "reviewedAt": "2026-09-06",
+  "timezone": "Asia/Seoul",
+  "scope": "기존 Marriott DB 패치 재정리. 자동 승인·커밋·push·배포 없음.",
+  "sourceCollectedAt": "2026-09-05T17:49:58.695Z",
+  "approvedBaseline": {
+    "path": "data/marriott/official-property-snapshot.json",
+    "sha256": "d383fa1d6c8e9520ad704aa657c9b3aaffcc6a2f01644ba3e886be71dc12c1d8",
+    "updated": false
+  },
+  "sourceSnapshot": {
+    "path": ".marriott-reports/2026-09-06-refresh/official-snapshot.current.json",
+    "sha256": "ebe585e3d64cbdad594fa7270bc02e8371d86370f29f8d3e17af92358b95f38f"
+  },
+  "observedChanges": {
+    "officialProperties": 10358,
+    "officialAdditions": 79,
+    "officialDisappearances": 20,
+    "slugChanges": 36,
+    "unhandledNewCandidatesBeforePatch": 26
+  },
+  "finalVerification": {
+    "sourceCollectedAt": "2026-09-05T18:07:23.149Z",
+    "snapshotPath": ".marriott-reports/2026-09-06-final/official-snapshot.current.json",
+    "snapshotSha256": "f5ad10db125b198ec6fca6c5315cbfd6d618470d17de906f1c5895faf68b99a8",
+    "officialProperties": 10357,
+    "safeOfficialProperties": 10348,
+    "sourceFailures": 0,
+    "unhandledRegistrationCandidates": 0,
+    "heldProperties": 88,
+    "unreviewedSourceGaps": 16,
+    "changeSinceFirstCollection": "격리된 Ritz-Carlton QA 코드 AQAOA 1개가 공식 소스에서 사라짐. 실제 호텔 비교 대상과 +79/20/36 변경 수는 동일.",
+    "validation": { "vitestPassed": 488, "lintPassed": true, "buildPassed": true }
+  },
+  "newCandidates": [
+    {
+      "propertyCode": "AMDFL",
+      "officialName": "The Fern Sattva Resort Little Rann of Kutch, Series by Marriott",
+      "decision": "active_patch",
+      "evidenceUrl": "https://www.marriott.com/en-us/destinations/india/ahmedabad.mi",
+      "evidence": "공식 목적지 목록에 호텔명과 숫자 요금 표시. 전 날짜 예약 가능이나 현재 영업의 보장은 아님."
+    },
+    {
+      "propertyCode": "ANRCC",
+      "officialName": "The Belson Antwerp, a Tribute Portfolio Hotel",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/anrcc-the-belson-antwerp-a-tribute-portfolio-hotel/overview/",
+      "evidence": "공식 신규 호텔 목록에서 요금이 제공되지 않으며 Marriott 운영·예약 개시를 확인하지 못했습니다. 기존 건물의 운영 이력과 Marriott 신규 등록을 구분해 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "BCNCB",
+      "officialName": "Condes Barcelona, Autograph Collection",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/bcncb-condes-barcelona-autograph-collection/overview/",
+      "evidence": "공식 호텔·객실 페이지는 있으나 공식 목적지 목록의 표본 숙박일에는 요금이 제공되지 않습니다. 해당 날짜의 요금 불가만으로 폐업이나 예약 미개시를 단정하지 않고 확인 필요로 보류합니다."
+    },
+    {
+      "propertyCode": "BHJRB",
+      "officialName": "The Fern Residency Bhuj, Series by Marriott",
+      "decision": "active_patch",
+      "evidenceUrl": "https://www.marriott.com/en-us/destinations/india/new-hotels.mi",
+      "evidence": "공식 신규 호텔 목록에 호텔명과 숫자 요금 표시. 전 날짜 예약 가능이나 현재 영업의 보장은 아님."
+    },
+    {
+      "propertyCode": "CHIRX",
+      "officialName": "City Express by Marriott Rolling Meadows",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/chirx-city-express-rolling-meadows/overview/",
+      "evidence": "공식 HWS에서 코드와 URL만 확인했습니다. 호텔 표시명은 URL에서 정리한 검토용 이름이며 공식 상세 페이지의 표시명·운영·예약 개시는 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "CTUWF",
+      "officialName": "Fairfield by Marriott Chengdu Wuhou District Yulin Road",
+      "decision": "reservations_unavailable",
+      "evidenceUrl": "https://www.marriott.com/en-gb/hotels/ctuwf-fairfield-chengdu-wuhou-district-yulin-road/photos/",
+      "evidence": "Marriott 공식 사진 페이지에서 예약이 아직 제공되지 않는다는 안내를 확인해 활성 등록을 보류합니다."
+    },
+    {
+      "propertyCode": "EWRPO",
+      "officialName": "StudioRes by Marriott Piscataway Somerset",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/ewrpo-studiores-piscataway-somerset/overview/",
+      "evidence": "공식 호텔 정보는 있으나 실제 Marriott 운영·예약 개시를 확인하지 못했습니다. 예정 시점의 도래나 예약 검색 버튼만으로 활성 등록하지 않습니다."
+    },
+    {
+      "propertyCode": "GEGCR",
+      "officialName": "Residence Inn by Marriott Coeur d'Alene",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/gegcr-residence-inn-coeur-dalene/overview/",
+      "evidence": "공식 호텔 소개는 있으나 현재 Marriott 운영·예약 개시를 확인하지 못해 활성 등록 전 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "IADCN",
+      "officialName": "City Express by Marriott Chantilly Dulles Airport",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/iadcn-city-express-chantilly-dulles-airport/overview/",
+      "evidence": "공식 호텔명·주소·전화번호는 있으나 현재 Marriott 운영·예약 개시를 확인하지 못해 활성 등록 전 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "IXMRT",
+      "officialName": "The Fern Residency Thekkady, Series by Marriott",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/ixmrt-the-fern-residency-thekkady-series/overview/",
+      "evidence": "공식 목적지 목록에는 요금이 있으나 Marriott 신규 개장 안내에는 2027년 3분기로 표시됩니다. 공식 자료가 상충하므로 실제 Marriott 운영 개시 확인 전 활성 등록을 보류합니다."
+    },
+    {
+      "propertyCode": "JZHAS",
+      "officialName": "Four Points by Sheraton Aba Songpan",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/jzhas-four-points-aba-songpan/overview/",
+      "evidence": "공식 HWS에서 코드와 URL만 확인했습니다. 호텔 표시명은 URL에서 정리한 검토용 이름이며 공식 상세 페이지의 표시명·운영·예약 개시는 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "LYIIF",
+      "officialName": "Fairfield by Marriott Linyi International Convention and Exhibition Center",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/lyiif-fairfield-linyi-international-convention-and-exhibition-center/overview/",
+      "evidence": "공식 HWS에서 코드와 URL만 확인했습니다. 호텔 표시명은 URL에서 정리한 검토용 이름이며 공식 상세 페이지의 표시명·운영·예약 개시는 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "MGMPR",
+      "officialName": "StudioRes by Marriott Prattville",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/mgmpr-studiores-prattville/overview/",
+      "evidence": "공식 호텔 정보는 있으나 목적지 목록의 표본 숙박일은 매진으로 표시됩니다. 매진을 폐업·예약 미개시로 단정하지 않고 실제 Marriott 운영 개시 확인 전 보류합니다."
+    },
+    {
+      "propertyCode": "OKARR",
+      "officialName": "Okinawa Marriott Rizzan Resort & Spa",
+      "decision": "not_yet_open",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/okarr-okinawa-marriott-rizzan-resort-and-spa/overview/",
+      "evidence": "Marriott 공식 체험 페이지의 예약 미개시 안내와 공식 개장 목록의 2026년 4분기 예정이 일치합니다. 기존 Rizzan의 운영과 Marriott 전환 개시를 구분해 보류합니다."
+    },
+    {
+      "propertyCode": "PHXMF",
+      "officialName": "Fairfield by Marriott Inn & Suites Phoenix Mesa East",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/phxmf-fairfield-inn-and-suites-phoenix-mesa-east/overview/",
+      "evidence": "공식 호텔 페이지는 있으나 호텔 연락처와 현재 Marriott 운영·예약 개시를 충분히 확인하지 못해 활성 등록 전 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "PHXOE",
+      "officialName": "Residence Inn by Marriott Phoenix Southeast",
+      "decision": "reservations_unavailable",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/phxoe-residence-inn-phoenix-southeast/overview/",
+      "evidence": "Marriott 공식 호텔 페이지에서 예약이 아직 제공되지 않는다는 안내를 확인해 활성 등록을 보류합니다."
+    },
+    {
+      "propertyCode": "PVDTD",
+      "officialName": "Hotel Neptune, a Member of Design Hotels",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/pvdtd-hotel-neptune-a-member-of-design-hotels/overview/",
+      "evidence": "공식 호텔·객실 페이지는 있으나 목적지 목록의 표본 숙박일은 매진으로 표시됩니다. 매진을 폐업·예약 미개시로 단정하지 않고 실제 Marriott 운영 개시 확인 전 보류합니다."
+    },
+    {
+      "propertyCode": "RMIAS",
+      "officialName": "Lyra Hotel Rimini Fiera, Series by Marriott",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/rmias-lyra-hotel-rimini-fiera-series/overview/",
+      "evidence": "공식 호텔 정보는 있으나 현재 Marriott 운영·예약 개시를 확인하지 못해 활성 등록 전 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "SHEYC",
+      "officialName": "Courtyard by Marriott Shenyang",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/sheyc-courtyard-shenyang/overview/",
+      "evidence": "공식 HWS에서 코드와 URL만 확인했습니다. 호텔 표시명은 URL에서 정리한 검토용 이름이며 공식 상세 페이지의 표시명·운영·예약 개시는 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "SVQCT",
+      "officialName": "Confidencia Sevilla, a Tribute Portfolio Hotel",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/svqct-confidencia-sevilla-a-tribute-porfolio-hotel/overview/",
+      "evidence": "공식 호텔 페이지는 있으나 현재 Marriott 운영·예약 개시를 확인하지 못했습니다. HWS URL의 porfolio 오탈자를 공식 표시명으로 사용하지 않습니다."
+    },
+    {
+      "propertyCode": "SZXQP",
+      "officialName": "Four Points by Sheraton Shenzhen Qianhai CBD",
+      "decision": "reservations_unavailable",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/szxqp-four-points-shenzhen-qianhai-cbd/overview/",
+      "evidence": "Marriott 공식 호텔 페이지에서 예약이 아직 제공되지 않는다는 안내를 확인해 활성 등록을 보류합니다."
+    },
+    {
+      "propertyCode": "TLLCY",
+      "officialName": "Courtyard by Marriott Tallinn City Center",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/tllcy-courtyard-tallinn-city-center/overview/",
+      "evidence": "공식 호텔 소개는 있으나 현재 Marriott 운영·예약 개시를 확인하지 못해 활성 등록 전 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "UDRNH",
+      "officialName": "City Express by Marriott Udaipur Nathdwara Highway",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/udrnh-city-express-udaipur-nathdwara-highway/overview/",
+      "evidence": "공식 HWS에서 코드와 URL만 확인했습니다. 호텔 표시명은 URL에서 정리한 검토용 이름이며 공식 상세 페이지의 표시명·운영·예약 개시는 확인이 필요합니다."
+    },
+    {
+      "propertyCode": "VIESI",
+      "officialName": "Hotel Savoyen Vienna",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/viesi-hotel-savoyen-vienna/overview/",
+      "evidence": "공식 호텔·객실 페이지의 예약 검색 경로는 있으나 현재 Marriott 운영·예약 개시를 확인하지 못했습니다. 일반 예약 버튼만으로 활성 등록하지 않습니다."
+    },
+    {
+      "propertyCode": "WASSE",
+      "officialName": "Hotel Nell - Union Market, Series by Marriott",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/wasse-hotel-nell-union-market-series/overview/",
+      "evidence": "공식 목적지 목록의 표본 숙박일은 매진으로 표시됩니다. 매진을 폐업·예약 미개시로 단정하지 않고 실제 Marriott 운영 개시 확인 전 보류합니다."
+    },
+    {
+      "propertyCode": "WUXJW",
+      "officialName": "JW Marriott Hotel Wuxi",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/wuxjw-jw-marriott-hotel-wuxi/overview/",
+      "evidence": "공식 호텔·식음 페이지는 있으나 객실 안내가 미완성이고 목적지 목록의 표본 숙박일은 매진으로 표시됩니다. 실제 Marriott 운영·예약 개시 확인 전 보류합니다."
+    }
+  ],
+  "movedToHold": [
+    {
+      "propertyCode": "ALSSH",
+      "decision": "reservations_unavailable",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/alssh-springhill-suites-alamosa-downtown/overview/",
+      "evidence": "Marriott 공식 호텔 페이지에서 새 표시명과 예약이 아직 제공되지 않는다는 안내를 확인했습니다. 이전 활성 seed를 삭제 확정하지 않고 보류 목록으로 이동합니다."
+    },
+    {
+      "propertyCode": "DPSUJ",
+      "decision": "not_yet_open",
+      "evidenceUrl": "https://www.marriott.com/en-us/marriott-brands/portfolio/openings.mi",
+      "evidence": "Marriott 공식 신규 개장 안내에서 2027년 2분기 예정으로 확인됩니다. 일반 예약 화면만으로 운영 확인 처리했던 소스 누락 예외를 철회하고 활성 seed를 보류 목록으로 이동합니다."
+    },
+    {
+      "propertyCode": "LGWFP",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/lgwfp-four-points-london-gatwick-airport/overview/",
+      "evidence": "공식 HWS에서 계속 누락되고 기존 공식 호텔 경로에서 현재 Marriott 운영·예약 상태를 재확인하지 못했습니다. 과거 소스 누락 예외를 철회하고 확인 필요로 보류하며 폐업·제휴 종료로 단정하지 않습니다."
+    },
+    {
+      "propertyCode": "SOUWX",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/destinations/united-kingdom/winchester/new-hotels.mi",
+      "evidence": "공식 HWS에서 계속 누락되고 공식 목적지 목록은 요금 불가이며 현재 Marriott 운영·예약 개시를 재확인하지 못했습니다. 과거 소스 누락 예외를 철회하고 확인 필요로 보류하며 폐업으로 단정하지 않습니다."
+    },
+    {
+      "propertyCode": "STNCD",
+      "decision": "verification_required",
+      "evidenceUrl": "https://www.marriott.com/en-us/dining/restaurant-bar/stncd-delta-hotels-cheshunt/6811008-the-delta-restaurant.mi",
+      "evidence": "공식 식음 소개는 남아 있으나 공식 HWS와 호텔 경로에서 현재 Marriott 숙박 운영·예약 상태를 재확인하지 못했습니다. 과거 소스 누락 예외를 철회하고 확인 필요로 보류하며 폐업·제휴 종료로 단정하지 않습니다."
+    }
+  ],
+  "renames": [
+    {
+      "propertyCode": "ABEEH",
+      "stableId": "us-abeeh",
+      "previousName": "SpringHill Suites by Marriott Easton PA",
+      "officialName": "SpringHill Suites by Marriott Easton Bethlehem",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/abeeh-springhill-suites-easton-bethlehem/overview/"
+    },
+    {
+      "propertyCode": "ABEFA",
+      "stableId": "us-abefa",
+      "previousName": "Fairfield by Marriott Inn & Suites Bethlehem PA",
+      "officialName": "Fairfield by Marriott Inn & Suites Bethlehem Lehigh",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/abefa-fairfield-inn-and-suites-bethlehem-lehigh/overview/"
+    },
+    {
+      "propertyCode": "ATLLP",
+      "stableId": "us-atllp",
+      "previousName": "Residence Inn by Marriott Atlanta Buckhead/Lenox Park",
+      "officialName": "Residence Inn by Marriott Atlanta Buckhead",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/atllp-residence-inn-atlanta-buckhead/overview/"
+    },
+    {
+      "propertyCode": "AUSFW",
+      "stableId": "us-ausfw",
+      "previousName": "Fairfield Inn & Suites Austin West",
+      "officialName": "Fairfield by Marriott Inn & Suites Austin Southwest",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/ausfw-fairfield-inn-and-suites-austin-southwest/overview/"
+    },
+    {
+      "propertyCode": "DALFP",
+      "stableId": "us-dalfp",
+      "previousName": "Fairfield by Marriott Inn & Suites Dallas Plano",
+      "officialName": "Fairfield by Marriott Inn & Suites Dallas Plano West",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/dalfp-fairfield-inn-and-suites-dallas-plano-west/overview/"
+    },
+    {
+      "propertyCode": "MCOAK",
+      "stableId": "us-mcoak",
+      "previousName": "Grand Bohemian Orlando, Autograph Collection",
+      "officialName": "Hotel Beauden, Autograph Collection",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/mcoak-hotel-beauden-autograph-collection/overview/"
+    },
+    {
+      "propertyCode": "MIASP",
+      "stableId": "us-miasp",
+      "previousName": "UNFRAMED, Autograph Collection",
+      "officialName": "UNFRAMED, Miami Beach, Autograph Collection",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/miasp-unframed-miami-beach-autograph-collection/overview/"
+    },
+    {
+      "propertyCode": "PHXMR",
+      "stableId": "us-phxmr",
+      "previousName": "StudioRes by Marriott Mesa",
+      "officialName": "StudioRes by Marriott Mesa Gateway Airport",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/phxmr-studiores-mesa-gateway-airport/overview/"
+    },
+    {
+      "propertyCode": "SAVAK",
+      "stableId": "us-savak",
+      "previousName": "Bohemian Hotel Savannah Riverfront, Autograph Collection",
+      "officialName": "Hotel Orielle, Autograph Collection",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/savak-hotel-orielle-autograph-collection/overview/"
+    },
+    {
+      "propertyCode": "SBYOT",
+      "stableId": "us-sbyot",
+      "previousName": "Ashore Oceanfront Hotel",
+      "officialName": "Ashore Oceanfront Hotel, Ocean City, a Tribute Portfolio Hotel",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/sbyot-ashore-oceanfront-hotel-ocean-city-a-tribute-portfolio-hotel/overview/"
+    },
+    {
+      "propertyCode": "STFCT",
+      "stableId": "us-stfct",
+      "previousName": "Stamford Marriott Hotel & Spa",
+      "officialName": "Stamford Marriott",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/stfct-stamford-marriott/overview/"
+    },
+    {
+      "propertyCode": "PSECX",
+      "stableId": "PSECX",
+      "previousName": "City Centro by Marriott Ponce Plaza Puerto Rico",
+      "officialName": "City Centro by Marriott Ponce Plaza & Casino, Puerto Rico",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/psecx-city-centro-ponce-plaza-and-casino-puerto-rico/overview/"
+    },
+    {
+      "propertyCode": "SZKAK",
+      "stableId": "SZKAK",
+      "previousName": "Leopard Sands, Kruger Park",
+      "officialName": "Leopard Sands Kruger Park, Autograph Collection",
+      "evidenceUrl": "https://www.marriott.com/en-us/hotels/szkak-leopard-sands-kruger-park-autograph-collection/overview/"
+    }
+  ],
+  "unreviewedSourceGaps": [
+    {
+      "propertyCode": "BJSLY",
+      "officialName": "Courtyard by Marriott Langfang",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "HGHHA",
+      "officialName": "Aloft Huzhou",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "SZXLP",
+      "officialName": "Four Points by Sheraton Shenzhen Longhua",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "TAOZY",
+      "officialName": "Qingdao Zhanqiao Yours Hotel, a Member of Design Hotels™",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "XIYCW",
+      "officialName": "Courtyard by Marriott Xi'an West",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "CULXC",
+      "officialName": "City Express by Marriott Culiacán",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "BOMFP",
+      "officialName": "Four Points by Sheraton Navi Mumbai, Vashi",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "MUCAT",
+      "officialName": "Caro & Selig, Tegernsee, Autograph Collection",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "NBOMM",
+      "officialName": "Kinara, a Luxury Collection Safari Camp, Masai Mara",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "ATLBH",
+      "officialName": "Residence Inn by Marriott Atlanta Buckhead",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "DAYLM",
+      "officialName": "Fairfield by Marriott Inn & Suites Lima",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "JANCY",
+      "officialName": "Courtyard by Marriott Jackson Ridgeland",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "LWCKS",
+      "officialName": "SpringHill Suites by Marriott Lawrence Downtown",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "MIAWS",
+      "officialName": "W South Beach",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "RSWNS",
+      "officialName": "SpringHill Suites by Marriott Naples",
+      "decision": "retain_pending_review"
+    },
+    {
+      "propertyCode": "SRQSH",
+      "officialName": "SpringHill Suites by Marriott Sarasota Bradenton",
+      "decision": "retain_pending_review"
+    }
+  ],
+  "notes": [
+    "소스 이탈 20건 중 신규 미검토 16건은 XML 누락만으로 삭제하거나 운영 확인 예외로 승인하지 않음.",
+    "ATLLP의 공식 표시명이 ATLBH와 같아졌지만 동일 실체·코드 이전은 미확인. 별도 안정 ID와 기존 alias 유지, 자동 병합하지 않음.",
+    "GCMGC는 현재 XML에 beach가 추가됐지만 호텔 페이지는 기존 Grand Cayman Marriott Resort로 리다이렉트. 기존 공식명 유지.",
+    "PHXLR의 이중 인코딩 NBSP와 YTYSP의 zero-width 오염 제거는 이름 변경 근거로 사용하지 않음.",
+    "기존 보류 29건은 기존 사유에 맞게 verification_required로 의미만 정정. 이전 검토일을 보존하며 이번에 개별 재검증했다고 주장하지 않음.",
+    "새 보류 상태는 미확인과 명시적 예약 미개시를 구분하며 어느 상태도 자동 누락 의심 대상이 아님.",
+    "등록·이름 변경은 검토용 로컬 코드 패치이며 승인 snapshot과 운영 배포는 바꾸지 않음."
+  ]
+}

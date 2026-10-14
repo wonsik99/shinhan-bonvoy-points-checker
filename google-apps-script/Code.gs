@@ -19,11 +19,15 @@
  * 업로드 파일·금액 상세·카드번호는 절대 전송되지 않습니다.
  */
 
+var COLLECTOR_VERSION = "2026-10-04.1";
 var MAX_TEXT_CELL_LENGTH = 4000;
-var MAX_BODY_BYTES = 8192;
+// A 4,000-code-unit diagnostic can take up to 24 KB after JSON escaping.
+// Keep the schema limits below; a byte cap must not reject valid Korean text.
+var MAX_BODY_BYTES = 32768;
 var MAX_FEEDBACK_FIELD_LENGTH = 256;
 var MAX_SESSION_ID_LENGTH = 128;
 var MAX_DAILY_WRITES = 500;
+var LOCK_WAIT_MILLISECONDS = 30000;
 var DEDUPE_TTL_SECONDS = 21600;
 var COLLECTOR_PAUSED_PROPERTY = "COLLECTOR_PAUSED";
 var DAILY_WRITES_PREFIX = "COLLECTOR_WRITES_";
@@ -56,6 +60,16 @@ var DETECTED_STATUSES = [
   "user_designated",
 ];
 var DETECTED_CONFIDENCES = ["certain", "high", "medium", "low", "none"];
+var FEEDBACK_HEADERS = [
+  "created_at",
+  "merchant_raw_name",
+  "normalized_name",
+  "user_action",
+  "detected_status",
+  "detected_confidence",
+  "point_type",
+  "session_id",
+];
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -194,7 +208,9 @@ function withAdmission(body, write) {
   }
 
   var lock = LockService.getScriptLock();
-  if (!lock.tryLock(1000)) {
+  // The current browser sends several reports in parallel. Give normal
+  // bursts time to serialize instead of rejecting them after one second.
+  if (!lock.tryLock(LOCK_WAIT_MILLISECONDS)) {
     throw new Error("collector busy");
   }
 
@@ -233,6 +249,10 @@ function withAdmission(body, write) {
       throw error;
     }
 
+    // Commit pending Sheet work while still holding the lock. If flushing
+    // fails, the write may already exist: retain the reserved budget slot.
+    SpreadsheetApp.flush();
+
     // Cache is best-effort; the durable daily budget remains the primary cap.
     try {
       cache.put(key, "1", DEDUPE_TTL_SECONDS);
@@ -253,15 +273,21 @@ function safeSheetText(value) {
   return FORMULA_PREFIX_RE.test(text) ? "'" + text : text;
 }
 
-function removeLegacyExpectedDifferenceColumn(sheet) {
-  if (sheet.getLastRow() === 0) {
-    return;
-  }
+function feedbackRowForHeaders(sheet, values) {
   var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var legacyColumn = headers.indexOf("expected_difference");
-  if (legacyColumn >= 0) {
-    sheet.deleteColumn(legacyColumn + 1);
+  for (var i = 0; i < FEEDBACK_HEADERS.length; i++) {
+    var header = FEEDBACK_HEADERS[i];
+    if (headers.indexOf(header) < 0 || headers.indexOf(header) !== headers.lastIndexOf(header)) {
+      throw new Error("invalid feedback sheet headers");
+    }
   }
+
+  // Preserve legacy columns, old values and user-added columns. New reports
+  // contain only the eight allowlisted fields; other cells remain blank.
+  return headers.map(function (header) {
+    var index = FEEDBACK_HEADERS.indexOf(header);
+    return index < 0 ? "" : values[index];
+  });
 }
 
 function appendSubmission(data) {
@@ -271,26 +297,15 @@ function appendSubmission(data) {
 
   if (sheet.getLastRow() === 0) {
     if (type === "feedback") {
-      sheet.appendRow([
-        "created_at",
-        "merchant_raw_name",
-        "normalized_name",
-        "user_action",
-        "detected_status",
-        "detected_confidence",
-        "point_type",
-        "session_id",
-      ]);
+      sheet.appendRow(FEEDBACK_HEADERS.slice());
     } else {
       sheet.appendRow(["created_at", "diagnostic"]);
     }
-  } else if (type === "feedback") {
-    removeLegacyExpectedDifferenceColumn(sheet);
   }
 
   var now = new Date();
   if (type === "feedback") {
-    sheet.appendRow([
+    var values = [
       now,
       safeSheetText(data.merchant_raw_name),
       safeSheetText(data.normalized_merchant_name),
@@ -299,7 +314,8 @@ function appendSubmission(data) {
       safeSheetText(data.detected_confidence),
       safeSheetText(data.point_type),
       safeSheetText(data.anonymous_session_id),
-    ]);
+    ];
+    sheet.appendRow(feedbackRowForHeaders(sheet, values));
   } else {
     sheet.appendRow([now, safeSheetText(data.diagnostic)]);
   }
@@ -326,5 +342,7 @@ function doPost(e) {
 
 // 브라우저에서 URL을 직접 열었을 때 배포가 살아있는지 확인용
 function doGet() {
-  return ContentService.createTextOutput("Bonvoy L5 Checker collector is running.");
+  return ContentService.createTextOutput(
+    "Bonvoy L5 Checker collector is running. collectorVersion=" + COLLECTOR_VERSION
+  );
 }

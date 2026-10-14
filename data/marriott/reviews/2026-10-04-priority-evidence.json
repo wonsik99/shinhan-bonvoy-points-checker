@@ -1,0 +1,1150 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-04T23:49:06Z",
+  "timezone": "America/Detroit",
+  "reviewDate": "2026-10-04",
+  "checkWindow": {
+    "startedAt": "2026-10-04T23:45:33Z",
+    "completedAt": "2026-10-04T23:49:06Z"
+  },
+  "scope": {
+    "propertyCodes": [
+      "HGHHA",
+      "SZXLP",
+      "SHAFO",
+      "UKBCY",
+      "MRYCO",
+      "SFOPS",
+      "BNACR",
+      "HGHFU",
+      "MGMSS",
+      "IXMRT"
+    ],
+    "uniqueCodeCount": 10,
+    "purpose": "지정된 우선 후보 10개 공식 근거 재확인; 근거 파일만 생성"
+  },
+  "evidenceOnly": true,
+  "applied": false,
+  "inputs": [
+    "data/marriott/reviews/2026-10-03-verification.json",
+    "data/marriott/reviews/2026-09-07-verification.json",
+    ".marriott-reports/2026-10-03-final-source/official-snapshot.current.json"
+  ],
+  "interpretationRules": [
+    "XML 등재는 공식 코드 존재 근거이며 실제 운영·개장·공개 객실 판매와 구분합니다.",
+    "이 파일의 priorXmlMembership은 2026-10-03 스냅샷에서 읽은 과거 메타데이터이며 오늘 새 XML 수집 결과가 아닙니다.",
+    "checkedAt은 이번 조회·관찰 시각이며 crawlFreshness나 상대 시간은 발행일·호텔 전환일로 환산하지 않습니다.",
+    "web_page 응답도 도구가 표시한 crawlFreshness에 따라 색인·캐시 자료일 수 있습니다. 실시간 브라우저 UI 관찰은 authorized_browser_ui로 별도 표시합니다.",
+    "예약 버튼·호텔 소개·Bonvoy 참여·목적지 표본 요금은 날짜·객실·요금·선택 가능한 재고가 확인된 공개 예약 결과와 다릅니다.",
+    "publiclyBookableRoomsObserved=false는 이번 검사에서 선택 가능한 객실을 확인하지 못했다는 뜻이며 호텔의 모든 날짜 매진·미운영을 뜻하지 않습니다.",
+    "URL 접근 오류·Marriott 자체 404는 폐업·제휴 종료 증거로 사용하지 않습니다.",
+    "날짜 없는 전환은 null로 보존하며 과거 상충 일정은 retainedUnconfirmedDates에서 미확인 상태로 유지합니다."
+  ],
+  "summary": {
+    "moveToHoldCandidates": [
+      "HGHHA",
+      "SZXLP",
+      "SHAFO"
+    ],
+    "releaseCandidates": [
+      "UKBCY",
+      "MRYCO",
+      "SFOPS"
+    ],
+    "conditionalReleaseCandidates": [
+      "BNACR",
+      "MGMSS",
+      "IXMRT"
+    ],
+    "holdWithConflictingReservationEvidence": [
+      "HGHFU"
+    ],
+    "genuineDatedBookableInventoryConfirmed": 0,
+    "biggestChangedFact": "HGHFU의 오래된 공식 rooms 응답에 예약 미개시 배너가 반환되어, 10월 3일 overview에서 배너가 없었다는 사실만으로 예약 개시를 해석하면 안 되는 상충 근거가 추가됐습니다. 오래된 배너를 현재 사실로 단정하지 않고 확인 필요 보류 유지로 권고합니다.",
+    "otherChangedFacts": [
+      "BNACR HMC 개장 발표를 공식 동일 URL 검색 색인에서 재확인했습니다(직접 조회는 계속 실패).",
+      "MGMSS 호텔별 Marriott Bonvoy 회원 호텔 본문을 명시적으로 확인했습니다.",
+      "SFOPS·IXMRT 목적지 표본 날짜와 실제 예약 링크 날짜의 불일치를 확인했습니다."
+    ]
+  },
+  "mutations": {
+    "activeRegistry": false,
+    "holdRegistry": false,
+    "aliases": false,
+    "appSource": false,
+    "packageFiles": false,
+    "baselineSnapshots": false,
+    "externalSystems": false,
+    "commit": false,
+    "push": false,
+    "deployment": false
+  },
+  "records": [
+    {
+      "code": "HGHHA",
+      "propertyCode": "HGHHA",
+      "officialName": "Aloft Huzhou",
+      "category": "active_uncertain",
+      "reviewedAt": "2026-10-04T23:47:53Z",
+      "priorRecommendation": "move_to_hold_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": false,
+        "lastmod": null,
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/hghha-aloft-huzhou/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "fetch_error_404",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "en-us 개별 URL에서 호텔 본문을 확보하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-gb/hotels/hghha-aloft-huzhou/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "3 weeks ago",
+          "observations": [
+            "영국 영어 URL의 호텔별 소개·Huzhou 주소·전화·Bonvoy 직접 예약 Wi-Fi 안내가 반환됐습니다. 공개 개장일과 날짜별 판매 객실은 없습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-gb/hotels/hghha-aloft-huzhou/overview/",
+          "kind": "browser_live_page",
+          "method": "authorized_browser_ui",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "marriott_soft_not_found",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "현재 브라우저 실제 UI는 Marriott 자체 Page Not Found 안내를 표시했습니다. 검색 도구가 반환한 소개 본문과 실시간 접근 결과가 다릅니다."
+          ]
+        },
+        {
+          "url": "https://aloft-hotels.marriott.com/ru-RU/lokaciyi/",
+          "kind": "marriott_historical_schedule_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "3 months ago",
+          "observations": [
+            "구 공식 브랜드 목록 검색 색인에는 2027년 1월 개장 예정이 남아 있습니다."
+          ]
+        },
+        {
+          "url": "https://aloft-hotels.marriott.com/ru-RU/lokaciyi/",
+          "kind": "marriott_brand_locations",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "redirected_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last month",
+          "observations": [
+            "직접 조회는 https://www.marriott.com/brands/aloft/locations.mi 로 이동했고 반환 본문에서 Huzhou를 찾지 못했습니다. 구 색인 일정을 오늘 유효한 일정으로 확인하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/marriott-brands/portfolio/openings.mi",
+          "kind": "marriott_opening_schedule",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "content_returned_name_not_found",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "반환 개장 목록 본문에서 Huzhou를 찾지 못했습니다. 미등재는 개장 완료 증거가 아닙니다."
+          ]
+        }
+      ],
+      "facts": [
+        "공식 호텔별 소개가 검색 도구의 en-gb 응답에서 반환됩니다.",
+        "실시간 브라우저 en-gb URL은 Marriott 자체 404 안내를 표시합니다.",
+        "구 브랜드 검색 색인의 2027년 1월 예정 날짜는 현재 유효성 미확인입니다."
+      ],
+      "retainedUnconfirmedDates": [
+        {
+          "date": "2027-01",
+          "meaning": "historical_announced_opening_month",
+          "sourceUrl": "https://aloft-hotels.marriott.com/ru-RU/lokaciyi/",
+          "currentValidity": "unconfirmed",
+          "firstRecordedIn": "data/marriott/reviews/2026-09-07-verification.json"
+        }
+      ],
+      "gaps": [
+        "실제 운영 개시일",
+        "2027년 1월 예정 일정의 현재 유효성",
+        "현재 Marriott 날짜별 선택 가능한 공개 객실"
+      ],
+      "recommendation": "move_to_hold_candidate",
+      "proposedStatus": "active_pending_review",
+      "confidence": {
+        "level": "medium",
+        "rationale": "운영 확인 공백은 재확인됐으나 최신 실제 개장·휴업·제휴 종료 발표는 확보하지 못했습니다. URL 404와 색인 지연만으로 폐업을 판단할 수 없습니다."
+      }
+    },
+    {
+      "code": "SZXLP",
+      "propertyCode": "SZXLP",
+      "officialName": "Four Points by Sheraton Shenzhen Longhua",
+      "category": "active_uncertain",
+      "reviewedAt": "2026-10-04T23:47:53Z",
+      "priorRecommendation": "move_to_hold_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": false,
+        "lastmod": null,
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/szxlp-four-points-shenzhen-longhua/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "fetch_error_404",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "개별 URL에서 호텔 본문을 확보하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-gb/hotels/szxlp-four-points-shenzhen-longhua/overview/",
+          "kind": "marriott_overview_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last month",
+          "observations": [
+            "공식 검색 색인에 155실 및 Building T4, Lijincheng Center, Jihua Road, Longhua District 주소가 확인됩니다. 공개 개장일은 없습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/szxlp-four-points-shenzhen-longhua/overview/",
+          "kind": "browser_live_page",
+          "method": "authorized_browser_ui",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "marriott_soft_not_found",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "현재 브라우저 UI는 Marriott 자체 Page Not Found 안내를 표시해 객실 검색 단계에 도달하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/search/submitSearch.mi?searchType=Keyword&keywords=Four+Points+Shenzhen+Longhua",
+          "kind": "browser_live_page",
+          "method": "authorized_browser_ui",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "marriott_soft_not_found",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "404 페이지의 공식 Hotel Keyword Search에서 호텔명을 검색했으나 결과 URL도 Marriott 404 안내를 표시했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/destinations/china/huizhou/fitness-center-hotels.mi",
+          "kind": "marriott_destination",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last month",
+          "observations": [
+            "호텔별 항목에 Hotel opening in 및 Rate Unavailable가 남아 있습니다. 개장 날짜는 공란이며 목록 표본은 2026-10-01→2026-10-02로 이미 지난 날짜입니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/marriott-brands/portfolio/openings.mi",
+          "kind": "marriott_opening_schedule",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "content_returned_name_not_found",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "반환 개장 목록에서 Longhua를 찾지 못했습니다. 미등재를 개장으로 해석하지 않습니다."
+          ]
+        }
+      ],
+      "facts": [
+        "공식 검색 색인으로 코드·브랜드·Longhua 주소의 동일성이 뒷받침됩니다.",
+        "목적지 목록 응답에는 날짜 없는 개장 예정 및 요금 미제공 표시가 있습니다.",
+        "현재 브라우저에서는 호텔 overview와 공식 키워드 검색 모두 404 안내였습니다."
+      ],
+      "retainedUnconfirmedDates": [],
+      "gaps": [
+        "실제 개장 완료일",
+        "현재 운영·투숙 가능 여부",
+        "현재 Marriott 날짜별 선택 가능한 공개 객실"
+      ],
+      "recommendation": "move_to_hold_candidate",
+      "proposedStatus": "active_pending_review",
+      "confidence": {
+        "level": "medium",
+        "rationale": "호텔별 공식 소개와 개장 예정 표시가 함께 남아 있어 운영 완료 근거가 부족합니다. 캐시 날짜와 접근 실패 때문에 현재 미운영·폐업으로 단정하지 않습니다."
+      }
+    },
+    {
+      "code": "SHAFO",
+      "propertyCode": "SHAFO",
+      "officialName": "Fairfield by Marriott Shanghai Hongqiao NECC",
+      "category": "active_uncertain",
+      "reviewedAt": "2026-10-04T23:47:53Z",
+      "priorRecommendation": "move_to_hold_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": false,
+        "lastmod": null,
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/shafo-fairfield-shanghai-hongqiao-necc/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "fetch_error_404",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "개별 overview 본문을 확보하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/shafo-fairfield-shanghai-hongqiao-necc/photos/",
+          "kind": "marriott_closure_notice_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last week",
+          "observations": [
+            "공식 사진 페이지 색인에는 해당 호텔이 현재 닫혀 있다는 휴업 안내가 반환됩니다. 휴업 시작일·재개일·영구 여부는 없습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/shafo-fairfield-shanghai-hongqiao-necc/rooms/",
+          "kind": "marriott_closure_notice_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "3 weeks ago",
+          "observations": [
+            "공식 객실 페이지 색인에도 같은 휴업 안내가 있습니다. 예약 버튼·Bonvoy 문구는 함께 있지만 판매 객실 증거로 쓰지 않습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/shafo-fairfield-shanghai-hongqiao-necc/photos/",
+          "kind": "marriott_photos",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:46:12Z",
+          "accessResult": "fetch_error_404",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "직접 페이지 본문을 확보하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/shafo-fairfield-shanghai-hongqiao-necc/rooms/",
+          "kind": "browser_live_page",
+          "method": "authorized_browser_ui",
+          "checkedAt": "2026-10-04T23:47:53Z",
+          "accessResult": "marriott_soft_not_found",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "현재 브라우저 실제 UI는 Marriott 자체 Page Not Found 안내를 표시했습니다. 오늘 live UI에서 휴업 배너 자체를 확인한 것은 아닙니다."
+          ]
+        }
+      ],
+      "facts": [
+        "2026-10-03에 기록한 공식 사진 페이지 휴업 안내가 검색 색인에서 다시 확인됩니다.",
+        "객실 페이지 색인도 휴업 안내를 보입니다.",
+        "오늘 직접 조회와 현재 브라우저 UI에서는 404여서 현재 휴업 배너의 실시간 유효성을 재확인하지 못했습니다."
+      ],
+      "retainedUnconfirmedDates": [],
+      "gaps": [
+        "휴업 시작일·재개일",
+        "일시 휴업·영구 폐업·Marriott 제휴 종료 구분",
+        "현재 Marriott 공개 객실 판매"
+      ],
+      "recommendation": "move_to_hold_candidate",
+      "proposedStatus": "active_pending_review",
+      "confidence": {
+        "level": "medium",
+        "rationale": "명시적 휴업 문구는 공식 검색 색인 증거이며 단순 접근 실패보다 강합니다. 다만 현재 실시간 배너·시작일·종료 유형은 미확인으로, 삭제나 제휴 종료 결론을 지지하지 않습니다."
+      }
+    },
+    {
+      "code": "UKBCY",
+      "propertyCode": "UKBCY",
+      "officialName": "Courtyard by Marriott Kobe",
+      "category": "hold",
+      "reviewedAt": "2026-10-04T23:47:23Z",
+      "priorRecommendation": "release_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": true,
+        "lastmod": "2026-08-20",
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": "2026-10-01",
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ukbcy-courtyard-kobe/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "호텔별 본문·Port Island 주소·시설·New to Marriott 표시를 확인했습니다. From / Night의 숫자 요금은 공란입니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ukbcy-courtyard-kobe/rooms/",
+          "kind": "marriott_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "객실 소개는 반환되지만 날짜·객실·숫자 요금이 함께 있는 선택 결과가 아닙니다."
+          ]
+        },
+        {
+          "url": "https://prtimes.jp/main/html/rd/p/000000153.000124910.html",
+          "kind": "marriott_opening_announcement",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned_after_initial_open_error",
+          "publishedAt": "2026-10-01 12:00 (Japanese source display; timezone not independently confirmed)",
+          "crawlFreshness": null,
+          "observations": [
+            "Marriott International 발행 본문이 2026-10-01 당일 실제 개장, Kobe Port Island 위치·381실을 발표합니다. 같은 본문에 호텔의 Marriott Bonvoy 참여·포인트 적립 및 사용이 명시됩니다."
+          ]
+        }
+      ],
+      "facts": [
+        "Marriott 발행 실제 개장 발표를 본문으로 재확인했습니다.",
+        "해당 발표는 호텔 Bonvoy 참여도 명시합니다.",
+        "날짜별 판매 객실 선택 결과는 확보하지 못했습니다."
+      ],
+      "transitionDateMeaning": "actual_opening_announced_by_marriott",
+      "retainedUnconfirmedDates": [],
+      "gaps": [
+        "현재 Marriott 날짜별 선택 가능한 객실·요금",
+        "운영자 보류 해제 검토; 발표 자체로 신한 카드 특별적립 적용을 증명하지 않음"
+      ],
+      "recommendation": "release_candidate",
+      "proposedStatus": "verification_required",
+      "confidence": {
+        "level": "high_for_opening_and_bonvoy_medium_for_release",
+        "rationale": "호텔 위치·객실 수가 일치하는 Marriott 발행 개장·참여 발표가 직접 근거입니다. 현재 실제 판매 객실 단계가 남아 즉시 활성화 권고는 아닙니다."
+      }
+    },
+    {
+      "code": "MRYCO",
+      "propertyCode": "MRYCO",
+      "officialName": "Le Petit Pali at Ocean Ave, a Member of Design Hotels",
+      "category": "hold",
+      "reviewedAt": "2026-10-04T23:47:23Z",
+      "priorRecommendation": "release_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": true,
+        "lastmod": "2026-09-05",
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/mryco-le-petit-pali-at-ocean-ave-a-member-of-design-hotels/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "Ocean Ave 호텔 34실·전화 +1 831-624-3864를 확인했습니다. Bonvoy 혜택에 Design Hotels 관련 제한 안내가 있습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/mryco-le-petit-pali-at-ocean-ave-a-member-of-design-hotels/rooms/",
+          "kind": "marriott_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "객실 소개가 반환되지만 날짜별 재고 선택 결과는 아닙니다."
+          ]
+        },
+        {
+          "url": "https://www.designhotels.com/hotels/usa/california/carmel-by-the-sea/le-petit-pali-at-ocean-ave/",
+          "kind": "design_hotels_participation",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "yesterday",
+          "observations": [
+            "해당 호텔의 Marriott Bonvoy 참여를 명시하고 Marriott로 연결합니다."
+          ]
+        },
+        {
+          "url": "https://www.designhotels.com/hotels/usa/california/carmel-by-the-sea/le-petit-pali-at-ocean-ave/rooms-rates/",
+          "kind": "design_hotels_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last week",
+          "observations": [
+            "The King Fireplace 등 객실 설명만 확인했고 날짜별 재고·숫자 요금은 확보하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/destinations/united-states/california/monterey.mi",
+          "kind": "marriott_destination",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned_rate_result_error",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "목록은 2026-11-03→2026-11-04 표본에서 Ocean Ave 호텔 495 USD/night를 표시하고 8th Ave 호텔을 별도 항목으로 구분합니다. View Rates 클릭은 오류로 객실 결과를 확보하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.lepetitpali.com/",
+          "kind": "operator_property_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "2 days ago",
+          "observations": [
+            "공식 운영사 검색 결과의 Ocean Ave 호텔 소개에 34실·조식·객실 서비스가 있습니다."
+          ]
+        },
+        {
+          "url": "https://www.palisociety.com/contact-us",
+          "kind": "operator_contact",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "2 weeks ago",
+          "observations": [
+            "Ocean Avenue와 8th Avenue의 주소·전화가 별도로 표시됩니다."
+          ]
+        }
+      ],
+      "facts": [
+        "Marriott·Design Hotels의 호텔별 소개와 Bonvoy 참여를 재확인했습니다.",
+        "목적지 목록의 495 USD는 날짜 있는 표본 요금이며 선택 가능한 객실 재고가 아닙니다.",
+        "이전 9월 표본 580 USD는 현재 요금으로 재사용하지 않았습니다."
+      ],
+      "retainedUnconfirmedDates": [],
+      "sampleRates": [
+        {
+          "source": "marriott_destination",
+          "stayFrom": "2026-11-03",
+          "stayTo": "2026-11-04",
+          "amount": 495,
+          "currency": "USD",
+          "unit": "per_night",
+          "roomInventoryVerified": false
+        }
+      ],
+      "gaps": [
+        "현재 Marriott 날짜별 선택 가능한 객실·요금",
+        "Marriott 참여 전환의 정확한 시작일",
+        "운영자 보류 해제 검토"
+      ],
+      "recommendation": "release_candidate",
+      "proposedStatus": "verification_required",
+      "confidence": {
+        "level": "high_for_bonvoy_medium_for_release",
+        "rationale": "Design Hotels가 호텔명을 특정해 Bonvoy 참여를 명시합니다. 운영사 동일성 근거도 있지만 실제 Marriott 객실 선택 단계는 미확인입니다."
+      }
+    },
+    {
+      "code": "SFOPS",
+      "propertyCode": "SFOPS",
+      "officialName": "Palihotel San Francisco, a Member of Design Hotels",
+      "category": "hold",
+      "reviewedAt": "2026-10-04T23:47:23Z",
+      "priorRecommendation": "release_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": true,
+        "lastmod": "2026-09-03",
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/sfops-palihotel-san-francisco-a-member-of-design-hotels/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "82실·417 Stockton Street·전화 +1 415-400-0500가 확인됩니다. Overview 숫자 요금은 공란입니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/sfops-palihotel-san-francisco-a-member-of-design-hotels/rooms/",
+          "kind": "marriott_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "yesterday",
+          "observations": [
+            "객실 소개는 있으나 날짜별 판매 객실 선택 결과가 아닙니다."
+          ]
+        },
+        {
+          "url": "https://www.designhotels.com/hotels/usa/california/san-francisco/palihotel-san-francisco/",
+          "kind": "design_hotels_participation",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "호텔별 본문이 Marriott Bonvoy 참여와 82실을 명시합니다."
+          ]
+        },
+        {
+          "url": "https://www.designhotels.com/hotels/usa/california/san-francisco/palihotel-san-francisco/rooms-rates/",
+          "kind": "design_hotels_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "소개 페이지는 반환됐지만 날짜별 선택 가능한 객실 재고를 확인하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.palisociety.com/hotels/san-francisco",
+          "kind": "operator_property",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "2 days ago",
+          "observations": [
+            "운영사 본문에 82실·객실 종류·주소·전화·Bar Maritime 안내가 있습니다. 새 개장 발표는 아닙니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/destinations/united-states/california/san-francisco.mi",
+          "kind": "marriott_destination",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "목록은 2026-11-03→2026-11-04 표본에서 380 USD/night를 표시합니다. 실제 View Rates 링크의 요청 날짜는 2026-10-04→2026-10-05로 다릅니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/reservation/availabilitySearch.mi?childrenAges=currency%3D&childrenCount=0&clusterCode=none&fromDate=10%2F04%2F2026&isRateCalendar=true&isSearch=true&numberOfAdults=1&numberOfRooms=1&propertyCode=SFOPS&toDate=10%2F05%2F2026&useRewardsPoints=false",
+          "kind": "marriott_availability",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:23Z",
+          "accessResult": "cache_miss",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "객실 1·성인 1·2026-10-04→2026-10-05 요청 본문을 확보하지 못했습니다. 목록 표본 요금을 이 날짜의 판매 객실 증거로 합치지 않습니다."
+          ]
+        }
+      ],
+      "facts": [
+        "Design Hotels 공식 본문이 호텔의 Bonvoy 참여를 재확인합니다.",
+        "운영사 호텔 소개도 같은 82실·주소·전화로 동일성을 뒷받침합니다.",
+        "목적지 목록의 표본 날짜와 클릭한 예약 URL 날짜가 불일치하며 객실별 재고는 미확인입니다."
+      ],
+      "retainedUnconfirmedDates": [],
+      "sampleRates": [
+        {
+          "source": "marriott_destination",
+          "stayFrom": "2026-11-03",
+          "stayTo": "2026-11-04",
+          "amount": 380,
+          "currency": "USD",
+          "unit": "per_night",
+          "roomInventoryVerified": false,
+          "clickedAvailabilityFrom": "2026-10-04",
+          "clickedAvailabilityTo": "2026-10-05"
+        }
+      ],
+      "gaps": [
+        "현재 Marriott 날짜별 선택 가능한 객실·요금",
+        "Marriott 참여 전환의 정확한 시작일",
+        "운영자 보류 해제 검토"
+      ],
+      "recommendation": "release_candidate",
+      "proposedStatus": "verification_required",
+      "confidence": {
+        "level": "high_for_bonvoy_medium_for_release",
+        "rationale": "호텔별 직접 참여 안내가 충분하지만 표본 요금과 날짜 불일치 예약 링크는 공개 객실 판매 근거가 아닙니다."
+      }
+    },
+    {
+      "code": "BNACR",
+      "propertyCode": "BNACR",
+      "officialName": "StudioRes by Marriott Clarksville",
+      "category": "hold",
+      "reviewedAt": "2026-10-04T23:47:30Z",
+      "priorRecommendation": "conditional_release_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": true,
+        "lastmod": "2026-09-15",
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/bnacr-studiores-clarksville/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last week",
+          "observations": [
+            "호텔별 소개·681 Kennedy Lane·전화·체크인 정보가 있습니다. 공개 개장일은 없고 이번 반환 본문에 예약 미개시/폐업 안내는 관찰되지 않았습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/bnacr-studiores-clarksville/rooms/",
+          "kind": "marriott_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last month",
+          "observations": [
+            "예약 미개시 문구는 관찰되지 않았지만 날짜별 객실 선택 결과가 아닙니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/destinations/united-states/tennessee/extended-stay-hotels.mi",
+          "kind": "marriott_destination",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned_rate_result_error",
+          "publishedAt": null,
+          "crawlFreshness": "last month",
+          "observations": [
+            "2026-10-03→2026-10-10 목록 표본의 89 USD/night가 있습니다. View Rates 클릭은 오류이며 현재 객실 선택 결과를 확보하지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.linkedin.com/posts/hotel-management-and-consulting_hmc-studiores-marriott-activity-7496673233405108224-xVWc",
+          "kind": "operator_announcement",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "fetch_error_cache_miss",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "운영사 HMC 공식 게시물 직접 본문 접근은 실패했습니다."
+          ]
+        },
+        {
+          "url": "https://www.linkedin.com/posts/hotel-management-and-consulting_hmc-studiores-marriott-activity-7496673233405108224-xVWc",
+          "kind": "operator_announcement_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last month",
+          "observations": [
+            "동일 공식 게시물 URL의 검색 색인에 HMC의 108번째 호텔 개장 및 손님 맞이 발표가 반환됩니다. 상대 표시 2d는 정확한 발행일로 환산하지 않습니다."
+          ]
+        },
+        {
+          "url": "https://www.linkedin.com/company/hotel-management-and-consulting",
+          "kind": "operator_company_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "공식 회사 페이지 검색 색인에도 같은 개장 발표가 있습니다. 상대 시간 1w만 보이며 절대 발행일은 확인하지 못했습니다."
+          ]
+        }
+      ],
+      "facts": [
+        "10월 3일 직접 재조회 실패만 남았던 HMC 개장 발표를 이번에는 공식 동일 URL 검색 색인에서 다시 확인했습니다.",
+        "개장 발표의 정확한 발행일·호텔 개장일은 여전히 확인되지 않았습니다.",
+        "89 USD 목록 표본은 객실별 선택 가능한 예약 결과가 아닙니다."
+      ],
+      "retainedUnconfirmedDates": [],
+      "sampleRates": [
+        {
+          "source": "marriott_destination",
+          "stayFrom": "2026-10-03",
+          "stayTo": "2026-10-10",
+          "amount": 89,
+          "currency": "USD",
+          "unit": "per_night",
+          "roomInventoryVerified": false
+        }
+      ],
+      "gaps": [
+        "정확한 개장·Marriott 운영 개시일",
+        "현재 Marriott 날짜별 선택 가능한 공개 객실"
+      ],
+      "recommendation": "conditional_release_candidate",
+      "proposedStatus": "verification_required",
+      "confidence": {
+        "level": "medium",
+        "rationale": "운영사 개장·손님 맞이 발표 색인은 강화된 운영 단서지만 직접 본문 접근·절대 날짜·현재 객실 판매가 부족합니다. 보류 유지가 필요합니다."
+      }
+    },
+    {
+      "code": "HGHFU",
+      "propertyCode": "HGHFU",
+      "officialName": "Fairfield by Marriott Hangzhou Fuyang",
+      "category": "hold",
+      "reviewedAt": "2026-10-04T23:47:30Z",
+      "priorRecommendation": "conditional_release_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": true,
+        "lastmod": "2026-08-07",
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/hghfu-fairfield-hangzhou-fuyang/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "3 weeks ago",
+          "observations": [
+            "호텔별 신규 개장 설명·주소·체크인·시설이 반환됩니다. 공개 개장일은 없고 해당 반환 본문에 예약 미개시 배너는 관찰되지 않았습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/hghfu-fairfield-hangzhou-fuyang/overview/",
+          "kind": "marriott_overview_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "4 days ago",
+          "observations": [
+            "같은 신규 개장 설명이 더 최근 검색 색인에서도 확인됩니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/hghfu-fairfield-hangzhou-fuyang/rooms/",
+          "kind": "marriott_reservations_unavailable_notice",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "2 months ago",
+          "observations": [
+            "객실 페이지 응답에는 호텔별 예약이 아직 제공되지 않는다는 배너가 있습니다. 이 응답의 crawl 표시는 2개월 전이며 현재 예약 미개시 확정 근거가 아닙니다."
+          ]
+        }
+      ],
+      "facts": [
+        "10월 3일 overview에서 배너가 안 보였다는 사실과 이번 rooms의 오래된 예약 미개시 배너가 상충합니다.",
+        "신규 개장 설명은 실제 개장일·현재 공개 객실 판매를 직접 증명하지 않습니다.",
+        "폐업·제휴 종료 근거는 확보하지 못했습니다."
+      ],
+      "retainedUnconfirmedDates": [],
+      "gaps": [
+        "신규 개장 설명과 rooms 예약 미개시 배너의 현재 유효성 해소",
+        "정확한 개장일",
+        "현재 Marriott 날짜별 선택 가능한 공개 객실"
+      ],
+      "recommendation": "keep_hold",
+      "proposedStatus": "verification_required",
+      "confidence": {
+        "level": "medium_for_conflict_low_for_current_reservation_state",
+        "rationale": "이전 조건부 해제 근거의 예약 측 공백이 더 분명해졌습니다. 오래된 배너를 현재 사실로 승격하지 않으며, 실시간 예약이 확인될 때까지 확인 필요 보류 유지 권고입니다."
+      }
+    },
+    {
+      "code": "MGMSS",
+      "propertyCode": "MGMSS",
+      "officialName": "The St. James Hotel, Selma, Series by Marriott",
+      "category": "hold",
+      "reviewedAt": "2026-10-04T23:47:30Z",
+      "priorRecommendation": "conditional_release_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": true,
+        "lastmod": "2026-09-17",
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/mgmss-the-st-james-hotel-selma-series/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last week",
+          "observations": [
+            "호텔별 본문이 이 호텔을 Marriott Bonvoy 회원 호텔로 명시합니다. 1200 Water Avenue·전화·체크인 안내·신규 Marriott 참여 표시가 있고 예약 미개시/폐업 배너는 관찰되지 않았습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/mgmss-st-james-hotel-selma-series/rooms/",
+          "kind": "marriott_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "redirect_loop_400",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "이전 slug 객실 URL에서 Redirect loop 오류가 반환됩니다. overview의 Rooms 링크 클릭도 오류로 객실 결과 URL·본문을 얻지 못했습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-gb/hotels/mgmss-st-james-hotel-selma-series/events/",
+          "kind": "marriott_events_index",
+          "method": "web_search_index",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "index_content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last month",
+          "observations": [
+            "호텔별 행사 공간 및 Marriott 신규 참여·Bonvoy Events 소개가 있습니다. 투숙 객실 판매 결과가 아닙니다."
+          ]
+        }
+      ],
+      "facts": [
+        "10월 3일 표시명 확인에 더해 이번에는 호텔별 Bonvoy 참여 본문을 명시적으로 확보했습니다.",
+        "객실 경로의 오류는 객실 미판매·폐업 근거가 아닙니다.",
+        "날짜 있는 전환 완료 발표와 공개 객실 선택은 아직 확보하지 못했습니다."
+      ],
+      "retainedUnconfirmedDates": [],
+      "gaps": [
+        "Marriott 전환·참여의 정확한 시작일",
+        "현재 Marriott 날짜별 선택 가능한 공개 객실"
+      ],
+      "recommendation": "conditional_release_candidate",
+      "proposedStatus": "verification_required",
+      "confidence": {
+        "level": "high_for_bonvoy_medium_for_release",
+        "rationale": "해당 호텔명을 특정한 Marriott Bonvoy 회원 호텔 본문이 참여 근거입니다. 실시간 객실 결과와 전환 날짜가 없어 조건부 해제 후보로만 유지합니다."
+      }
+    },
+    {
+      "code": "IXMRT",
+      "propertyCode": "IXMRT",
+      "officialName": "The Fern Residency Thekkady, Series by Marriott",
+      "category": "hold",
+      "reviewedAt": "2026-10-04T23:47:30Z",
+      "priorRecommendation": "conditional_release_candidate",
+      "priorXmlMembership": {
+        "snapshot": "2026-10-03T05:47:21.734Z",
+        "present": true,
+        "lastmod": "2026-09-04",
+        "source": "marriott",
+        "recheckedInThisCompanion": false
+      },
+      "publiclyBookableRoomsObserved": false,
+      "inventoryConclusion": "not_verified",
+      "actualTransitionDate": null,
+      "applied": false,
+      "checkedUrls": [
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ixmrt-the-fern-residency-thekkady-series/overview/",
+          "kind": "marriott_overview",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "yesterday",
+          "observations": [
+            "호텔별 본문에 50객실/스위트·주소·전화·체크인·Bonvoy 직접 예약 Wi-Fi 안내가 있습니다. 개장일·전환 완료일은 없고 예약 미개시/폐업 배너는 관찰되지 않았습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/hotels/ixmrt-the-fern-residency-thekkady-series/rooms/",
+          "kind": "marriott_rooms",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "last week",
+          "observations": [
+            "예약 미개시 문구는 관찰되지 않았으나 날짜별 객실 선택 결과는 아닙니다."
+          ]
+        },
+        {
+          "url": "https://www.fernhotels.com/jungle-safaris-forest-resorts-wildlife-sanctuaries/the-fern-residency-thekkady-series-by-marriott",
+          "kind": "operator_property",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned_booking_link_error",
+          "publishedAt": null,
+          "crawlFreshness": "3 weeks ago",
+          "observations": [
+            "Series by Marriott 명칭·객실 소개·Marriott Book Now 연결은 있지만 객실 수 00 표기가 두 곳 유지됩니다. 예약 링크 클릭은 오류입니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/destinations/india/family-friendly-hotels.mi?pg=3",
+          "kind": "marriott_destination",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned",
+          "publishedAt": null,
+          "crawlFreshness": "2 days ago",
+          "observations": [
+            "목록은 2026-11-01→2026-11-02 표본에서 4,200 INR/night를 표시합니다. 실제 View Rates 링크는 2026-10-02→2026-10-03 요청으로 날짜가 다릅니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/reservation/availabilitySearch.mi?childrenAges=currency%3D&childrenCount=0&clusterCode=none&fromDate=10%2F02%2F2026&isRateCalendar=true&isSearch=true&numberOfAdults=1&numberOfRooms=1&propertyCode=IXMRT&toDate=10%2F03%2F2026&useRewardsPoints=false",
+          "kind": "marriott_availability",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "cache_miss",
+          "publishedAt": null,
+          "crawlFreshness": null,
+          "observations": [
+            "실제 객실 결과를 얻지 못했습니다. 4,200 INR를 11월 표본에 현재 예약 가능한 객실 요금으로 기록하지 않습니다."
+          ]
+        },
+        {
+          "url": "https://www.marriott.com/en-us/marriott-brands/portfolio/openings.mi",
+          "kind": "marriott_opening_schedule",
+          "method": "web_page",
+          "checkedAt": "2026-10-04T23:47:30Z",
+          "accessResult": "content_returned_name_not_found",
+          "publishedAt": null,
+          "crawlFreshness": "today",
+          "observations": [
+            "반환 본문에서 Thekkady를 찾지 못했습니다. 과거 2027년 3분기 일정의 유효성이나 전환 완료를 입증하지 않습니다."
+          ]
+        }
+      ],
+      "facts": [
+        "Marriott 및 Fern 공식 호텔별 소개와 Marriott 예약 연결이 유지됩니다.",
+        "Fern 객실 수 00와 Marriott 객실 수 50의 정보 불일치가 남아 있습니다.",
+        "표본 날짜와 예약 링크 날짜가 불일치하며 공개 객실 선택 결과는 미확인입니다."
+      ],
+      "retainedUnconfirmedDates": [
+        {
+          "date": "2027-Q3",
+          "meaning": "historical_announced_opening_quarter",
+          "sourceUrl": "https://www.marriott.com/en-us/marriott-brands/portfolio/openings.mi",
+          "currentValidity": "unconfirmed",
+          "firstRecordedIn": "data/marriott/reviews/2026-09-07-verification.json"
+        }
+      ],
+      "sampleRates": [
+        {
+          "source": "marriott_destination",
+          "stayFrom": "2026-11-01",
+          "stayTo": "2026-11-02",
+          "amount": 4200,
+          "currency": "INR",
+          "unit": "per_night",
+          "roomInventoryVerified": false,
+          "clickedAvailabilityFrom": "2026-10-02",
+          "clickedAvailabilityTo": "2026-10-03"
+        }
+      ],
+      "gaps": [
+        "과거 2027년 3분기 일정과 현재 Marriott 참여 소개 상충 해소",
+        "운영 개시·Marriott 전환의 정확한 날짜",
+        "현재 Marriott 날짜별 선택 가능한 공개 객실"
+      ],
+      "recommendation": "conditional_release_candidate",
+      "proposedStatus": "verification_required",
+      "confidence": {
+        "level": "medium",
+        "rationale": "양쪽 공식 호텔 소개가 참여 단서를 제공하지만 운영사 정보 미완성·과거 일정 상충·날짜 불일치 링크 때문에 공개 판매 확인이 남습니다."
+      }
+    }
+  ]
+}

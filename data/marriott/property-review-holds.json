@@ -2,48 +2,26 @@
   "version": 1,
   "properties": [
     {
-      "propertyCode": "BEGAC",
-      "officialName": "AC Hotel Airport City Belgrade",
-      "country": "RS",
-      "region": "overseas",
-      "aliases": ["AC Hotel Belgrade Airport City"],
-      "status": "not_yet_open",
-      "reason": "개발사 공식 정보에서 아직 개발 중이며 2026년 말 완공 예정으로 확인되어 운영 개시 전까지 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/begac-ac-hotel-airport-city-belgrade/overview/",
-      "lastReviewedAt": "2026-07-27"
-    },
-    {
       "propertyCode": "BKIFI",
       "officialName": "Fairfield by Marriott Kota Kinabalu",
       "country": "MY",
       "region": "overseas",
       "aliases": ["Fairfield Kota Kinabalu"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Kota Kinabalu의 Marriott 개장 일정은 2026년 4분기 안내입니다. 오늘이 해당 분기에 들어갔다는 사실만으로 실제 개장을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/bkifi-fairfield-kota-kinabalu/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "CAEFW",
-      "officialName": "Fairfield by Marriott Inn & Suites Columbia West",
+      "officialName": "Fairfield by Marriott Inn & Suites West Columbia Airport",
       "country": "US",
       "region": "overseas",
       "aliases": ["Fairfield Inn & Suites Columbia West"],
       "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/caefw-fairfield-inn-and-suites-columbia-west/overview/",
-      "lastReviewedAt": "2026-07-26"
-    },
-    {
-      "propertyCode": "CSXPF",
-      "officialName": "Four Points by Sheraton Changsha South Station",
-      "country": "CN",
-      "region": "overseas",
-      "aliases": ["Four Points Changsha South Station"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/csxpf-four-points-changsha-south-station/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "reason": "Fairfield by Marriott Inn & Suites West Columbia Airport의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/caefw-fairfield-inn-and-suites-west-columbia-airport/overview/",
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "CTUFF",
@@ -51,10 +29,10 @@
       "country": "CN",
       "region": "overseas",
       "aliases": ["Fairfield Chengdu Fenghuangshan Sports Park"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Chengdu Fenghuangshan Sports Park의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/ctuff-fairfield-chengdu-fenghuangshan-sports-park/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "EUGCX",
@@ -62,10 +40,10 @@
       "country": "US",
       "region": "overseas",
       "aliases": ["City Express Corvallis"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "City Express by Marriott Corvallis의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/eugcx-city-express-corvallis/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "HGHFU",
@@ -73,32 +51,10 @@
       "country": "CN",
       "region": "overseas",
       "aliases": ["Fairfield Hangzhou Fuyang"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "현재 Marriott 본문에 신규 개장 설명이 있고 과거 예약 미개시 배너는 관찰되지 않았습니다. 이를 호텔의 실제 운영을 뒷받침하는 추가 단서로 기록하지만, 명확한 개장일과 현재 공개 예약을 별도로 확인하기 전에는 보류를 해제하지 않습니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/hghfu-fairfield-hangzhou-fuyang/overview/",
-      "lastReviewedAt": "2026-07-26"
-    },
-    {
-      "propertyCode": "ISTXA",
-      "officialName": "Four Points Flex by Sheraton Istanbul Airport",
-      "country": "TR",
-      "region": "overseas",
-      "aliases": ["Four Points Flex Istanbul Airport"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지는 있으나 객실 요금이 제공되지 않고 실제 운영·예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/istxa-four-points-flex-istanbul-airport/overview/",
-      "lastReviewedAt": "2026-07-27"
-    },
-    {
-      "propertyCode": "MQTTS",
-      "officialName": "TownePlace Suites by Marriott Marquette",
-      "country": "US",
-      "region": "overseas",
-      "aliases": ["TownePlace Suites Marquette"],
-      "status": "not_yet_open",
-      "reason": "Marriott 공식 페이지는 있으나 객실 요금과 실제 운영 개시를 확인하지 못했고 공사 중인 정황이 있어 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/mqtts-towneplace-suites-marquette/overview/",
-      "lastReviewedAt": "2026-07-27"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "MSPXE",
@@ -106,21 +62,10 @@
       "country": "US",
       "region": "overseas",
       "aliases": ["City Express Minneapolis Airport"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "City Express by Marriott Minneapolis Airport의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/mspxe-city-express-minneapolis-airport/overview/",
-      "lastReviewedAt": "2026-07-26"
-    },
-    {
-      "propertyCode": "MYRFI",
-      "officialName": "Fairfield by Marriott Inn & Suites Myrtle Beach",
-      "country": "US",
-      "region": "overseas",
-      "aliases": ["Fairfield Inn & Suites Myrtle Beach"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/myrfi-fairfield-inn-and-suites-myrtle-beach/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "NUMAK",
@@ -128,10 +73,10 @@
       "country": "SA",
       "region": "overseas",
       "aliases": ["Oraya Sindalah"],
-      "status": "not_yet_open",
-      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "status": "verification_required",
+      "reason": "Oraya, Sindalah, Autograph Collection의 개별 공식 URL 접근이 실패했습니다. 최신 운영·예약 상태가 미확인이라 확인 필요로 두고 보류를 유지합니다. 접근 실패만으로 폐업 또는 예약 미개시를 단정하지 않습니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/numak-oraya-sindalah-autograph-collection/overview/",
-      "lastReviewedAt": "2026-07-22"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "NUMLC",
@@ -139,10 +84,10 @@
       "country": "SA",
       "region": "overseas",
       "aliases": ["The Syanne Sindalah"],
-      "status": "not_yet_open",
-      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "status": "verification_required",
+      "reason": "The Syanne, A Luxury Collection Resort, Sindalah 확인을 위해 공식 URL을 조회했지만 호텔별 운영·예약을 증명하는 본문이 충분하지 않았습니다. 목록·일정·리디렉션 또는 안내 페이지를 개장 완료 증거로 사용하지 않고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotel-sitemap/saudi-arabia-hotel-sitemap",
-      "lastReviewedAt": "2026-07-22"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "NUMSA",
@@ -150,10 +95,10 @@
       "country": "SA",
       "region": "overseas",
       "aliases": ["Seratoro Sindalah"],
-      "status": "not_yet_open",
-      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "status": "verification_required",
+      "reason": "Seratoro, Sindalah, Apartments by Marriott Bonvoy 확인을 위해 공식 URL을 조회했지만 호텔별 운영·예약을 증명하는 본문이 충분하지 않았습니다. 목록·일정·리디렉션 또는 안내 페이지를 개장 완료 증거로 사용하지 않고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/numsa-apartments-bonvoy-sindalah-island-neom/overview/",
-      "lastReviewedAt": "2026-07-22"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "NUMSL",
@@ -161,10 +106,10 @@
       "country": "SA",
       "region": "overseas",
       "aliases": ["Coramar Sindalah"],
-      "status": "not_yet_open",
-      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "status": "verification_required",
+      "reason": "Coramar, A Luxury Collection All-Suites Hotel, Sindalah 확인을 위해 공식 URL을 조회했지만 호텔별 운영·예약을 증명하는 본문이 충분하지 않았습니다. 목록·일정·리디렉션 또는 안내 페이지를 개장 완료 증거로 사용하지 않고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotel-sitemap/saudi-arabia-hotel-sitemap",
-      "lastReviewedAt": "2026-07-22"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "OKCTD",
@@ -172,10 +117,10 @@
       "country": "US",
       "region": "overseas",
       "aliases": ["TownePlace Suites Oklahoma City Downtown"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "TownePlace Suites by Marriott Oklahoma City Downtown의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/okctd-towneplace-suites-oklahoma-city-downtown/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "PUSAH",
@@ -183,10 +128,10 @@
       "country": "KR",
       "region": "domestic",
       "aliases": ["Anook Signature Busan Haeundae"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Anook Signature Busan Haeundae, Series by Marriott의 Marriott 개장 일정은 2026년 4분기 안내입니다. 오늘이 해당 분기에 들어갔다는 사실만으로 실제 개장을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/pusah-anook-signature-busan-haeundae-series-by-marriot/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "SELAI",
@@ -194,21 +139,10 @@
       "country": "KR",
       "region": "domestic",
       "aliases": ["Anook Signature Incheon Guwol"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Anook Signature Incheon Guwol, Series by Marriott의 Marriott 개장 일정은 2026년 4분기 안내입니다. 오늘이 해당 분기에 들어갔다는 사실만으로 실제 개장을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/selai-anook-signature-incheon-guwol-series/overview/",
-      "lastReviewedAt": "2026-07-26"
-    },
-    {
-      "propertyCode": "SELSG",
-      "officialName": "Anook Signature Hotel Seoul Guro, Series by Marriott",
-      "country": "KR",
-      "region": "domestic",
-      "aliases": ["Anook Signature Hotel Seoul Guro"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/selsg-anook-signature-hotel-seoul-guro-series/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "SHAHQ",
@@ -216,32 +150,10 @@
       "country": "CN",
       "region": "overseas",
       "aliases": ["Fairfield Shanghai Hongqiao Airport Qibao"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Shanghai Hongqiao Airport Qibao의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/shahq-fairfield-shanghai-hongqiao-airport-qibao/overview/",
-      "lastReviewedAt": "2026-07-26"
-    },
-    {
-      "propertyCode": "SNAAF",
-      "officialName": "Fairfield by Marriott Inn & Suites Anaheim Resort",
-      "country": "US",
-      "region": "overseas",
-      "aliases": ["Fairfield Inn & Suites Anaheim Resort"],
-      "status": "reservations_unavailable",
-      "reason": "동일 주소의 기존 호텔이 다른 브랜드로 운영 중이며 Fairfield 전환 및 Marriott 예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/snaaf-fairfield-inn-and-suites-anaheim-resort/overview/",
-      "lastReviewedAt": "2026-07-27"
-    },
-    {
-      "propertyCode": "SNAAL",
-      "officialName": "SpringHill Suites by Marriott Anaheim Resort",
-      "country": "US",
-      "region": "overseas",
-      "aliases": ["SpringHill Suites Anaheim Resort"],
-      "status": "reservations_unavailable",
-      "reason": "동일 주소의 기존 호텔이 다른 브랜드로 운영 중이며 SpringHill Suites 전환 및 Marriott 예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/snaal-springhill-suites-anaheim-resort/overview/",
-      "lastReviewedAt": "2026-07-27"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "TIJPC",
@@ -249,10 +161,10 @@
       "country": "MX",
       "region": "overseas",
       "aliases": ["Courtyard Tijuana Plaza Toreo"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Courtyard by Marriott Tijuana, Plaza Toreo의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/tijpc-courtyard-tijuana-plaza-toreo/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "VCEOX",
@@ -260,21 +172,10 @@
       "country": "IT",
       "region": "overseas",
       "aliases": ["Moxy Venice Airport"],
-      "status": "not_yet_open",
-      "reason": "실제 운영 개시 전으로 확인되어 활성 호텔 탐지에서 보류합니다.",
+      "status": "verification_required",
+      "reason": "Moxy Venice Airport 확인을 위해 공식 URL을 조회했지만 호텔별 운영·예약을 증명하는 본문이 충분하지 않았습니다. 목록·일정·리디렉션 또는 안내 페이지를 개장 완료 증거로 사용하지 않고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotel-sitemap/italy-hotel-sitemap",
-      "lastReviewedAt": "2026-07-22"
-    },
-    {
-      "propertyCode": "WASWF",
-      "officialName": "The Potomac Hotel, Autograph Collection",
-      "country": "US",
-      "region": "overseas",
-      "aliases": ["The Potomac Hotel"],
-      "status": "reservations_unavailable",
-      "reason": "기존 Salamander Washington DC의 Autograph Collection 전환과 Marriott 예약 개시가 완료되었는지 확인되지 않아 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/waswf-the-potomac-hotel-autograph-collection/overview/",
-      "lastReviewedAt": "2026-07-27"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "XICQP",
@@ -282,21 +183,10 @@
       "country": "CN",
       "region": "overseas",
       "aliases": ["Four Points Xichang Qionghai"],
-      "status": "not_yet_open",
-      "reason": "Marriott 공식 호텔 목록에서 개장 예정으로 표시되고 실제 운영·예약 개시를 확인하지 못해 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton Xichang Qionghai의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/xicqp-four-points-xichang-qionghai/overview/",
-      "lastReviewedAt": "2026-07-27"
-    },
-    {
-      "propertyCode": "XMNXW",
-      "officialName": "The Westin Xiamen Xiang'an",
-      "country": "CN",
-      "region": "overseas",
-      "aliases": ["Westin Xiamen Xiang'an"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
-      "officialUrl": "https://www.marriott.com/en-us/hotels/xmnxw-the-westin-xiamen-xiangan/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
     },
     {
       "propertyCode": "ZUHXP",
@@ -304,10 +194,792 @@
       "country": "CN",
       "region": "overseas",
       "aliases": ["Four Points Zhuhai Xiangzhou"],
-      "status": "reservations_unavailable",
-      "reason": "Marriott 공식 페이지에서 호텔 정보는 확인되지만 예약이 아직 제공되지 않아 활성 탐지 등록을 보류합니다.",
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton Zhuhai Xiangzhou의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
       "officialUrl": "https://www.marriott.com/en-us/hotels/zuhxp-four-points-zhuhai-xiangzhou/overview/",
-      "lastReviewedAt": "2026-07-26"
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "ANCMT",
+      "officialName": "Courtyard by Marriott Midtown Anchorage",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Courtyard Midtown Anchorage"],
+      "status": "reservations_unavailable",
+      "reason": "Courtyard by Marriott Midtown Anchorage의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ancmt-courtyard-midtown-anchorage/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "ATLDS",
+      "officialName": "SpringHill Suites by Marriott Dawsonville",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["SpringHill Suites Dawsonville"],
+      "status": "reservations_unavailable",
+      "reason": "SpringHill Suites by Marriott Dawsonville의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/atlds-springhill-suites-dawsonville/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "BAHSW",
+      "officialName": "Aqua Vista Bahrain Hotel",
+      "country": "BH",
+      "region": "overseas",
+      "aliases": ["Aqua Vista Bahrain"],
+      "status": "verification_required",
+      "reason": "Aqua Vista Bahrain Hotel의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bahsw-aqua-vista-bahrain-hotel/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "BNACR",
+      "officialName": "StudioRes by Marriott Clarksville",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["StudioRes Clarksville"],
+      "status": "verification_required",
+      "reason": "현재 Marriott 호텔 소개는 반환되며 예약 미개시 배너는 관찰되지 않았습니다. 9월 검토의 HMC 개장 발표는 이번 직접 재조회가 실패해 최신 개장 근거로 재확인하지 못했습니다. 과거 요금·개장 근거는 보존하고 공개 예약 및 운영사 발표 재확인을 남깁니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bnacr-studiores-clarksville/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "DENFE",
+      "officialName": "Fairfield by Marriott Inn & Suites Denver Central Park",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Fairfield Inn & Suites Denver Central Park"],
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Inn & Suites Denver Central Park의 개별 공식 URL 접근이 실패했습니다. 최신 운영·예약 상태가 미확인이라 확인 필요로 두고 보류를 유지합니다. 접근 실패만으로 폐업 또는 예약 미개시를 단정하지 않습니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/denfe-farifield-inn-and-suites-denver-central-park/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "GGGRI",
+      "officialName": "Residence Inn by Marriott Longview",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Residence Inn Longview"],
+      "status": "verification_required",
+      "reason": "Residence Inn by Marriott Longview의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/gggri-residence-inn-longview/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "KNOCY",
+      "officialName": "Courtyard by Marriott Medan",
+      "country": "ID",
+      "region": "overseas",
+      "aliases": ["Courtyard Medan"],
+      "status": "reservations_unavailable",
+      "reason": "Courtyard by Marriott Medan의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/knocy-courtyard-medan/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "LASFN",
+      "officialName": "Fairfield by Marriott Inn & Suites Las Vegas North",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Fairfield Inn & Suites Las Vegas North"],
+      "status": "reservations_unavailable",
+      "reason": "Fairfield by Marriott Inn & Suites Las Vegas North의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/lasfn-fairfield-inn-and-suites-las-vegas-north/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "MLBCW",
+      "officialName": "The Westin Cocoa Beach Resort & Spa",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Westin Cocoa Beach Resort"],
+      "status": "verification_required",
+      "reason": "The Westin Cocoa Beach Resort & Spa의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/mlbcw-the-westin-cocoa-beach-resort-and-spa/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "MOBST",
+      "officialName": "StudioRes by Marriott Mobile",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["StudioRes Mobile"],
+      "status": "verification_required",
+      "reason": "StudioRes by Marriott Mobile의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/mobst-studiores-mobile/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "OSAKM",
+      "officialName": "Kyoto Marriott Hotel",
+      "country": "JP",
+      "region": "overseas",
+      "aliases": ["Kyoto Marriott"],
+      "status": "verification_required",
+      "reason": "Kyoto Marriott Hotel의 Marriott 개장 일정은 2026년 4분기 안내입니다. 오늘이 해당 분기에 들어갔다는 사실만으로 실제 개장을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/osakm-kyoto-marriott-hotel/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "POZFP",
+      "officialName": "Four Points by Sheraton Poznan",
+      "country": "PL",
+      "region": "overseas",
+      "aliases": ["Four Points Poznan"],
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton Poznan의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/pozfp-four-points-poznan/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "PVRMI",
+      "officialName": "Marriott Playa Vallarta, An All-Inclusive Resort",
+      "country": "MX",
+      "region": "overseas",
+      "aliases": ["Marriott Playa Vallarta"],
+      "status": "verification_required",
+      "reason": "Marriott Playa Vallarta, An All-Inclusive Resort의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/pvrmi-marriott-playa-vallarta-an-all-inclusive-resort/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SDFEI",
+      "officialName": "Residence Inn by Marriott Elizabethtown",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Residence Inn Elizabethtown"],
+      "status": "verification_required",
+      "reason": "Residence Inn by Marriott Elizabethtown의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/sdfei-residence-inn-elizabethtown/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SELUI",
+      "officialName": "UH Seoul Insadong, Series by Marriott",
+      "country": "KR",
+      "region": "domestic",
+      "aliases": ["UH Seoul Insadong"],
+      "status": "verification_required",
+      "reason": "UH Seoul Insadong, Series by Marriott의 Marriott 개장 일정은 2026년 4분기 안내입니다. 오늘이 해당 분기에 들어갔다는 사실만으로 실제 개장을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/selui-uh-seoul-insadong-series/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SJOLP",
+      "officialName": "Four Points by Sheraton San Jose Airport Alajuela",
+      "country": "CR",
+      "region": "overseas",
+      "aliases": ["Four Points San Jose Airport Alajuela"],
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton San Jose Airport Alajuela의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/sjolp-four-points-san-jose-airport-alajuela/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SRQRS",
+      "officialName": "StudioRes by Marriott Sarasota",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["StudioRes Sarasota"],
+      "status": "verification_required",
+      "reason": "StudioRes by Marriott Sarasota의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/srqrs-studiores-sarasota/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SYXAC",
+      "officialName": "AC Hotel Sanya Downtown",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["AC Sanya Downtown"],
+      "status": "verification_required",
+      "reason": "AC Hotel Sanya Downtown의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/syxac-ac-hotel-sanya-downtown/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "TRIJT",
+      "officialName": "TownePlace Suites by Marriott Johnson City",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["TownePlace Suites Johnson City"],
+      "status": "reservations_unavailable",
+      "reason": "TownePlace Suites by Marriott Johnson City의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/trijt-towneplace-suites-johnson-city/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "TSNGP",
+      "officialName": "Four Points by Sheraton Tianjin Gulou",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Four Points Tianjin Gulou"],
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton Tianjin Gulou의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/tsngp-four-points-tianjin-gulou/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "UKBCY",
+      "officialName": "Courtyard by Marriott Kobe",
+      "country": "JP",
+      "region": "overseas",
+      "aliases": ["Courtyard Kobe"],
+      "status": "verification_required",
+      "reason": "Marriott International의 2026-10-01 공식 발표에서 Courtyard Kobe 실제 개장을 확인했습니다. 381실·Port Island 위치가 해당 호텔 안내와 일치합니다. 예전 운영 전 상태를 확인 필요로 갱신하되, 현재 Marriott 공개 예약·카드 가맹점 적용을 최종 검토한 뒤 보류 해제를 승인해야 합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ukbcy-courtyard-kobe/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "ZNZBM",
+      "officialName": "Maya Resort Zanzibar, a Tribute Portfolio Hotel",
+      "country": "TZ",
+      "region": "overseas",
+      "aliases": ["Maya Resort Zanzibar"],
+      "status": "verification_required",
+      "reason": "Maya Resort Zanzibar, a Tribute Portfolio Hotel의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/znzbm-maya-resort-zanzibar-a-tribute-portfolio-hotel/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "ZUHSF",
+      "officialName": "Fairfield by Marriott Zhongshan Sunwen East Road",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Fairfield Zhongshan Sunwen East Road"],
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Zhongshan Sunwen East Road의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/zuhsf-fairfield-zhongshan-sunwen-east-road/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "MYRFI",
+      "officialName": "Fairfield by Marriott Inn & Suites Myrtle Beach Oceanfront",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Fairfield Inn & Suites Myrtle Beach"],
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Inn & Suites Myrtle Beach Oceanfront의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/myrfi-fairfield-inn-and-suites-myrtle-beach-oceanfront/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "BHMXT",
+      "officialName": "City Express by Marriott Tuscaloosa",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["City Express Tuscaloosa"],
+      "status": "reservations_unavailable",
+      "reason": "City Express by Marriott Tuscaloosa의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bhmxt-city-express-tuscaloosa/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "CTUHT",
+      "officialName": "Chengdu Marriott Hotel High-Tech Zone West",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Chengdu Marriott High-Tech Zone West"],
+      "status": "verification_required",
+      "reason": "Chengdu Marriott Hotel High-Tech Zone West의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ctuht-chengdu-marriott-hotel-high-tech-zone-west/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "DPSCL",
+      "officialName": "Courtyard by Marriott Nusa Lembongan Bali Resort",
+      "country": "ID",
+      "region": "overseas",
+      "aliases": ["Courtyard Nusa Lembongan Bali Resort"],
+      "status": "not_yet_open",
+      "reason": "Marriott 공식 개장 안내는 Courtyard by Marriott Nusa Lembongan Bali Resort의 개장을 2027년 2분기로 예정합니다. 일정은 실제 운영 개시를 의미하지 않으며 활성 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/dpscl-courtyard-nusa-lembongan-bali-resort/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "DXBZR",
+      "officialName": "Marriott Executive Apartments Sheikh Zayed Road, Dubai",
+      "country": "AE",
+      "region": "overseas",
+      "aliases": ["Marriott Executive Apartments Sheikh Zayed Road"],
+      "status": "reservations_unavailable",
+      "reason": "Marriott Executive Apartments Sheikh Zayed Road, Dubai의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/dxbzr-marriott-executive-apartments-sheikh-zayed-road-dubai/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "FUONJ",
+      "officialName": "Four Points by Sheraton Foshan Jiujiang",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Four Points Foshan Jiujiang"],
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton Foshan Jiujiang의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/fuonj-four-points-foshan-jiujiang/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "GDLPA",
+      "officialName": "Four Points by Sheraton Guadalajara",
+      "country": "MX",
+      "region": "overseas",
+      "aliases": ["Four Points Guadalajara"],
+      "status": "reservations_unavailable",
+      "reason": "Four Points by Sheraton Guadalajara의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/gdlpa-four-points-guadalajara/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "GSPEH",
+      "officialName": "SpringHill Suites by Marriott Greenville East",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["SpringHill Suites Greenville East"],
+      "status": "verification_required",
+      "reason": "SpringHill Suites by Marriott Greenville East의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/gspeh-springhill-suites-greenville-east/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "MGMSS",
+      "officialName": "The St. James Hotel, Selma, Series by Marriott",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["St James Hotel Selma", "St James Hotel, Selma, Series by Marriott"],
+      "status": "verification_required",
+      "reason": "현재 Marriott 호텔 소개는 The St. James Hotel, Selma, Series by Marriott로 표시되며 과거 예약 미개시 배너가 관찰되지 않았습니다. 보류 표시명은 이 직접 확인 이름으로 정리하고 과거 이름은 alias로 보존합니다. 실제 개장 완료·현재 공개 예약을 확인해야 보류 해제를 검토할 수 있습니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/mgmss-st-james-hotel-selma-series/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "MRYCO",
+      "officialName": "Le Petit Pali at Ocean Ave, a Member of Design Hotels",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Le Petit Pali at Ocean Ave"],
+      "status": "verification_required",
+      "reason": "Marriott 호텔 소개와 Design Hotels 공식 호텔 페이지에서 해당 호텔의 Marriott Bonvoy 참여를 확인했습니다. 기존 예약 미개시 증거만을 현재 상태로 계속 쓰지 않고 보류 해제 검토 후보로 유지합니다. 요금 화면이나 참여 안내만으로 카드 특별적립을 단정하지 않습니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/mryco-le-petit-pali-at-ocean-ave-a-member-of-design-hotels/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "NGBCH",
+      "officialName": "Courtyard by Marriott Ningbo Hangzhou Bay",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Courtyard Ningbo Hangzhou Bay"],
+      "status": "reservations_unavailable",
+      "reason": "Courtyard by Marriott Ningbo Hangzhou Bay의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ngbch-courtyard-ningbo-hangzhou-bay/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "ORHSX",
+      "officialName": "City Express by Marriott Shrewsbury",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["City Express Shrewsbury"],
+      "status": "verification_required",
+      "reason": "City Express by Marriott Shrewsbury의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/orhsx-city-express-shrewsbury/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "PARMX",
+      "officialName": "Moxy Paris Montmartre",
+      "country": "FR",
+      "region": "overseas",
+      "aliases": ["Moxy Paris Montmartre"],
+      "status": "verification_required",
+      "reason": "Moxy Paris Montmartre의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/parmx-moxy-paris-montmartre/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "PQCFI",
+      "officialName": "Fairfield by Marriott Phu Quoc Hon Thom",
+      "country": "VN",
+      "region": "overseas",
+      "aliases": ["Fairfield Phu Quoc Hon Thom"],
+      "status": "not_yet_open",
+      "reason": "Marriott 공식 개장 안내는 Fairfield by Marriott Phu Quoc Hon Thom의 개장을 2027년 1분기로 예정합니다. 일정은 실제 운영 개시를 의미하지 않으며 활성 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/pqcfi-fairfield-phu-quoc-hon-thom/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "PQCOX",
+      "officialName": "Moxy Phu Quoc Hon Thom",
+      "country": "VN",
+      "region": "overseas",
+      "aliases": ["Moxy Phu Quoc Hon Thom"],
+      "status": "not_yet_open",
+      "reason": "Marriott 공식 개장 안내는 Moxy Phu Quoc Hon Thom의 개장을 2027년 1분기로 예정합니다. 일정은 실제 운영 개시를 의미하지 않으며 활성 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/pqcox-moxy-phu-quoc-hon-thom/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "RDURS",
+      "officialName": "StudioRes by Marriott Raleigh Northeast",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["StudioRes Raleigh Northeast"],
+      "status": "verification_required",
+      "reason": "기존 상세 URL의 이번 접근은 실패했습니다. 현재 공식 XML은 RDURS 코드를 유지하지만 URL·표시명 North/Northeast 변경과 개장 준비 문구를 최신 페이지로 충분히 해소하지 못했습니다. 9월 표본 요금을 오늘 예약 가능 증거로 재사용하지 않고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/rdurs-studiores-raleigh-northeast/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SANDS",
+      "officialName": "Stellen, San Diego Gaslamp, Series by Marriott",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Stellen San Diego Gaslamp"],
+      "status": "reservations_unavailable",
+      "reason": "Stellen, San Diego Gaslamp, Series by Marriott의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/sands-stellen-san-diego-gaslamp-series/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SFOPS",
+      "officialName": "Palihotel San Francisco, a Member of Design Hotels",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Palihotel San Francisco"],
+      "status": "verification_required",
+      "reason": "Marriott 호텔 소개가 반환되고, Design Hotels 공식 페이지가 Palihotel San Francisco의 Marriott Bonvoy 참여를 명시합니다. 기존 보류 해제 검토 근거를 재확인했지만 사람 승인 전에는 활성 seed에 추가하지 않습니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/sfops-palihotel-san-francisco-a-member-of-design-hotels/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "ANRCC",
+      "officialName": "The Belson Antwerp, a Tribute Portfolio Hotel",
+      "country": "BE",
+      "region": "overseas",
+      "aliases": ["The Belson Antwerp"],
+      "status": "reservations_unavailable",
+      "reason": "The Belson Antwerp, a Tribute Portfolio Hotel의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/anrcc-the-belson-antwerp-a-tribute-portfolio-hotel/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "BCNCB",
+      "officialName": "Condes Barcelona, Autograph Collection",
+      "country": "ES",
+      "region": "overseas",
+      "aliases": ["Condes Barcelona"],
+      "status": "reservations_unavailable",
+      "reason": "Condes Barcelona, Autograph Collection의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/bcncb-condes-barcelona-autograph-collection/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "CHIRX",
+      "officialName": "City Express by Marriott Rolling Meadows",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["City Express Rolling Meadows"],
+      "status": "verification_required",
+      "reason": "City Express by Marriott Rolling Meadows의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/chirx-city-express-rolling-meadows/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "CTUWF",
+      "officialName": "Fairfield by Marriott Chengdu Wuhou District Yulin Road",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Fairfield Chengdu Wuhou District Yulin Road"],
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Chengdu Wuhou District Yulin Road의 개별 공식 URL 접근이 실패했습니다. 최신 운영·예약 상태가 미확인이라 확인 필요로 두고 보류를 유지합니다. 접근 실패만으로 폐업 또는 예약 미개시를 단정하지 않습니다.",
+      "officialUrl": "https://www.marriott.com/en-gb/hotels/ctuwf-fairfield-chengdu-wuhou-district-yulin-road/photos/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "EWRPO",
+      "officialName": "StudioRes by Marriott Piscataway Somerset",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["StudioRes Piscataway Somerset"],
+      "status": "verification_required",
+      "reason": "StudioRes by Marriott Piscataway Somerset의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ewrpo-studiores-piscataway-somerset/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "GEGCR",
+      "officialName": "Residence Inn by Marriott Coeur d'Alene",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Residence Inn Coeur d'Alene"],
+      "status": "verification_required",
+      "reason": "Residence Inn by Marriott Coeur d'Alene의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/gegcr-residence-inn-coeur-dalene/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "IADCN",
+      "officialName": "City Express by Marriott Chantilly Dulles Airport",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["City Express Chantilly Dulles Airport"],
+      "status": "verification_required",
+      "reason": "City Express by Marriott Chantilly Dulles Airport의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/iadcn-city-express-chantilly-dulles-airport/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "IXMRT",
+      "officialName": "The Fern Residency Thekkady, Series by Marriott",
+      "country": "IN",
+      "region": "overseas",
+      "aliases": ["The Fern Residency Thekkady"],
+      "status": "verification_required",
+      "reason": "Marriott와 운영사 Fern 공식 페이지에 Series by Marriott 소개 및 Marriott 예약 연결이 있습니다. 9월 기록의 2027년 3분기 예정 문구는 오늘 읽은 Marriott 개장 목록에서 찾지 못했습니다. 일정 목록에서 빠진 것 자체는 개장 완료 증거가 아니며, Fern 페이지의 객실 수 00 표기도 남아 있어 공개 예약·운영을 추가 확인해야 합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/ixmrt-the-fern-residency-thekkady-series/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "JZHAS",
+      "officialName": "Four Points by Sheraton Aba Songpan",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Four Points Aba Songpan"],
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton Aba Songpan의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/jzhas-four-points-aba-songpan/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "LYIIF",
+      "officialName": "Fairfield by Marriott Linyi International Convention and Exhibition Center",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Fairfield Linyi International Convention and Exhibition Center"],
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Linyi International Convention and Exhibition Center의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/lyiif-fairfield-linyi-international-convention-and-exhibition-center/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "MGMPR",
+      "officialName": "StudioRes by Marriott Prattville",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["StudioRes Prattville"],
+      "status": "verification_required",
+      "reason": "StudioRes by Marriott Prattville의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/mgmpr-studiores-prattville/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "OKARR",
+      "officialName": "Okinawa Marriott Rizzan Resort & Spa",
+      "country": "JP",
+      "region": "overseas",
+      "aliases": ["Okinawa Marriott Rizzan Resort and Spa"],
+      "status": "verification_required",
+      "reason": "Okinawa Marriott Rizzan Resort & Spa의 Marriott 개장 일정은 2026년 4분기 안내입니다. 오늘이 해당 분기에 들어갔다는 사실만으로 실제 개장을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/okarr-okinawa-marriott-rizzan-resort-and-spa/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "PHXMF",
+      "officialName": "Fairfield by Marriott Inn & Suites Phoenix Mesa East",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Fairfield Inn & Suites Phoenix Mesa East"],
+      "status": "verification_required",
+      "reason": "Fairfield by Marriott Inn & Suites Phoenix Mesa East의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/phxmf-fairfield-inn-and-suites-phoenix-mesa-east/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "PHXOE",
+      "officialName": "Residence Inn by Marriott Phoenix Southeast",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Residence Inn Phoenix Southeast"],
+      "status": "reservations_unavailable",
+      "reason": "Residence Inn by Marriott Phoenix Southeast의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/phxoe-residence-inn-phoenix-southeast/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "PVDTD",
+      "officialName": "Hotel Neptune, a Member of Design Hotels",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Hotel Neptune"],
+      "status": "verification_required",
+      "reason": "Hotel Neptune, a Member of Design Hotels의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/pvdtd-hotel-neptune-a-member-of-design-hotels/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "RMIAS",
+      "officialName": "Lyra Hotel Rimini Fiera, Series by Marriott",
+      "country": "IT",
+      "region": "overseas",
+      "aliases": ["Lyra Hotel Rimini Fiera"],
+      "status": "verification_required",
+      "reason": "현재 Marriott 응답의 페이지 제목은 Amapa Hotel Rimini이고 호텔 본문 제목은 Lyra Hotel Rimini Fiera여서 같은 응답 안에서도 표시명이 상충합니다. 코드·주소·브랜드 연속성을 확인하기 전에는 이름을 자동 변경하거나 활성 등록하지 않습니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/rmias-lyra-hotel-rimini-fiera-series/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SHEYC",
+      "officialName": "Courtyard by Marriott Shenyang",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Courtyard Shenyang"],
+      "status": "reservations_unavailable",
+      "reason": "Courtyard by Marriott Shenyang의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/sheyc-courtyard-shenyang/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SVQCT",
+      "officialName": "Confidencia Sevilla, a Tribute Portfolio Hotel",
+      "country": "ES",
+      "region": "overseas",
+      "aliases": ["Confidencia Sevilla"],
+      "status": "verification_required",
+      "reason": "Confidencia Sevilla, a Tribute Portfolio Hotel의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/svqct-confidencia-sevilla-a-tribute-porfolio-hotel/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SZXQP",
+      "officialName": "Four Points by Sheraton Shenzhen Qianhai CBD",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["Four Points Shenzhen Qianhai CBD"],
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton Shenzhen Qianhai CBD의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/szxqp-four-points-shenzhen-qianhai-cbd/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "TLLCY",
+      "officialName": "Courtyard by Marriott Tallinn City Center",
+      "country": "EE",
+      "region": "overseas",
+      "aliases": ["Courtyard Tallinn City Center"],
+      "status": "verification_required",
+      "reason": "Courtyard by Marriott Tallinn City Center의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/tllcy-courtyard-tallinn-city-center/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "UDRNH",
+      "officialName": "City Express by Marriott Udaipur Nathdwara Highway",
+      "country": "IN",
+      "region": "overseas",
+      "aliases": ["City Express Udaipur Nathdwara Highway"],
+      "status": "verification_required",
+      "reason": "City Express by Marriott Udaipur Nathdwara Highway의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/udrnh-city-express-udaipur-nathdwara-highway/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "VIESI",
+      "officialName": "Hotel Savoyen Vienna",
+      "country": "AT",
+      "region": "overseas",
+      "aliases": ["Savoyen Vienna"],
+      "status": "verification_required",
+      "reason": "현재 Marriott 프로필은 Hotel Savoyen Vienna 안내를 반환합니다. 기존 호텔 자체의 존재와 향후 Marriott/Sheraton 브랜드 전환 완료는 별개입니다. 브랜드 전환일과 현재 Marriott 예약·참여가 확인되기 전까지 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/viesi-hotel-savoyen-vienna/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "WASSE",
+      "officialName": "Hotel Nell - Union Market, Series by Marriott",
+      "country": "US",
+      "region": "overseas",
+      "aliases": ["Hotel Nell Union Market"],
+      "status": "verification_required",
+      "reason": "Hotel Nell - Union Market, Series by Marriott의 개별 공식 URL 접근이 실패했습니다. 최신 운영·예약 상태가 미확인이라 확인 필요로 두고 보류를 유지합니다. 접근 실패만으로 폐업 또는 예약 미개시를 단정하지 않습니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/wasse-hotel-nell-union-market-series/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "WUXJW",
+      "officialName": "JW Marriott Hotel Wuxi",
+      "country": "CN",
+      "region": "overseas",
+      "aliases": ["JW Marriott Wuxi"],
+      "status": "verification_required",
+      "reason": "JW Marriott Hotel Wuxi의 Marriott 호텔 안내는 반환됐고 예약 미개시 배너는 이번 응답에서 관찰되지 않았습니다. 배너 제거·호텔 소개만으로 실제 운영이나 현재 공개 예약을 단정할 수 없어 확인 필요로 갱신하고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/wuxjw-jw-marriott-hotel-wuxi/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "ALSSH",
+      "officialName": "SpringHill Suites by Marriott Alamosa Downtown",
+      "country": "US",
+      "region": "overseas",
+      "aliases": [
+        "SpringHill Suites Alamosa",
+        "SpringHill Suites Alamosa Downtown"
+      ],
+      "status": "reservations_unavailable",
+      "reason": "SpringHill Suites by Marriott Alamosa Downtown의 개별 Marriott 호텔 안내에 예약 미개시 문구를 확인했습니다. 실제 폐업이나 영구 제휴 종료를 뜻하지 않으며 활성 등록 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/alssh-springhill-suites-alamosa-downtown/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "DPSUJ",
+      "officialName": "JW Marriott Bali Ubud Resort & Spa",
+      "country": "ID",
+      "region": "overseas",
+      "aliases": [
+        "JW Marriott Bali Ubud",
+        "JW Marriott Ubud Resort & Spa"
+      ],
+      "status": "not_yet_open",
+      "reason": "Marriott 공식 개장 안내는 JW Marriott Bali Ubud Resort & Spa의 개장을 2027년 2분기로 예정합니다. 일정은 실제 운영 개시를 의미하지 않으며 활성 등록을 보류합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/marriott-brands/portfolio/openings.mi",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "LGWFP",
+      "officialName": "Four Points by Sheraton London Gatwick Airport",
+      "country": "GB",
+      "region": "overseas",
+      "aliases": [
+        "Four Points London Gatwick Airport",
+        "Four Points by Sheraton Gatwick Airport"
+      ],
+      "status": "verification_required",
+      "reason": "Four Points by Sheraton London Gatwick Airport의 개별 공식 URL 접근이 실패했습니다. 최신 운영·예약 상태가 미확인이라 확인 필요로 두고 보류를 유지합니다. 접근 실패만으로 폐업 또는 예약 미개시를 단정하지 않습니다.",
+      "officialUrl": "https://www.marriott.com/en-us/hotels/lgwfp-four-points-london-gatwick-airport/overview/",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "SOUWX",
+      "officialName": "Four Points Flex by Sheraton Winchester South",
+      "country": "GB",
+      "region": "overseas",
+      "aliases": ["Four Points Flex Winchester South"],
+      "status": "verification_required",
+      "reason": "Four Points Flex by Sheraton Winchester South 확인을 위해 공식 URL을 조회했지만 호텔별 운영·예약을 증명하는 본문이 충분하지 않았습니다. 목록·일정·리디렉션 또는 안내 페이지를 개장 완료 증거로 사용하지 않고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/destinations/united-kingdom/winchester/new-hotels.mi",
+      "lastReviewedAt": "2026-10-03"
+    },
+    {
+      "propertyCode": "STNCD",
+      "officialName": "Delta Hotels Cheshunt",
+      "country": "GB",
+      "region": "overseas",
+      "aliases": [
+        "Delta Cheshunt",
+        "Cheshunt Marriott Hotel"
+      ],
+      "status": "verification_required",
+      "reason": "Delta Hotels Cheshunt 확인을 위해 공식 URL을 조회했지만 호텔별 운영·예약을 증명하는 본문이 충분하지 않았습니다. 목록·일정·리디렉션 또는 안내 페이지를 개장 완료 증거로 사용하지 않고 보류를 유지합니다.",
+      "officialUrl": "https://www.marriott.com/en-us/dining/restaurant-bar/stncd-delta-hotels-cheshunt/6811008-the-delta-restaurant.mi",
+      "lastReviewedAt": "2026-10-03"
     }
   ]
 }
