@@ -129,19 +129,23 @@ describe("Human-approved local registration of three October candidates", () => 
 
   it("preserves the frozen review, holds, privacy constraints and manual-approval audit trail", () => {
     // Keep this approval immutable. Only the separately approved SHAFO
-    // classifier delta, exact framework dependency patch, and review-only
-    // merchant alias may supersede their hashes; other files stay unchanged.
+    // classifier delta, exact framework dependency patch, and recorded
+    // merchant alias chain may supersede hashes; other files stay unchanged.
     expect(operatingReviewApproval.approvedCodeChanges.map((change) => change.path)).toEqual(["lib/classifyMerchant.ts"]);
     expect(operatingReviewApproval.approval.source).toBe("explicit_human_user_request");
     expect(operatingReviewApproval.records.map((record) => record.propertyCode)).toEqual(["SHAFO"]);
     for (const [path, hash] of Object.entries(approval.protectedFileSha256)) {
       const approvedChange = operatingReviewApproval.approvedCodeChanges.find((change) => change.path === path);
       const dependencyChange = approvedFrameworkDependencyChanges.find((change) => change.path === path);
-      const aliasChange = approvedMerchantAliasChanges.find((change) => change.path === path);
+      const aliasChanges = approvedMerchantAliasChanges.filter((change) => change.path === path);
       if (approvedChange) expect(approvedChange.beforeSha256, path).toBe(hash);
       if (dependencyChange) expect(dependencyChange.beforeSha256, path).toBe(hash);
-      if (aliasChange) expect(aliasChange.beforeSha256, path).toBe(hash);
-      expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(aliasChange?.afterSha256 ?? dependencyChange?.afterSha256 ?? approvedChange?.afterSha256 ?? hash);
+      let expectedHash = dependencyChange?.afterSha256 ?? approvedChange?.afterSha256 ?? hash;
+      for (const change of aliasChanges) {
+        expect(change.beforeSha256, path).toBe(expectedHash);
+        expectedHash = change.afterSha256;
+      }
+      expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(expectedHash);
     }
     expect(createHash("sha256").update(readFileSync(approval.sourceReview.path)).digest("hex")).toBe(approval.sourceReview.sha256);
     expect(approval.mutationPolicy).toMatchObject({ automaticRegistration: false, humanApprovedLocalRegistration: true, automaticHoldRelease: false, automaticDeletion: false, approvedBaselineUpdated: false, committed: false, pushed: false, deployed: false, collectorChanged: false, uploadPrivacyChanged: false });

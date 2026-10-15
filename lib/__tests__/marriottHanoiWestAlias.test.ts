@@ -34,22 +34,32 @@ function transaction(
 }
 
 describe("Sheraton Hanoi West candidate statement alias", () => {
-  it("limits the approved override delta to this candidate and its evidence comments", () => {
-    expect(approvedMerchantAliasChanges).toHaveLength(1);
+  it("preserves every recorded alias revision and limits each delta to its evidence block", () => {
+    expect(approvedMerchantAliasChanges.map(({ propertyId }) => propertyId)).toEqual([
+      "vn-hansw",
+      "jp-osays",
+    ]);
     const approval = approvedMerchantAliasChanges[0];
     expect(approval).toMatchObject({
       path: "rules/marriottPropertyOverrides.ts",
       propertyId: "vn-hansw",
       alias: merchantName,
     });
-    const current = readFileSync(approval.path, "utf8");
-    expect(createHash("sha256").update(current).digest("hex")).toBe(approval.afterSha256);
-    const previous = current.replace(
-      /  \/\/ Reviewed 2026-10-14: VIB[^]*?(?=  \/\/ Vinpearl also operates)/,
-      ""
-    );
-    expect(previous).not.toBe(current);
-    expect(createHash("sha256").update(previous).digest("hex")).toBe(approval.beforeSha256);
+    expect(approvedMerchantAliasChanges[1]).toMatchObject({
+      path: approval.path,
+      propertyId: "jp-osays",
+      alias: "MIYAKO HOTELSSHERATON OSK",
+      beforeSha256: approval.afterSha256,
+    });
+    let current = readFileSync(approval.path, "utf8");
+    for (const change of [...approvedMerchantAliasChanges].reverse()) {
+      expect(change.path).toBe(approval.path);
+      expect(createHash("sha256").update(current).digest("hex")).toBe(change.afterSha256);
+      const previous = current.replace(change.addedBlockPattern, "");
+      expect(previous).not.toBe(current);
+      expect(createHash("sha256").update(previous).digest("hex")).toBe(change.beforeSha256);
+      current = previous;
+    }
   });
 
   it("adds a review-only exact alias without downgrading the existing hotel", () => {

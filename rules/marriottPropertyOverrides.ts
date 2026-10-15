@@ -88,6 +88,11 @@ export const curatedMarriottPropertyAliases: Readonly<
   "jp-ctscy": [contains("CYMARRIOTTSAPPOR", high)],
   "jp-ngoxf": [exact("FPF NAGOYA STATION", high)],
   "jp-osaoo": [exact("MOXY OSAKA SHIN UMEDA", high)],
+  // Reviewed 2026-10-15: user-reported Miyako Hotels + Sheraton + OSK descriptor.
+  // https://www.marriott.com/en-us/hotels/osays-sheraton-miyako-hotel-osaka/overview/
+  // https://www.miyakohotels.ne.jp/osaka/
+  // Exact descriptor only; do not generalize MIYAKO HOTELS to the entire group.
+  "jp-osays": [exact("MIYAKO HOTELSSHERATON OSK", high)],
   // Verified Malaysian Shinhan overseas statement spelling.
   "my-kuldt": [exact("JW MARRIOT HOTEL KL", high)],
   // Confirmed Chinese hotel/operator statement names.
