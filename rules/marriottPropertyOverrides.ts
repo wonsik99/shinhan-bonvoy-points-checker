@@ -100,6 +100,19 @@ export const curatedMarriottPropertyAliases: Readonly<
   "us-psphr": [
     contains("HOTEL RESET TWENTYNINE PALMS JOSHUA TREE NATIONAL PARK", high),
   ],
+  // Reviewed 2026-10-14: VIB lists this descriptor (p. 406, row 20368).
+  // https://www.vib.com.vn/wps/wcm/connect/a8ff48f0-4546-42b0-a73d-997df2a9fd48/DANH%2BS%C3%81CH%2B%C4%90I%E1%BB%82M%2BCH%E1%BA%A4P%2BNH%E1%BA%ACN%2BTH%E1%BA%BA%2BVIB%2BSUPER%2BCARD.pdf?CVID=p5aqYfI&MOD=AJPERES
+  // SABECO's AGM venue identifies THQ's hotel tower as Sheraton Hanoi West (p. 3).
+  // https://sabecohanoi.com.vn/downloads/TLDHDCD2025SIGNED.pdf
+  // https://www.marriott.com/en-us/hotels/hansw-sheraton-hanoi-west/overview/
+  // The abbreviation-to-hotel link is inferred, not a confirmed payment alias.
+  "vn-hansw": [
+    exact("CN CT THQ TTKS - FO", {
+      ...candidate,
+      reason:
+        "사업자명 약어와 주소를 근거로 Sheraton Hanoi West 결제 후보로 추정됩니다. 결제명과 호텔의 직접 연결 및 결제 당시 제휴 여부는 확인이 필요합니다.",
+    }),
+  ],
   // Vinpearl also operates non-Marriott hotels, so the bare operator needs review.
   "vn-sgnak": [
     contains("CTY CP VINPEARL", {
