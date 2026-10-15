@@ -105,6 +105,16 @@ export const curatedMarriottPropertyAliases: Readonly<
   "us-psphr": [
     contains("HOTEL RESET TWENTYNINE PALMS JOSHUA TREE NATIONAL PARK", high),
   ],
+  // Reviewed 2026-10-15: RH SEAPORT DISTRICT is a name-based hotel candidate.
+  // https://www.marriott.com/en-us/hotels/boswf-renaissance-boston-seaport-district/overview/
+  // RH is interpreted as Renaissance Hotels; the payment alias is unconfirmed.
+  "us-boswf": [
+    exact("RH SEAPORT DISTRICT", {
+      ...candidate,
+      reason:
+        "Renaissance Boston Seaport District 결제로 추정됩니다. 결제명과 호텔의 직접 연결은 확인이 필요합니다.",
+    }),
+  ],
   // Reviewed 2026-10-14: VIB lists this descriptor (p. 406, row 20368).
   // https://www.vib.com.vn/wps/wcm/connect/a8ff48f0-4546-42b0-a73d-997df2a9fd48/DANH%2BS%C3%81CH%2B%C4%90I%E1%BB%82M%2BCH%E1%BA%A4P%2BNH%E1%BA%ACN%2BTH%E1%BA%BA%2BVIB%2BSUPER%2BCARD.pdf?CVID=p5aqYfI&MOD=AJPERES
   // SABECO's AGM venue identifies THQ's hotel tower as Sheraton Hanoi West (p. 3).
