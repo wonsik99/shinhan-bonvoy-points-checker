@@ -39,6 +39,7 @@ describe("Sheraton Hanoi West candidate statement alias", () => {
       "vn-hansw",
       "jp-osays",
       "us-boswf",
+      "cn-bpemc",
     ]);
     const approval = approvedMerchantAliasChanges[0];
     expect(approval).toMatchObject({
@@ -57,6 +58,12 @@ describe("Sheraton Hanoi West candidate statement alias", () => {
       propertyId: "us-boswf",
       alias: "RH SEAPORT DISTRICT",
       beforeSha256: approvedMerchantAliasChanges[1].afterSha256,
+    });
+    expect(approvedMerchantAliasChanges[3]).toMatchObject({
+      path: approval.path,
+      propertyId: "cn-bpemc",
+      alias: "QINHUANGDAO MARRIOTT RESO",
+      beforeSha256: approvedMerchantAliasChanges[2].afterSha256,
     });
     let current = readFileSync(approval.path, "utf8");
     for (const change of [...approvedMerchantAliasChanges].reverse()) {

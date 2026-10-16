@@ -99,6 +99,10 @@ export const curatedMarriottPropertyAliases: Readonly<
   "cn-dlcdp": [contains("LKL*DALIANFUMAOJIUDIAN", high)],
   "cn-taoqs": [contains("QING DAO LV CHENG HUA CHU", high)],
   "cn-xiyox": [contains("Y P H Y HOTEL MANAGEMENT", high)],
+  // Reviewed 2026-10-16: QINHUANGDAO MARRIOTT RESO omits the final RT of RESORT.
+  // https://www.marriott.com/en-us/hotels/bpemc-qinhuangdao-marriott-resort/rooms/
+  // Exact name-based identification; the payment descriptor is not independently confirmed.
+  "cn-bpemc": [exact("QINHUANGDAO MARRIOTT RESO", high)],
   // Confirmed U.S. statement variants.
   "us-chidb": [contains("HOTEL 55 CHICAGO", high)],
   "us-flgsx": [contains("SKY ROCK INN OF SEDONA", high)],

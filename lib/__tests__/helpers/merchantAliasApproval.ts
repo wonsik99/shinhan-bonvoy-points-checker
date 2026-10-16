@@ -3,6 +3,8 @@
 // alias and requested local review/commit preparation on 2026-10-15.
 // The Boston Seaport review-only candidate was approved for local preparation
 // on 2026-10-15; its merchant-to-hotel connection remains unconfirmed.
+// The exact Qinhuangdao name-truncation alias was approved on 2026-10-16;
+// the payment descriptor itself has not been independently confirmed.
 // This ordered chain permits only the recorded alias blocks; no registration,
 // hold, snapshot, or automatic commit is authorized by these test records.
 export const approvedMerchantAliasChanges = [
@@ -29,5 +31,13 @@ export const approvedMerchantAliasChanges = [
     beforeSha256: "45899036f1190b07044d53ac4c11decf1b800f2d683eeea40ed934ac3f18972c",
     afterSha256: "860407dc95c9e795c42b7e73aa09ac02f6496698a06c483445d2c31b66219b5d",
     addedBlockPattern: /  \/\/ Reviewed 2026-10-15: RH SEAPORT DISTRICT[^]*?(?=  \/\/ Reviewed 2026-10-14: VIB)/,
+  },
+  {
+    path: "rules/marriottPropertyOverrides.ts",
+    propertyId: "cn-bpemc",
+    alias: "QINHUANGDAO MARRIOTT RESO",
+    beforeSha256: "860407dc95c9e795c42b7e73aa09ac02f6496698a06c483445d2c31b66219b5d",
+    afterSha256: "14b9e5ba6d43ac9504ff22257f7856c0a0636a6ab7f703a92ffbe40cdacbce44",
+    addedBlockPattern: /  \/\/ Reviewed 2026-10-16: QINHUANGDAO MARRIOTT RESO[^]*?(?=  \/\/ Confirmed U.S. statement variants\.)/,
   },
 ] as const;
