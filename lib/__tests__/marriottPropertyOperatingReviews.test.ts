@@ -14,6 +14,7 @@ import { loadLocalMarriottCatalog } from "../../scripts/marriott/catalog.mjs";
 import { approvedFrameworkDependencyChanges } from "./helpers/frameworkDependencyApproval";
 import { approvedMerchantAliasChanges } from "./helpers/merchantAliasApproval";
 import { approvedPointsPurchaseChanges } from "./helpers/pointsPurchaseApproval";
+import { approvedApostropheNormalizationChanges } from "./helpers/apostropheNormalizationApproval";
 
 const officialName = "Fairfield by Marriott Shanghai Hongqiao NECC";
 const tx = (overrides: Partial<NormalizedTransaction> = {}): NormalizedTransaction => ({
@@ -158,6 +159,11 @@ describe("SHAFO retained record with a human-approved operating review", () => {
       if (purchaseChange) {
         expect(purchaseChange.beforeSha256, path).toBe(expectedHash);
         expectedHash = purchaseChange.afterSha256;
+      }
+      const apostropheChange = approvedApostropheNormalizationChanges.find((change) => change.path === path);
+      if (apostropheChange) {
+        expect(apostropheChange.beforeSha256, path).toBe(expectedHash);
+        expectedHash = apostropheChange.afterSha256;
       }
       expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(expectedHash);
     }

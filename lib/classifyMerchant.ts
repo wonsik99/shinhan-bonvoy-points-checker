@@ -16,7 +16,12 @@ import {
   type MarriottPropertyReviewHold,
   type SharedMarriottMerchantRule,
 } from "@/rules/marriott";
-import { defaultPropertyAliasMatch } from "@/rules/marriottProperties/helpers";
+import {
+  compactAliasKey,
+  defaultPropertyAliasMatch,
+  foldInternalPropertyApostrophes,
+  literalCompactAliasKey,
+} from "@/rules/marriottProperties/helpers";
 import { matchMarriottPropertyTransition } from "@/lib/marriottPropertyTransitions";
 import {
   matchMarriottPropertyOperatingReview,
@@ -50,6 +55,12 @@ function matchesKeyword(normalized: string, keyword: string): boolean {
   return new RegExp(`(^|[^A-Z])${escaped}([^A-Z]|$)`).test(normalized);
 }
 
+/** Short property aliases must not match inside another word or identifier. */
+function matchesShortPropertyAlias(normalized: string, alias: string): boolean {
+  const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}([^\\p{L}\\p{N}]|$)`, "u").test(normalized);
+}
+
 /**
  * Space-insensitive substring match for Korean tokens. Korean statement names
  * lack the A-Z collision problem, and spacing varies ("조선 팰리스" vs
@@ -65,6 +76,7 @@ interface CompiledPropertyAlias {
   source: MarriottPropertyAliasSource | "official" | "local";
   normalized: string;
   compact: string;
+  literalCompact: string;
 }
 
 interface CompiledSharedMerchantRule {
@@ -75,6 +87,7 @@ interface CompiledSharedMerchantRule {
 interface PropertyAliasMatch {
   compiled: CompiledPropertyAlias;
   isFullMatch: boolean;
+  isLiteralFullMatch: boolean;
 }
 
 interface SharedMerchantRuleMatch {
@@ -82,20 +95,8 @@ interface SharedMerchantRuleMatch {
   isFullMatch: boolean;
 }
 
-/**
- * Compact key for property-alias matching.
- * Statements often drop hyphens/periods/& that appear in official names
- * (e.g. "W Dubai - The Palm" vs "W DUBAI THE PALM").
- */
-function compactMatchKeyFromNormalized(normalized: string): string {
-  return normalized
-    .replace(/&/g, " AND ")
-    .replace(/[\p{Pd}.]/gu, " ")
-    .replace(/\s+/g, "");
-}
-
 function aliasKey(value: string): string {
-  return compactMatchKeyFromNormalized(normalizeMerchantName(value));
+  return compactAliasKey(value);
 }
 
 /**
@@ -128,7 +129,7 @@ function createPropertyReviewHoldMatcher(
   );
 
   return (normalized) => {
-    const compact = compactMatchKeyFromNormalized(normalized);
+    const compact = compactAliasKey(normalized);
     const selected = compiled
       .filter((candidate) => compact.includes(candidate.compact))
       .sort(
@@ -196,6 +197,11 @@ function comparePropertyAliasMatchPriority(
 ): number {
   if (left.isFullMatch !== right.isFullMatch) {
     return Number(left.isFullMatch) - Number(right.isFullMatch);
+  }
+
+  // A previously exact spelling outranks a newly equivalent apostrophe variant.
+  if (left.isLiteralFullMatch !== right.isLiteralFullMatch) {
+    return Number(left.isLiteralFullMatch) - Number(right.isLiteralFullMatch);
   }
 
   const sourceDifference =
@@ -426,7 +432,8 @@ function qualifiesForBrandlessTokenReview(
 }
 
 function ambiguousPropertyMatchesToClassification(
-  matches: PropertyAliasMatch[]
+  matches: PropertyAliasMatch[],
+  apostropheCollision = false
 ): MerchantClassification {
   const properties = [
     ...new Map(
@@ -467,7 +474,7 @@ function ambiguousPropertyMatchesToClassification(
         ? propertyNames.slice(0, 3).join(" / ")
         : undefined,
     matchedPattern: patterns.slice(0, 3).join(" / "),
-    reason: `동일한 우선순위의 호텔 후보 ${properties.length}곳과 일치해 정확한 호텔 확인이 필요합니다.${candidateSummary}`,
+    reason: `${apostropheCollision ? "작은따옴표 표기를 정리하면" : "동일한 우선순위의"} 호텔 후보 ${properties.length}곳과 일치해 정확한 호텔 확인이 필요합니다.${candidateSummary}`,
     region: regions.size === 1 ? properties[0]?.region : undefined,
   };
 }
@@ -483,6 +490,20 @@ function selectBestPropertyAliasMatch(
   for (const match of matches.slice(1)) {
     if (comparePropertyAliasMatchPriority(match, best) > 0) {
       best = match;
+    }
+  }
+
+  // Do not let source priority or quote length pick one of newly merged names.
+  // A literal full match is still authoritative under the existing policy.
+  if (!best.isLiteralFullMatch) {
+    const equivalentMatches = matches.filter(
+      ({ compiled }) => compiled.compact === best.compiled.compact
+    );
+    if (
+      new Set(equivalentMatches.map(({ compiled }) => compiled.property.id)).size > 1 &&
+      new Set(equivalentMatches.map(({ compiled }) => compiled.literalCompact)).size > 1
+    ) {
+      return ambiguousPropertyMatchesToClassification(equivalentMatches, true);
     }
   }
 
@@ -617,8 +638,9 @@ export function createPropertyAliasMatcher(
         property,
         alias: { ...alias, match },
         source,
-        normalized: normalizeMerchantName(alias.value),
+        normalized: foldInternalPropertyApostrophes(normalizeMerchantName(alias.value)),
         compact: aliasKey(alias.value),
+        literalCompact: literalCompactAliasKey(alias.value),
       };
     });
   });
@@ -646,10 +668,16 @@ export function createPropertyAliasMatcher(
   }
 
   return (normalized) => {
-    const compact = compactMatchKeyFromNormalized(normalized);
+    const compact = compactAliasKey(normalized);
+    const literalCompact = literalCompactAliasKey(normalized);
+    const propertyNormalized = foldInternalPropertyApostrophes(normalized);
     const matches: PropertyAliasMatch[] = (
       exactPropertyAliases.get(compact) ?? []
-    ).map((compiled) => ({ compiled, isFullMatch: true }));
+    ).map((compiled) => ({
+      compiled,
+      isFullMatch: true,
+      isLiteralFullMatch: literalCompact === compiled.literalCompact,
+    }));
     const checkedAliases = new Set<CompiledPropertyAlias>();
 
     for (const char of new Set(compact)) {
@@ -672,12 +700,13 @@ export function createPropertyAliasMatcher(
         const aliasHasSpaces = compiled.normalized.includes(" ");
         const matched =
           isShortAsciiToken && !aliasHasSpaces
-            ? matchesKeyword(normalized, compiled.normalized)
+            ? matchesShortPropertyAlias(propertyNormalized, compiled.normalized)
             : compact.includes(compiled.compact);
         if (matched) {
           matches.push({
             compiled,
             isFullMatch: compact === compiled.compact,
+            isLiteralFullMatch: literalCompact === compiled.literalCompact,
           });
         }
       }
@@ -694,7 +723,8 @@ export function createSharedMerchantRuleMatcher(
   const sharedMerchantRules = rules.map(
     (rule): CompiledSharedMerchantRule => ({
       rule,
-      compact: aliasKey(rule.pattern),
+      // Shared operator rules are outside the hotel apostrophe expansion.
+      compact: literalCompactAliasKey(rule.pattern),
     })
   );
   const exactSharedMerchantRules = new Map<
@@ -728,7 +758,7 @@ export function createSharedMerchantRuleMatcher(
   }
 
   return (normalized) => {
-    const compact = compactMatchKeyFromNormalized(normalized);
+    const compact = literalCompactAliasKey(normalized);
     const matches: SharedMerchantRuleMatch[] = (
       exactSharedMerchantRules.get(compact) ?? []
     ).map((compiled) => ({ compiled, isFullMatch: true }));
@@ -819,10 +849,19 @@ export function classifyMerchant(
     };
   }
 
-  const operatingReview = matchMarriottPropertyOperatingReview(normalized);
+  // Run protections on both spellings before any broader hotel-alias match.
+  // Keep brand, operator, points-purchase and token rules on the original text.
+  const propertyNormalized = foldInternalPropertyApostrophes(normalized);
+  const operatingReview = matchMarriottPropertyOperatingReview(normalized) ??
+    (propertyNormalized !== normalized
+      ? matchMarriottPropertyOperatingReview(propertyNormalized)
+      : undefined);
   if (operatingReview) return operatingReview;
 
-  const transitionMatch = matchMarriottPropertyTransition(normalized, transactionDate);
+  const transitionMatch = matchMarriottPropertyTransition(normalized, transactionDate) ??
+    (propertyNormalized !== normalized
+      ? matchMarriottPropertyTransition(propertyNormalized, transactionDate)
+      : undefined);
   if (transitionMatch) return transitionMatch;
 
   const reviewHoldMatch = matchPropertyReviewHold(normalized);
