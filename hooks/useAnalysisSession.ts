@@ -156,6 +156,7 @@ export function useAnalysisSession() {
   };
 
   const handleFeedback = (row: AnalysisResult, action: UserFeedbackAction) => {
+    if (row.classification.hotelAccrualExclusion) return;
     setSession((current) => {
       const feedbackById = { ...current.feedbackById };
       if (feedbackById[row.id] === action) delete feedbackById[row.id];

@@ -12,6 +12,8 @@ import { marriottPropertyTransitions } from "@/rules/marriottPropertyTransitions
 import type { NormalizedTransaction } from "@/types/transaction";
 import { loadLocalMarriottCatalog } from "../../scripts/marriott/catalog.mjs";
 import { approvedFrameworkDependencyChanges } from "./helpers/frameworkDependencyApproval";
+import { approvedMerchantAliasChanges } from "./helpers/merchantAliasApproval";
+import { approvedPointsPurchaseChanges } from "./helpers/pointsPurchaseApproval";
 
 const officialName = "Fairfield by Marriott Shanghai Hongqiao NECC";
 const tx = (overrides: Partial<NormalizedTransaction> = {}): NormalizedTransaction => ({
@@ -145,8 +147,19 @@ describe("SHAFO retained record with a human-approved operating review", () => {
     expect(approval.approvedCodeChanges[0].beforeSha256).toBe("d9505a6bfc5b7884bd853b801655e120f20a172eb2eebee616de7fa0fd5fedc2");
     for (const [path, hash] of Object.entries({ ...approval.protectedFileSha256, ...approval.runtimeFileSha256 })) {
       const dependencyChange = approvedFrameworkDependencyChanges.find((change) => change.path === path);
+      const aliasChanges = approvedMerchantAliasChanges.filter((change) => change.path === path);
       if (dependencyChange) expect(dependencyChange.beforeSha256, path).toBe(hash);
-      expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(dependencyChange?.afterSha256 ?? hash);
+      let expectedHash = dependencyChange?.afterSha256 ?? hash;
+      for (const change of aliasChanges) {
+        expect(change.beforeSha256, path).toBe(expectedHash);
+        expectedHash = change.afterSha256;
+      }
+      const purchaseChange = approvedPointsPurchaseChanges.find((change) => change.path === path);
+      if (purchaseChange) {
+        expect(purchaseChange.beforeSha256, path).toBe(expectedHash);
+        expectedHash = purchaseChange.afterSha256;
+      }
+      expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(expectedHash);
     }
     expect(approval.mutationPolicy).toMatchObject({
       automaticRegistration: false, humanApprovedOperatingReview: true, automaticHoldRelease: false,

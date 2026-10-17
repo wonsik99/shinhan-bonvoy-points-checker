@@ -21,6 +21,7 @@ export function isAutomaticAliasFeedbackCandidate(
   return (
     result.analysisStatus === "ok_l5" &&
     result.gradeConfirmedMarriott === true &&
+    !result.classification.hotelAccrualExclusion &&
     !result.classification.isLikelyMarriott
   );
 }
@@ -96,13 +97,16 @@ export interface Judgment {
  * dispatched, false on network failure or when the collector is disabled.
  */
 export async function submitJudgments(items: Judgment[]): Promise<boolean> {
-  if (!getEndpoint() || typeof window === "undefined" || items.length === 0) {
+  const eligibleItems = items.filter(
+    ({ result }) => !result.classification.hotelAccrualExclusion
+  );
+  if (!getEndpoint() || typeof window === "undefined" || eligibleItems.length === 0) {
     return false;
   }
   const sessionId = getAnonymousSessionId();
   try {
     await Promise.all(
-      items.map(({ result, action }) =>
+      eligibleItems.map(({ result, action }) =>
         post({
           type: "feedback",
           merchant_raw_name: result.merchantName,

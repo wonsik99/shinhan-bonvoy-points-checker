@@ -88,17 +88,49 @@ export const curatedMarriottPropertyAliases: Readonly<
   "jp-ctscy": [contains("CYMARRIOTTSAPPOR", high)],
   "jp-ngoxf": [exact("FPF NAGOYA STATION", high)],
   "jp-osaoo": [exact("MOXY OSAKA SHIN UMEDA", high)],
+  // Reviewed 2026-10-15: user-reported Miyako Hotels + Sheraton + OSK descriptor.
+  // https://www.marriott.com/en-us/hotels/osays-sheraton-miyako-hotel-osaka/overview/
+  // https://www.miyakohotels.ne.jp/osaka/
+  // Exact descriptor only; do not generalize MIYAKO HOTELS to the entire group.
+  "jp-osays": [exact("MIYAKO HOTELSSHERATON OSK", high)],
   // Verified Malaysian Shinhan overseas statement spelling.
   "my-kuldt": [exact("JW MARRIOT HOTEL KL", high)],
   // Confirmed Chinese hotel/operator statement names.
   "cn-dlcdp": [contains("LKL*DALIANFUMAOJIUDIAN", high)],
   "cn-taoqs": [contains("QING DAO LV CHENG HUA CHU", high)],
   "cn-xiyox": [contains("Y P H Y HOTEL MANAGEMENT", high)],
+  // Reviewed 2026-10-16: QINHUANGDAO MARRIOTT RESO omits the final RT of RESORT.
+  // https://www.marriott.com/en-us/hotels/bpemc-qinhuangdao-marriott-resort/rooms/
+  // Exact name-based identification; the payment descriptor is not independently confirmed.
+  "cn-bpemc": [exact("QINHUANGDAO MARRIOTT RESO", high)],
   // Confirmed U.S. statement variants.
   "us-chidb": [contains("HOTEL 55 CHICAGO", high)],
   "us-flgsx": [contains("SKY ROCK INN OF SEDONA", high)],
   "us-psphr": [
     contains("HOTEL RESET TWENTYNINE PALMS JOSHUA TREE NATIONAL PARK", high),
+  ],
+  // Reviewed 2026-10-15: RH SEAPORT DISTRICT is a name-based hotel candidate.
+  // https://www.marriott.com/en-us/hotels/boswf-renaissance-boston-seaport-district/overview/
+  // RH is interpreted as Renaissance Hotels; the payment alias is unconfirmed.
+  "us-boswf": [
+    exact("RH SEAPORT DISTRICT", {
+      ...candidate,
+      reason:
+        "Renaissance Boston Seaport District 결제로 추정됩니다. 결제명과 호텔의 직접 연결은 확인이 필요합니다.",
+    }),
+  ],
+  // Reviewed 2026-10-14: VIB lists this descriptor (p. 406, row 20368).
+  // https://www.vib.com.vn/wps/wcm/connect/a8ff48f0-4546-42b0-a73d-997df2a9fd48/DANH%2BS%C3%81CH%2B%C4%90I%E1%BB%82M%2BCH%E1%BA%A4P%2BNH%E1%BA%ACN%2BTH%E1%BA%BA%2BVIB%2BSUPER%2BCARD.pdf?CVID=p5aqYfI&MOD=AJPERES
+  // SABECO's AGM venue identifies THQ's hotel tower as Sheraton Hanoi West (p. 3).
+  // https://sabecohanoi.com.vn/downloads/TLDHDCD2025SIGNED.pdf
+  // https://www.marriott.com/en-us/hotels/hansw-sheraton-hanoi-west/overview/
+  // The abbreviation-to-hotel link is inferred, not a confirmed payment alias.
+  "vn-hansw": [
+    exact("CN CT THQ TTKS - FO", {
+      ...candidate,
+      reason:
+        "사업자명 약어와 주소를 근거로 Sheraton Hanoi West 결제 후보로 추정됩니다. 결제명과 호텔의 직접 연결 및 결제 당시 제휴 여부는 확인이 필요합니다.",
+    }),
   ],
   // Vinpearl also operates non-Marriott hotels, so the bare operator needs review.
   "vn-sgnak": [
