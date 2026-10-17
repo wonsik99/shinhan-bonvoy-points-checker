@@ -81,7 +81,7 @@ export function analyzeTransactions(
       classification.isLikelyMarriott ||
       classification.status === "needs_review";
 
-    if (!isMarriottish) {
+    if (classification.hotelAccrualExclusion || !isMarriottish) {
       return {
         ...tx,
         classification,
@@ -146,6 +146,19 @@ export function applyFeedback(
   feedbackById: Record<string, UserFeedbackAction>
 ): AnalysisResult[] {
   return results.map((result) => {
+    // A known points purchase must not be promoted through the unmatched-hotel
+    // rescue path, even if stale or programmatic feedback requests inclusion.
+    if (result.classification.hotelAccrualExclusion) {
+      return {
+        ...result,
+        effectiveIncluded: false,
+        userFeedback: undefined,
+        userDesignatedMarriott: undefined,
+        expectedPointType: undefined,
+        expectedPoints: undefined,
+        difference: undefined,
+      };
+    }
     const feedback = feedbackById[result.id];
     if (!feedback) {
       return result.userFeedback === undefined

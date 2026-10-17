@@ -34,6 +34,8 @@ export interface MerchantClassification {
   normalizedName?: string;
   matchedPattern?: string;
   reason: string;
+  /** A reviewed non-hotel purchase, excluded from hotel accrual calculations. */
+  hotelAccrualExclusion?: "points_purchase";
   /**
    * Domestic (Korean-named) Marriott merchants accrue as L4 (특별적립),
    * overseas ones as L5 — the analysis expects a different grade per region.

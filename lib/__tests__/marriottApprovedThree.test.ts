@@ -11,6 +11,7 @@ import type { NormalizedTransaction } from "@/types/transaction";
 import { loadLocalMarriottCatalog } from "../../scripts/marriott/catalog.mjs";
 import { approvedFrameworkDependencyChanges } from "./helpers/frameworkDependencyApproval";
 import { approvedMerchantAliasChanges } from "./helpers/merchantAliasApproval";
+import { approvedPointsPurchaseChanges } from "./helpers/pointsPurchaseApproval";
 
 const selectedCodes = ["BLRXR", "IXKRS", "UTPMA"];
 const selected = marriottProperties.filter((p) => selectedCodes.includes(p.propertyCode));
@@ -144,6 +145,11 @@ describe("Human-approved local registration of three October candidates", () => 
       for (const change of aliasChanges) {
         expect(change.beforeSha256, path).toBe(expectedHash);
         expectedHash = change.afterSha256;
+      }
+      const purchaseChange = approvedPointsPurchaseChanges.find((change) => change.path === path);
+      if (purchaseChange) {
+        expect(purchaseChange.beforeSha256, path).toBe(expectedHash);
+        expectedHash = purchaseChange.afterSha256;
       }
       expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(expectedHash);
     }

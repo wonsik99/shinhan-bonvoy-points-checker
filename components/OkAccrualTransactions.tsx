@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { AnalysisResult } from "@/types/transaction";
 import { formatKrw, formatNumber } from "@/lib/format";
+import { isAutomaticAliasFeedbackCandidate } from "@/lib/feedback";
 
 interface OkAccrualTransactionsProps {
   /** Marriott payments that already received the special accrual (ok_l5). */
@@ -65,9 +66,7 @@ export default function OkAccrualTransactions({
           className="divide-y divide-hairline border-t border-hairline"
         >
           {rows.map((row) => {
-            const aliasCandidate =
-              row.gradeConfirmedMarriott === true &&
-              !row.classification.isLikelyMarriott;
+            const aliasCandidate = isAutomaticAliasFeedbackCandidate(row);
             const selectedForFeedback = row.userFeedback === "include";
 
             return (
@@ -81,6 +80,11 @@ export default function OkAccrualTransactions({
                       {row.transactionDate ?? "-"} · {formatKrw(row.originalAmount)} ·{" "}
                       {row.pointType || "-"}
                     </p>
+                    {row.classification.hotelAccrualExclusion ? (
+                      <p className="mt-1.5 text-xs leading-5 text-muted">
+                        포인트 구매 결제명 · 명세서의 {row.pointType} 적립 등급은 그대로 표시합니다.
+                      </p>
+                    ) : null}
                     {aliasCandidate ? (
                       <>
                         <p className="mt-1.5 text-xs leading-5 text-ink-soft">

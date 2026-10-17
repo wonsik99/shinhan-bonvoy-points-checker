@@ -1,5 +1,6 @@
 import type { MerchantClassification } from "@/types/transaction";
 import {
+  hotelAccrualExclusionRules,
   hotelLikeKeywords,
   knownMerchantRules,
   koreanKnownMerchantRules,
@@ -770,6 +771,7 @@ const matchPropertyTokens = createMarriottPropertyTokenMatcher(
 
 /**
  * Deterministic classification pipeline:
+ * -1. Exact reviewed non-hotel purchases → excluded from hotel accrual checks
  * 0. Operating uncertainty / dated affiliation transitions → needs_review,
  *    preserving records and verified historical dates
  * 1. Operator-reviewed registration holds → needs_review
@@ -796,6 +798,24 @@ export function classifyMerchant(
       confidence: "none",
       status: "rejected",
       reason: "가맹점명이 비어 있습니다.",
+    };
+  }
+
+  // Full normalized descriptors only; Marriott affiliation alone does not
+  // establish that a purchase is a participating-hotel charge.
+  const excludedPurchase = hotelAccrualExclusionRules.find(
+    (rule) => normalizeMerchantName(rule.pattern) === normalized
+  );
+  if (excludedPurchase) {
+    return {
+      isLikelyMarriott: false,
+      confidence: "high",
+      status: "rejected",
+      normalizedName: "메리어트 본보이 포인트 구매",
+      matchedPattern: excludedPurchase.pattern,
+      reason: excludedPurchase.reason,
+      hotelAccrualExclusion: excludedPurchase.reasonCode,
+      region: "overseas",
     };
   }
 
