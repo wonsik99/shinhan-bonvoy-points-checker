@@ -6,6 +6,7 @@ import { parseShinhanExcel, ShinhanParseError } from "@/lib/parseShinhanExcel";
 import {
   analyzeTransactions,
   applyFeedback,
+  isHotelAccrualLocked,
   summarizeResults,
 } from "@/lib/analyzeTransactions";
 import { buildInquiryMessage } from "@/lib/inquiryMessage";
@@ -13,6 +14,7 @@ import { formatNumber } from "@/lib/format";
 import {
   buildAutomaticAliasFeedback,
   isAutomaticAliasFeedbackCandidate,
+  isAutomaticUnsupportedGradeCandidate,
   isFeedbackPersistenceEnabled,
   submitJudgments,
 } from "@/lib/feedback";
@@ -75,6 +77,11 @@ export function useAnalysisSession() {
     (result) =>
       isAutomaticAliasFeedbackCandidate(result) &&
       result.userFeedback === "include"
+  ).length;
+  const automaticUnsupportedGradeCount = results.filter(
+    (result) =>
+      isAutomaticUnsupportedGradeCandidate(result) &&
+      result.userFeedback === "unsure"
   ).length;
   const alreadySent =
     session.sendState === "sent" && session.sentSnapshot === judgmentSnapshot;
@@ -156,7 +163,7 @@ export function useAnalysisSession() {
   };
 
   const handleFeedback = (row: AnalysisResult, action: UserFeedbackAction) => {
-    if (row.classification.hotelAccrualExclusion) return;
+    if (isHotelAccrualLocked(row)) return;
     setSession((current) => {
       const feedbackById = { ...current.feedbackById };
       if (feedbackById[row.id] === action) delete feedbackById[row.id];
@@ -212,6 +219,7 @@ export function useAnalysisSession() {
     pendingReviewCount,
     judgmentCount,
     automaticAliasFeedbackCount,
+    automaticUnsupportedGradeCount,
     alreadySent,
     nextDisabled,
     nextLabel,
