@@ -213,7 +213,7 @@ test("treats unmapped L4/L5 as normal and submits aliases only after consent", a
   await expect(
     page.getByRole("region", { name: "판단 제보" })
   ).toContainText(
-    "DB 미등록 L4/L5 가맹점명 2건은 제보 목록에 자동으로 포함됐습니다."
+    "DB 미등록 특별적립(L4·L5·C2·C3) 가맹점명 2건은 제보 목록에 자동으로 포함됐습니다."
   );
   await page
     .getByRole("button", { name: "서비스 개선 정보 보내기 (2건)" })
@@ -306,7 +306,7 @@ test("uploads locally and keeps feedback local until explicit submission", async
   ).toBeVisible();
   await expect(
     page.getByRole("region", { name: "판단 제보" })
-  ).not.toContainText("DB 미등록 L4/L5 가맹점명");
+  ).not.toContainText("DB 미등록 특별적립(L4·L5·C2·C3) 가맹점명");
   expect(collectorBodies).toHaveLength(0);
   await page.getByRole("button", { name: "이전" }).click();
 
@@ -594,4 +594,98 @@ test("keeps SHAFO review-only until explicit local inclusion, without changing i
   await expect(inquiry).toContainText(neighbor);
   expect(mutationRequests).toHaveLength(0);
   expect(pageErrors).toHaveLength(0);
+});
+
+test("analyzes a mixed The Best and The Classic export row by row without sending data", async ({ page }) => {
+  const mutationRequests: string[] = [];
+  page.on("request", (request) => {
+    if (!["GET", "HEAD", "OPTIONS"].includes(request.method())) {
+      mutationRequests.push(request.url());
+    }
+  });
+
+  // Synthetic rows. The C4 top-up shares sequence 2, so it carries the same
+  // slip number and date as its C1 payment.
+  const transactions: Transaction[] = [
+    [1, "VISA해외사용일시불", "COURTYARD BY MARRIOTT", 234068, "L2", 702, "N"],
+    [2, "VISA해외사용일시불", "QINHUANGDAO MARRIOTT RESO", 100000, "C1", 100, "N"],
+    [2, "VISA해외사용일시불", "QINHUANGDAO MARRIOTT RESO", 100000, "C4", 50, "N"],
+    [3, "VISA해외사용일시불", "MIYAKO HOTELSSHERATON OSK", 300000, "C3", 1200, "N"],
+    [4, "판교테크노밸리호텔", "", 200000, "C2", 800, "N"],
+    // An everyday purchase with its top-up, and a top-up without a payment.
+    [5, "스타벅스 강남점", "", 6500, "C1", 7, "N"],
+    [5, "스타벅스 강남점", "", 6500, "C4", 3, "N"],
+    [6, "GS25 역삼점", "", 10000, "C4", 5, "N"],
+    // A grade code no supported card defines.
+    [7, "VISA해외사용일시불", "HOTEL 55 CHICAGO", 100000, "C5", 100, "N"],
+  ];
+
+  await page.goto("/");
+  await upload(page, workbookPayload("mixed-cards.xlsx", statementMatrix(transactions)));
+
+  await expectSummaryCard(page, "전체 거래", "9건");
+  await expectSummaryCard(page, "Marriott 추정", "5건");
+  await expectSummaryCard(page, "정상 적립", "2건");
+  await expectSummaryCard(page, "적립 누락 의심", "2건");
+  await expectSummaryCard(page, "확인 필요", "1건");
+  await expectSummaryCard(page, "예상 추가 포인트", "718P");
+  await expect(page.getByRole("region", { name: "분석 요약" })).toContainText(
+    "명세서 등급으로 카드를 구분했어요 · 더 클래식 거래 7건은 C2·C3(1,000원당 4P) 기준, 더 베스트 거래 1건은 L4·L5(1,000원당 5P) 기준으로 확인했어요."
+  );
+  await expect(page.getByText("실제 C1+C4 → 예상 C3")).toBeVisible();
+
+  // An unsupported grade is reported as "unsure" by default and never estimated.
+  const unsupported = page.getByRole("group", { name: "HOTEL 55 CHICAGO 거래 문의 반영" });
+  await expect(page.getByText("지원하지 않는 적립 등급이에요")).toBeVisible();
+  await expect(unsupported.getByRole("button", { name: "모르겠음" })).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByText("‘모르겠음’으로 표시돼 서비스 개선 제보 목록에 포함됐어요")
+  ).toBeVisible();
+
+  // Paired top-up lines stay on their payment row; only an orphan is listed.
+  await page
+    .getByRole("button", { name: "미분류 거래 1건 · 짝 없는 추가적립 1건 펼치기" })
+    .click();
+  const unmatched = page.locator("#all-transactions-content");
+  await expect(unmatched.locator("article")).toHaveCount(2);
+  await expect(unmatched).toContainText("스타벅스 강남점");
+  await expect(unmatched).toContainText("C1+C4 10P");
+  await expect(unmatched).toContainText(
+    "C4 추가적립 행 · 짝이 되는 기본 적립 결제를 찾지 못해 합계에 넣지 않았습니다."
+  );
+  await expect(unmatched).not.toContainText("QINHUANGDAO MARRIOTT RESO");
+  await expect(
+    page.getByRole("button", { name: "스타벅스 강남점 거래를 메리어트로 표시" })
+  ).toHaveCount(1);
+  await expect(
+    page.getByRole("button", { name: "GS25 역삼점 거래를 메리어트로 표시" })
+  ).toHaveCount(0);
+
+  await page.getByRole("button", { name: "문의 보내기 단계로 이동" }).click();
+  await expect(page.getByRole("region", { name: "판단 제보" })).toContainText(
+    "지원하지 않는 적립 등급 1건은 제보 목록에 자동으로 포함됐습니다."
+  );
+  await page.getByRole("button", { name: "이전" }).click();
+  await unsupported.getByRole("button", { name: "문의에 포함" }).click();
+  await expectSummaryCard(page, "예상 추가 포인트", "718P");
+
+  await page.getByRole("button", { name: "문의 보내기 단계로 이동" }).click();
+  const inquiry = page.getByRole("region", { name: "신한카드 문의 문구" });
+  await expect(inquiry).toContainText(
+    "정상 특별적립 등급(더 베스트: 해외 L5·국내 L4 / 더 클래식: 해외 C3·국내 C2)"
+  );
+  await expect(inquiry).toContainText("[적립 등급 확인 요청]");
+  await expect(inquiry).toContainText(
+    "HOTEL 55 CHICAGO / 100,000원 / 실제 C5 → 특별적립 대상 여부 확인 요청"
+  );
+  await expect(inquiry).toContainText(
+    "(적립 등급을 확인하지 못한 1건은 포인트 차이에서 제외했습니다.)"
+  );
+  await expect(inquiry).toContainText("[메리어트 본보이™ 더 베스트 신한카드]");
+  await expect(inquiry).toContainText("[메리어트 본보이™ 더 클래식 신한카드]");
+  await expect(inquiry).toContainText(
+    "QINHUANGDAO MARRIOTT RESO / 100,000원 / 실제 C1+C4(150P) → C3 예상 / 차이 250P"
+  );
+  await expect(inquiry).toContainText("총 718포인트가 덜 적립된 것으로 보입니다");
+  expect(mutationRequests).toHaveLength(0);
 });

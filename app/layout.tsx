@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://shinhan-bonvoy-points-checker.vercel.app"),
   title: "Bonvoy L4/L5 Checker — 신한 메리어트 본보이 특별적립 확인",
   description:
-    "신한카드 포인트 적립 상세내역 엑셀을 업로드하면, 국내 메리어트 호텔 결제의 L4와 해외 메리어트 호텔 결제의 L5 특별적립 여부를 확인해드립니다. 파일은 서버에 저장되지 않고 브라우저 안에서만 분석됩니다.",
+    "신한카드 포인트 적립 상세내역 엑셀을 업로드하면, 메리어트 호텔 결제의 특별적립(더 베스트 L4·L5, 더 클래식 C2·C3) 여부를 확인해드립니다. 파일은 서버에 저장되지 않고 브라우저 안에서만 분석됩니다.",
   openGraph: {
     title: "Bonvoy L4/L5 Checker — 신한 메리어트 본보이 특별적립 확인",
     description:

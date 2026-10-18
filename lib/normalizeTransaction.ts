@@ -12,7 +12,8 @@ type CanonicalField =
   | "actualPoints"
   | "canceled"
   | "aggregationDate"
-  | "cardNumber";
+  | "cardNumber"
+  | "slipNumber";
 
 /**
  * Shinhan statement headers vary between exports. Aliases are matched after
@@ -30,6 +31,7 @@ const COLUMN_ALIASES: Record<CanonicalField, string[]> = {
   canceled: ["취소전표여부", "취소여부"],
   aggregationDate: ["집계작업일자", "집계일자"],
   cardNumber: ["카드번호"],
+  slipNumber: ["매출전표번호"],
 };
 
 /** Removes zero-width characters, BOM, NBSP, and all whitespace. */
@@ -139,15 +141,18 @@ export function normalizeDate(value: unknown): string | undefined {
   return text || undefined;
 }
 
-/** Extracts an L-grade token (L1/L2/L5 …) from the point type text. */
+/**
+ * Extracts a grade token from the point type text: L1–L5 (더 베스트) or
+ * C1–C4 (더 클래식).
+ */
 export function normalizePointType(value: unknown): string {
   if (value === null || value === undefined) {
     return "";
   }
   const text = String(value).trim();
-  const match = text.toUpperCase().match(/L\s*(\d+)/);
+  const match = text.toUpperCase().match(/([LC])\s*(\d+)/);
   if (match) {
-    return `L${match[1]}`;
+    return `${match[1]}${match[2]}`;
   }
   return text;
 }
@@ -228,6 +233,7 @@ export function normalizeRows(
     const domesticName = String(get(row, "merchantName") ?? "").trim();
     const overseasName = String(get(row, "overseasMerchantName") ?? "").trim();
     const merchantName = overseasName || domesticName;
+    const merchantSource = overseasName ? "overseas" : "domestic";
     const originalAmount = parseMoney(get(row, "originalAmount"));
     const eligibleRaw = get(row, "eligibleAmount");
     const eligibleAmount =
@@ -244,6 +250,7 @@ export function normalizeRows(
     const transactionDate = normalizeDate(get(row, "transactionDate"));
     const pointType = normalizePointType(get(row, "pointType"));
     const cardNumberRaw = get(row, "cardNumber");
+    const slipNumber = String(get(row, "slipNumber") ?? "").trim();
 
     transactions.push({
       id: `row-${i}-${hashString(
@@ -263,6 +270,8 @@ export function normalizeRows(
         cardNumberRaw === undefined || cardNumberRaw === null || cardNumberRaw === ""
           ? undefined
           : maskCardNumber(String(cardNumberRaw)),
+      slipNumber: slipNumber || undefined,
+      merchantSource,
       raw: row,
     });
   }

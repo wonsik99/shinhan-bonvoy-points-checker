@@ -14,7 +14,11 @@ import type {
 } from "@/rules/marriottProperties/types";
 import {
   activeCardProfile,
+  cardProfileById,
+  cardProfileForGrade,
+  cardProfiles,
   theBestProfile,
+  theClassicProfile,
 } from "@/rules/cardProfiles";
 
 function property(
@@ -152,17 +156,57 @@ describe("inferBrand", () => {
   });
 });
 
-describe("active card profile", () => {
+describe("card profiles", () => {
   it("keeps the supported The Best accrual contract explicit", () => {
     expect(theBestProfile).toEqual({
       id: "the_best",
       label: "메리어트 본보이™ 더 베스트 신한카드",
+      shortLabel: "더 베스트",
+      gradePrefix: "L",
       marriottPointsPer1000: 5,
       domesticGrade: "L4",
       overseasGrade: "L5",
       domesticFallbackGrade: "L1",
       overseasFallbackGrade: "L2",
+      knownGrades: ["L1", "L2", "L3", "L4", "L5"],
     });
     expect(activeCardProfile).toBe(theBestProfile);
+  });
+
+  it("keeps the confirmed The Classic accrual contract explicit", () => {
+    expect(theClassicProfile).toEqual({
+      id: "the_classic",
+      label: "메리어트 본보이™ 더 클래식 신한카드",
+      shortLabel: "더 클래식",
+      gradePrefix: "C",
+      marriottPointsPer1000: 4,
+      domesticGrade: "C2",
+      overseasGrade: "C3",
+      domesticFallbackGrade: "C1",
+      overseasFallbackGrade: "C1",
+      bonusGrade: "C4",
+      knownGrades: ["C1", "C2", "C3", "C4"],
+    });
+  });
+
+  it.each([
+    ["L2", "the_best"],
+    ["L5", "the_best"],
+    ["C1", "the_classic"],
+    ["C4", "the_classic"],
+    ["", "the_best"],
+    ["기본적립", "the_best"],
+  ])("resolves grade %s to %s", (grade, id) => {
+    expect(cardProfileForGrade(grade)?.id).toBe(id);
+  });
+
+  it.each(["C5", "L6", "X1"])("leaves the undefined grade code %s unsupported", (grade) => {
+    expect(cardProfileForGrade(grade)).toBeUndefined();
+  });
+
+  it("looks profiles up by id", () => {
+    expect(cardProfileById("the_classic")).toBe(theClassicProfile);
+    expect(cardProfileById(undefined)).toBeUndefined();
+    expect(cardProfiles).toEqual([theBestProfile, theClassicProfile]);
   });
 });

@@ -2,6 +2,7 @@
 
 import type { AnalysisResult, UserFeedbackAction } from "@/types/transaction";
 import { formatKrw, formatNumber } from "@/lib/format";
+import { actualGradeLabel } from "@/lib/analyzeTransactions";
 
 interface MissingTransactionsTableProps {
   rows: AnalysisResult[];
@@ -81,7 +82,7 @@ export default function MissingTransactionsTable({
                 <MissingFeedbackButton row={row} onFeedback={onFeedback} />
               </div>
               <p className="mt-0.5 break-words text-xs leading-5 tabular-nums text-muted">
-                {row.transactionDate ?? "-"} · {formatKrw(row.originalAmount)} · 실제 {row.pointType || "-"} → 예상 {row.expectedPointType ?? "-"}
+                {row.transactionDate ?? "-"} · {formatKrw(row.originalAmount)} · 실제 {actualGradeLabel(row) || "-"} → 예상 {row.expectedPointType ?? "-"}
               </p>
               <details className="mt-1 text-xs text-muted">
                 <summary className="min-h-9 cursor-pointer py-2 font-medium text-ink-soft">
