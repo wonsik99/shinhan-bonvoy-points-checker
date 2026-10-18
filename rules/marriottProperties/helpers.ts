@@ -47,22 +47,45 @@ export function propertyId(country: string, officialName: string): string {
   return `${country.toLowerCase()}-${slug}`;
 }
 
-/** Match-key compact form: strip spaces and punctuation that statements often omit. */
-export function compactAliasKey(value: string): string {
+/**
+ * Comparison only: join Latin letters separated by one supported apostrophe.
+ * Do this before removing spaces, so DOKHAN 'S is not treated as DOKHAN'S.
+ * Keep quotes at word edges, double quotes, numeric marks and other symbols.
+ */
+export function foldInternalPropertyApostrophes(value: string): string {
+  return value.replace(/([A-Za-z])['‘’＇](?=[A-Za-z])/g, "$1");
+}
+
+function normalizeAliasText(value: string): string {
   return value
+    .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, " ")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .normalize("NFC")
-    .toUpperCase()
+    .toUpperCase();
+}
+
+function compactAliasText(value: string): string {
+  return value
     .replace(/&/g, " AND ")
     // hyphen / en-dash / em-dash / period — card statements often drop these
     .replace(/[\p{Pd}.]/gu, " ")
     .replace(/\s+/g, "");
 }
 
+/** Existing punctuation rules, retaining apostrophes for exact-match priority. */
+export function literalCompactAliasKey(value: string): string {
+  return compactAliasText(normalizeAliasText(value));
+}
+
+/** Shared by alias generation, collision checks, registration holds and matching. */
+export function compactAliasKey(value: string): string {
+  return compactAliasText(foldInternalPropertyApostrophes(normalizeAliasText(value)));
+}
+
 export function defaultPropertyAliasMatch(value: string): MatchMode {
   const compact = compactAliasKey(value);
-  return /^[\x00-\x7F]+$/.test(value) && compact.length < 8
+  return /^[\x00-\x7F]+$/.test(foldInternalPropertyApostrophes(value)) && compact.length < 8
     ? "exact"
     : "contains";
 }
