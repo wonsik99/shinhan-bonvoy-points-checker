@@ -143,8 +143,11 @@ export const koreaMarriottProperties: MarriottPropertySeed[] = [
     contains("WESTIN SEOUL PARNAS"),
     contains("웨스틴서울파르나스"),
     contains("웨스틴파르나스"),
-    // Operator group also runs IHG/자체 브랜드 — bare name needs review
-    contains("파르나스", { ...candidate, reason: needsReviewReason }),
+    // The operator (파르나스호텔㈜) also runs IHG and own-brand hotels, so its
+    // bare or company name needs review. A bare substring also caught Parnas
+    // Mall/Tower tenants and Grand InterContinental Seoul Parnas (IHG).
+    exact("파르나스", { ...candidate, reason: needsReviewReason }),
+    contains("파르나스호텔", { ...candidate, reason: needsReviewReason }),
   ]),
   korea("kr-yeouido-park-centre-seoul", "Yeouido Park Centre, Seoul - Marriott Executive Apartments", "Marriott Executive Apartments", [
     contains("YEOUIDO PARK CENTRE"),
