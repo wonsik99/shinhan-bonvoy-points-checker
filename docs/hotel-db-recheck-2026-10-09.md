@@ -31,8 +31,7 @@ lastmod가 달라진 것은 **DXBBG — Bvlgari Dubai**입니다. [공식 sitema
 - 오늘 snapshot 생성 시각: 2026-10-09T22:30:59.950Z (Detroit 18:30:59)
 - 비교한 이전 snapshot: 2026-10-04T23:50:37.096Z
 - 승인된 7월 snapshot SHA-256: d383fa1d6c8e9520ad704aa657c9b3aaffcc6a2f01644ba3e886be71dc12c1d8 — 변경 없음
-- [오늘 수집 보고서](/Users/wonsikjung/Desktop/shinhan-bonvoy-l5-checker/docs/_local/marriott-refresh-2026-10-09.Tg0wXh/report.md)
-- [10월 4일 대비 비교 결과](/Users/wonsikjung/Desktop/shinhan-bonvoy-l5-checker/docs/_local/marriott-refresh-2026-10-09.Tg0wXh/comparison-to-2026-10-04.json)
+- 오늘 수집 보고서와 10월 4일 대비 비교 결과는 gitignore된 로컬 폴더(`docs/_local/`)에 보관한 비공개 자료이며 커밋 대상이 아닙니다.
 
 ## 호텔 3개 재확인
 
@@ -70,7 +69,7 @@ lastmod가 달라진 것은 **DXBBG — Bvlgari Dubai**입니다. [공식 sitema
 
 ## 증거·검증·변경 여부
 
-- [전체 재확인 근거 JSON](/Users/wonsikjung/Desktop/shinhan-bonvoy-l5-checker/docs/_local/marriott-recheck-2026-10-09.json)
+- 전체 재확인 근거 JSON은 gitignore된 로컬 폴더(`docs/_local/`)에 보관한 비공개 자료이며 커밋 대상이 아닙니다.
 - 개별 호텔 근거 38개: HGHHA 10 / SZXLP 17 / SHAFO 11. 서로 독립된 38건의 운영 증거라는 뜻이 아니라 조회·관찰 기록 수입니다.
 - 수집기·기존 승인 큐 관련 테스트 2파일 / 34개 통과.
 - 승인 snapshot·보류·소스 예외·코드 메타데이터·중국 seed·판정 코드·package/lockfile의 전후 해시가 같습니다.
