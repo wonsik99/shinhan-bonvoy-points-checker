@@ -29,6 +29,24 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
           중 {formatNumber(summary.missingSuspectedCount)}건은 누락이 의심되고, {" "}
           {formatNumber(summary.needsReviewCount)}건은 직접 확인이 필요해요.
         </p>
+        {summary.cardProfileCounts.the_classic > 0 ? (
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-muted">
+            명세서 등급으로 카드를 구분했어요 · 더 클래식 거래{" "}
+            {formatNumber(summary.cardProfileCounts.the_classic)}건은 C2·C3(1,000원당
+            4P) 기준
+            {summary.cardProfileCounts.the_best > 0
+              ? `, 더 베스트 거래 ${formatNumber(summary.cardProfileCounts.the_best)}건은 L4·L5(1,000원당 5P) 기준`
+              : ""}
+            으로 확인했어요.
+          </p>
+        ) : null}
+        {summary.unsupportedGradeCount > 0 ? (
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-muted">
+            지원하지 않는 적립 등급 코드{" "}
+            {formatNumber(summary.unsupportedGradeCount)}건은 예상 포인트를 계산하지
+            않았어요.
+          </p>
+        ) : null}
       </div>
 
       {/* 행동이 필요한 두 수치는 독립 카드, 참고 수치 셋은 구분선 스트립. */}

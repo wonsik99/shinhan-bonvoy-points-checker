@@ -16,7 +16,7 @@ interface OkAccrualTransactionsProps {
 
 /**
  * Collapsed-by-default list of correctly-accrued Marriott payments. When an
- * L4/L5 grade confirms the transaction but the merchant DB did not recognize
+ * L4/L5 or C2/C3 grade confirms the transaction but the merchant DB did not recognize
  * its name, that name is preselected locally for service improvement. The user
  * can opt out here; nothing is transmitted until the final explicit action.
  */

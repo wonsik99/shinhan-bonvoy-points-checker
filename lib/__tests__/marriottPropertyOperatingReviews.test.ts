@@ -15,6 +15,7 @@ import { approvedFrameworkDependencyChanges } from "./helpers/frameworkDependenc
 import { approvedMerchantAliasChanges } from "./helpers/merchantAliasApproval";
 import { approvedPointsPurchaseChanges } from "./helpers/pointsPurchaseApproval";
 import { approvedApostropheNormalizationChanges } from "./helpers/apostropheNormalizationApproval";
+import { approvedClassicCardChanges } from "./helpers/classicCardApproval";
 
 const officialName = "Fairfield by Marriott Shanghai Hongqiao NECC";
 const tx = (overrides: Partial<NormalizedTransaction> = {}): NormalizedTransaction => ({
@@ -164,6 +165,11 @@ describe("SHAFO retained record with a human-approved operating review", () => {
       if (apostropheChange) {
         expect(apostropheChange.beforeSha256, path).toBe(expectedHash);
         expectedHash = apostropheChange.afterSha256;
+      }
+      const classicChange = approvedClassicCardChanges.find((change) => change.path === path);
+      if (classicChange) {
+        expect(classicChange.beforeSha256, path).toBe(expectedHash);
+        expectedHash = classicChange.afterSha256;
       }
       expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(expectedHash);
     }

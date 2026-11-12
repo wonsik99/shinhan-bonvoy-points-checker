@@ -44,9 +44,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | L3 | 특별 적립 업종 (항공/택시/카페 등) | 3P |
 | L4 | **국내 메리어트** 결제 | 5P |
 | L5 | **해외 메리어트** 결제 | 5P |
+| C1 | 더 클래식 일반 적립 (국내·해외 공통) | 1P |
+| C2 | 더 클래식 **국내 메리어트** 결제 | 4P |
+| C3 | 더 클래식 **해외 메리어트** 결제 | 4P |
+| C4 | 더 클래식 전월 200만 원 이상 추가 적립 (C1 대상, 특별적립과 중복 없음) | 0.5P (`round(금액/2000)`) |
 
-- 기준 카드는 **메리어트 본보이™ 더 베스트 신한카드** (`rules/cardProfiles.ts`의 `activeCardProfile`).
-- **더 클래식** 카드는 메리어트 적립이 4P/1,000원으로 다름 — 아직 미지원. 클래식 명세서의 등급 코드가 확인되면 프로필 추가 + 카드 선택 UI로 확장할 것.
+- L 코드는 **메리어트 본보이™ 더 베스트 신한카드**, C 코드는 **더 클래식**(사용자 확인, 2026-10-15). 한 엑셀에 두 카드가 섞일 수 있어 카드 선택 UI 없이 `rules/cardProfiles.ts`의 `cardProfileForGrade`가 행마다 등급으로 프로필을 고른다. 빈 칸·자유 텍스트 등급은 기존처럼 더 베스트(`activeCardProfile`), 정의되지 않은 코드(C5, X1 등)는 미지원으로 계산하지 않는다.
+- 더 클래식 누락 패턴은 국내·해외 모두 `C1 → C2/C3`. C4는 같은 결제의 별도 추가적립 행으로 보고, 매출전표번호(없으면 카드·거래일·가맹점·금액)로 C1 행과 1:1로 짝지어 포인트를 합산한다. 짝이 모호하면 자동 누락 대신 확인 필요. **실물 클래식 엑셀로 C4 행 구조는 아직 검증되지 않음** — 실제 파일이 생기면 짝짓기 가정부터 확인할 것.
+- 내부 상태명 `ok_l5`는 수집기 검증 호환을 위해 클래식 정상 적립(C2/C3)에도 그대로 쓴다.
 
 **실제 신한 엑셀 레이아웃** (실물 파일로 검증됨):
 - 헤더 2행 + **거래 1건당 2행** 인터리브 구조. `lib/parseShinhanExcel.ts`의 `extractRecords`가 처리 (플랫 구조, 제목행 있는 변형도 지원).
@@ -74,9 +79,9 @@ google-apps-script/Code.gs  구글 시트 수집기(doPost) + 배포 안내
 next.config.ts          CSP 헤더 (connect-src 'self' + Apps Script 수집기 도메인 자동 추가)
 ```
 
-분석 규칙 요점: 취소→canceled / L4·L5는 가맹점명 DB 인식 여부와 관계없이 ok_l5 / 그 외 비메리어트→not_marriott / 확신(certain·high)+정상 누락 패턴(국내 L1→L4, 해외 L2→L5)+양수차이→missing_suspected / 그 외→needs_review. `effectiveIncluded` = missing_suspected(제외 안 한 것) + 사용자가 ✅포함한 needs_review.
+분석 규칙 요점: 행마다 등급으로 카드 프로필 선택 / 취소→canceled / 미지원 등급 코드→계산 없이 needs_review(비메리어트면 not_marriott) / L4·L5·C2·C3는 가맹점명 DB 인식 여부와 관계없이 ok_l5 / C4 추가적립 행→not_marriott(합계·지정 잠금, 짝지은 C1에 합산) / 그 외 비메리어트→not_marriott / 확신(certain·high)+정상 누락 패턴(국내 L1→L4, 해외 L2→L5, 클래식 C1→C2/C3)+양수차이→missing_suspected / 그 외→needs_review. `effectiveIncluded` = missing_suspected(제외 안 한 것) + 사용자가 ✅포함한 needs_review.
 
-**피드백 전송 모델**: ✅/❌/모르겠음 버튼은 로컬 상태(합계·문의 문구)만 바꾼다. DB 미등록 L4/L5 가맹점명은 업로드 분석 시 로컬 제보 목록에 자동 포함되며 사용자가 제외할 수 있다. 실제 시트 전송은 절대 분석·선택 시점에 하지 않고, 사용자가 마지막 단계에서 명시적으로 "서비스 개선 정보 보내기" 버튼을 누를 때 목록의 최종 내용만 한 번에 `submitJudgments`로 보낸다. 파싱 실패 제보도 별도 버튼(명시적). 둘 다 collector env 없으면 no-op/복사 fallback.
+**피드백 전송 모델**: ✅/❌/모르겠음 버튼은 로컬 상태(합계·문의 문구)만 바꾼다. DB 미등록 특별적립(L4/L5/C2/C3) 가맹점명은 업로드 분석 시 로컬 제보 목록에 자동 포함되며 사용자가 제외할 수 있다. 실제 시트 전송은 절대 분석·선택 시점에 하지 않고, 사용자가 마지막 단계에서 명시적으로 "서비스 개선 정보 보내기" 버튼을 누를 때 목록의 최종 내용만 한 번에 `submitJudgments`로 보낸다. 파싱 실패 제보도 별도 버튼(명시적). 둘 다 collector env 없으면 no-op/복사 fallback.
 
 **False-negative 구제**: 앱이 아예 못 잡은(not_marriott) 거래를 사용자가 전체 거래 표에서 "🏨 메리어트로 표시"하면, `applyFeedback`이 예상 포인트를 계산해 `userDesignatedMarriott`로 마킹하고 합계·문의 문구에 반영(status는 not_marriott 유지 → 전체 거래 표에서 토글). 시트엔 detected_status="user_designated"로 전송돼 규칙 후보 중 최우선 신호가 됨.
 
@@ -101,7 +106,7 @@ fixture 기대값: 16건 / Marriott 13 / 정상 2 / 누락 의심 9 / 확인 필
 ## 로드맵 (사용자 확인된 방향)
 
 1. **수집 활성화** — Google Sheets(Apps Script) 기반. 피드백 수집(가맹점 DB가 장기 자산) + 파싱 실패 원클릭 제보. 켜지면 페이지 하단 수집 고지가 자동 표시됨. (완료)
-2. **더 클래식 카드 지원** — cardProfiles에 프로필 추가 + 카드 선택 UI.
+2. **더 클래식 카드 지원** — 행별 등급(C1–C4) 자동 판별로 지원. (완료, C4 실물 구조 검증은 남음)
 3. 전세계 Marriott 호텔 alias DB 확장. 현재 구조는 `rules/marriottProperties/`에 전세계 149개 국가·지역 10,309개 보존 호텔 seed를 넣고, 공식명/짧은 영문명/한글명을 결정적 룰로 대조한다. 이 수치는 현재 운영을 전수 확인한 호텔 수가 아니며, 제휴 전환·운영 불확실성은 별도 확인 필요 규칙으로 보호한다. 운영 전이거나 공식 페이지에서 예약이 아직 제공되지 않는 호텔은 `data/marriott/property-review-holds.json`에 두어 자동 누락 의심 및 신규 등록 후보에서 제외한다. 공식 페이지로 운영을 확인했지만 현재 수집하는 XML 묶음에 없는 호텔은 `data/marriott/property-source-exceptions.json`에 근거와 검토일을 기록한다. 미국 주 단위 sitemap은 `us.ts`와 중복되므로 제외하고, Antarctica sitemap의 테스트 호텔 데이터와 공식 제휴 종료 항목은 제외한다.
 4. 피드백/제보 어드민 리뷰 페이지 (v2). 사용자 피드백은 절대 자동으로 규칙이 되지 않음: 집계 → 후보 → 수동 검토 → 규칙.
 5. **조건부 하이브리드 백엔드 (v2.x)** — 비공개로 유지할 가치가 있는 수동 검증 alias가 충분히 쌓인 경우에만, 파일 로컬 처리를 유지하면서 비공개 alias 조회 API를 추가하는 방안을 재검토한다. 상세 계획은 아래 참고.
