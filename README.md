@@ -7,9 +7,9 @@
 
 ## 한국어
 
-신한카드의 **포인트 적립 상세내역 Excel 파일**을 브라우저에서 분석해, Marriott 호텔 결제가 특별 적립(국내 **L4** / 해외 **L5**)으로 처리되었는지 확인하는 도구입니다.
+신한카드의 **포인트 적립 상세내역 Excel 파일**을 브라우저에서 분석해, Marriott 호텔 결제가 특별 적립(더 베스트 국내 **L4** / 해외 **L5**, 더 클래식 국내 **C2** / 해외 **C3**)으로 처리되었는지 확인하는 도구입니다.
 
-- 기준 카드: **메리어트 본보이™ 더 베스트 신한카드**
+- 지원 카드: **메리어트 본보이™ 더 베스트·더 클래식 신한카드** (명세서 적립 등급으로 행마다 자동 구분)
 - 파일 처리: 사용자 브라우저 안에서만 수행하며 서버에 업로드하지 않음
 - 판정 방식: 결정적 규칙 기반이며 사용자 앱 경로에 LLM 호출 없음
 - 배포 방식: Next.js 기반 정적 페이지이며 서버 함수 없음
@@ -19,7 +19,7 @@
 ### 주요 기능
 
 - 신한카드 포인트 적립 상세내역 `.xlsx` / `.xls` 분석
-- 국내 Marriott L4 · 해외 Marriott L5 특별 적립 확인
+- 국내 Marriott L4·C2 · 해외 Marriott L5·C3 특별 적립 확인
 - 실제 적립 포인트와 예상 포인트의 차이 계산
 - 해외 거래에서 채널명보다 `해외가맹점명`을 우선 사용
 - Marriott 브랜드, 공식 호텔명, 현지명, 검증된 alias 및 운영사 규칙 대조
@@ -66,15 +66,19 @@
 | L3 | 특별 적립 업종 | 1,000원당 3P |
 | L4 | 국내 Marriott 결제 | 1,000원당 5P |
 | L5 | 해외 Marriott 결제 | 1,000원당 5P |
+| C1 | 더 클래식 일반 적립 (국내·해외) | 1,000원당 1P |
+| C2 | 더 클래식 국내 Marriott 결제 | 1,000원당 4P |
+| C3 | 더 클래식 해외 Marriott 결제 | 1,000원당 4P |
+| C4 | 더 클래식 전월 200만 원 이상 추가 적립 | 1,000원당 0.5P |
 
-현재 지원 프로필은 **메리어트 본보이™ 더 베스트 신한카드**입니다. Marriott 적립 기준이 다른 더 클래식 카드는 아직 지원하지 않습니다.
+L 코드는 **메리어트 본보이™ 더 베스트 신한카드**, C 코드는 **더 클래식 신한카드**입니다. 한 파일에 두 카드가 섞여 있어도 행마다 등급으로 카드를 구분하며, 정의되지 않은 등급 코드는 예상 포인트를 계산하지 않습니다. 더 클래식의 C4 추가적립 행은 같은 결제의 C1 행과 짝지어 함께 계산합니다.
 
 #### 분석 순서
 
 1. 취소 거래는 계산에서 제외합니다.
-2. 명세서에 이미 L4 또는 L5가 기록된 거래는 가맹점 DB 등록 여부와 관계없이 `정상 적립`으로 처리합니다.
+2. 명세서에 이미 L4·L5(더 클래식은 C2·C3)가 기록된 거래는 가맹점 DB 등록 여부와 관계없이 `정상 적립`으로 처리합니다.
 3. 그 외 거래는 검증된 공유 가맹점·호텔 alias, 공식명·현지명, Marriott 브랜드, 호텔명 토큰, 국내 운영사 및 호텔 관련 보조 규칙 순서로 판정합니다.
-4. 확신도가 충분한 국내 Marriott의 `L1 → L4`, 해외 Marriott의 `L2 → L5` 패턴에서 예상 포인트 차이가 양수일 때만 `누락 의심`으로 표시합니다.
+4. 확신도가 충분한 국내 Marriott의 `L1 → L4`, 해외 Marriott의 `L2 → L5`, 더 클래식의 `C1 → C2/C3` 패턴에서 예상 포인트 차이가 양수일 때만 `누락 의심`으로 표시합니다.
 5. 호텔 후보는 있지만 자동 확정하기 어려운 거래는 `확인 필요`로 남기며 사용자가 포함하기 전에는 문의 합계에 넣지 않습니다.
 
 토큰 매칭은 공식 호텔명과 현지명만 후보 인덱스에 사용합니다. 최소 2개 토큰이 같은 호텔을 가리켜야 하며, 일반적인 토큰 충돌이나 설명되지 않는 추가 문자열이 있으면 자동 확정하지 않습니다. 공백 없이 붙은 특수 가맹점명이나 과거 상호는 검증된 명시 alias로 처리합니다.
@@ -95,7 +99,7 @@
 
 #### 선택적 피드백 수집
 
-`NEXT_PUBLIC_APPS_SCRIPT_URL`이 설정된 경우 DB에 등록되지 않은 L4/L5 가맹점명은 브라우저의 제보 목록에 자동으로 추가됩니다. 목록을 생성하거나 수정하는 것만으로는 전송되지 않으며, 사용자가 마지막 단계에서 `서비스 개선 정보 보내기`를 눌렀을 때만 최종 목록을 한 번 전송합니다.
+`NEXT_PUBLIC_APPS_SCRIPT_URL`이 설정된 경우 DB에 등록되지 않은 특별적립(L4/L5/C2/C3) 가맹점명은 브라우저의 제보 목록에 자동으로 추가됩니다. 목록을 생성하거나 수정하는 것만으로는 전송되지 않으며, 사용자가 마지막 단계에서 `서비스 개선 정보 보내기`를 눌렀을 때만 최종 목록을 한 번 전송합니다.
 
 전송할 수 있는 값:
 
@@ -177,7 +181,6 @@ npm run test:e2e
 
 ### 로드맵
 
-- 더 클래식 카드 프로필과 카드 선택 UI
 - 사용자 피드백 집계·후보화·수동 검토용 운영 도구
 - Marriott 공식 호텔 seed 주간 변경 모니터와 수동 검토 절차 (완료)
 - 수동 검증 alias가 충분히 쌓였을 때만 선택적 비공개 alias 조회 API 검토
@@ -194,9 +197,9 @@ npm run test:e2e
 
 ## English
 
-Bonvoy L4/L5 Checker analyzes a Shinhan Card **points accrual statement in Excel format** entirely in the browser and helps users review whether Marriott hotel transactions received the expected special accrual grade: domestic **L4** or overseas **L5**.
+Bonvoy L4/L5 Checker analyzes a Shinhan Card **points accrual statement in Excel format** entirely in the browser and helps users review whether Marriott hotel transactions received the expected special accrual grade: domestic **L4** or overseas **L5** on The Best, domestic **C2** or overseas **C3** on The Classic.
 
-- Supported card profile: **Marriott Bonvoy™ The Best Shinhan Card**
+- Supported card profiles: **Marriott Bonvoy™ The Best and The Classic Shinhan Cards**, detected per row from the statement grade
 - File processing: performed only in the user's browser, with no file upload
 - Classification: deterministic rules only, with no LLM calls in the user-facing path
 - Deployment: statically rendered Next.js pages with no server functions
@@ -206,7 +209,7 @@ Bonvoy L4/L5 Checker analyzes a Shinhan Card **points accrual statement in Excel
 ### Features
 
 - Parses Shinhan Card points statements in `.xlsx` and `.xls` formats
-- Reviews domestic Marriott L4 and overseas Marriott L5 accrual
+- Reviews domestic Marriott L4/C2 and overseas Marriott L5/C3 accrual
 - Calculates the difference between credited and expected points
 - Prefers the overseas merchant field over a generic payment-channel name
 - Matches Marriott brands, official names, local names, verified aliases, and operator rules
@@ -253,15 +256,19 @@ The app reads the grade from the `포인트종류상세` column.
 | L3 | Special merchant-category accrual | 3 points per KRW 1,000 |
 | L4 | Domestic Marriott transaction | 5 points per KRW 1,000 |
 | L5 | Overseas Marriott transaction | 5 points per KRW 1,000 |
+| C1 | The Classic base accrual (domestic and overseas) | 1 point per KRW 1,000 |
+| C2 | The Classic domestic Marriott transaction | 4 points per KRW 1,000 |
+| C3 | The Classic overseas Marriott transaction | 4 points per KRW 1,000 |
+| C4 | The Classic bonus for KRW 2M+ prior-month spend | 0.5 points per KRW 1,000 |
 
-The only supported profile is **Marriott Bonvoy™ The Best Shinhan Card**. The Classic card uses a different Marriott rate and is not yet supported.
+L codes belong to **Marriott Bonvoy™ The Best Shinhan Card** and C codes to **The Classic**. A statement holding both cards is analyzed row by row; undefined grade codes are never estimated. A C4 bonus line is paired with its C1 payment and counted together.
 
 #### Analysis order
 
 1. Canceled transactions are excluded from calculations.
-2. Transactions already labeled L4 or L5 are treated as normally accrued regardless of whether the merchant exists in the local alias database.
+2. Transactions already labeled L4 or L5 (C2 or C3 on The Classic) are treated as normally accrued regardless of whether the merchant exists in the local alias database.
 3. Other transactions are evaluated against verified shared merchants and property aliases, official/local names, Marriott brands, property-name token evidence, Korean operator rules, and hotel-like fallback rules.
-4. A transaction becomes `suspected missing accrual` only when a confident domestic Marriott match follows the `L1 → L4` pattern or a confident overseas match follows `L2 → L5`, and the expected difference is positive.
+4. A transaction becomes `suspected missing accrual` only when a confident domestic Marriott match follows the `L1 → L4` pattern, a confident overseas match follows `L2 → L5`, or a confident The Classic match follows `C1 → C2/C3`, and the expected difference is positive.
 5. Ambiguous candidates remain `needs review` and are not included in the inquiry total until the user explicitly includes them.
 
 Token matching indexes official and local property names only. At least two tokens must point to the same property, and generic token collisions or unexplained text prevent automatic confirmation. Concatenated statement names and former merchant names are handled through verified explicit aliases.
@@ -282,7 +289,7 @@ Because this is a static client-side application, the hotel seed and public alia
 
 #### Optional feedback collection
 
-When `NEXT_PUBLIC_APPS_SCRIPT_URL` is configured, unmapped L4/L5 merchant names are added to a local feedback queue. Creating or editing that queue does not transmit anything. The final queue is sent once only when the user clicks the service-improvement submission button in the final step.
+When `NEXT_PUBLIC_APPS_SCRIPT_URL` is configured, unmapped special-accrual (L4/L5/C2/C3) merchant names are added to a local feedback queue. Creating or editing that queue does not transmit anything. The final queue is sent once only when the user clicks the service-improvement submission button in the final step.
 
 Possible submitted fields:
 
@@ -364,7 +371,6 @@ If the collector URL changes, verify the feedback button, network payload, and C
 
 ### Roadmap
 
-- The Classic card profile and a card-selection UI
 - An operator tool for aggregating, reviewing, and approving feedback candidates
 - Weekly Marriott official-property monitoring with manual review
 - An optional private-alias lookup API only if enough high-value verified aliases accumulate

@@ -9,12 +9,12 @@ const statusTones: Record<AnalysisStatus, string> = {
   canceled: "bg-neutral-100 text-neutral-400 border-neutral-200 line-through",
 };
 
-export function StatusBadge({ status }: { status: AnalysisStatus }) {
+export function StatusBadge({ status, label }: { status: AnalysisStatus; label?: string }) {
   return (
     <span
       className={`inline-block whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusTones[status]}`}
     >
-      {statusLabels[status]}
+      {label ?? statusLabels[status]}
     </span>
   );
 }

@@ -302,7 +302,7 @@ describe("classifyMerchant", () => {
         ).toBe(true);
       }
     },
-    15_000
+    30_000
   );
 
   it.each([

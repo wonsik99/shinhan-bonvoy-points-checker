@@ -38,6 +38,7 @@ export default function Home() {
     collectionEnabled,
     judgmentCount,
     automaticAliasFeedbackCount,
+    automaticUnsupportedGradeCount,
     alreadySent,
     nextDisabled,
     nextLabel,
@@ -87,8 +88,8 @@ export default function Home() {
                 특별적립 누락 의심 항목을 확인해드립니다.
               </p>
               <p className="mt-3 rounded-lg bg-ember-soft px-3 py-2 text-xs leading-5 text-ember-deep">
-                현재는 메리어트 본보이™ 더 베스트 신한카드만 지원합니다. 더
-                클래식 카드는 적립 기준이 달라 결과가 맞지 않을 수 있어요.
+                메리어트 본보이™ 더 베스트·더 클래식 신한카드를 지원합니다.
+                명세서의 적립 등급(L·C)으로 카드를 자동 구분해요.
               </p>
 
               <div className="mt-6">
@@ -155,6 +156,7 @@ export default function Home() {
                 <ReviewTransactionsTable
                   rows={reviewRows}
                   onFeedback={handleFeedback}
+                  collectionEnabled={collectionEnabled}
                 />
               </section>
 
@@ -238,11 +240,26 @@ export default function Home() {
                       서비스 돕기
                     </p>
                     <p className="mt-2 text-sm leading-6 text-ink-soft">
-                      {automaticAliasFeedbackCount > 0 ? (
+                      {automaticAliasFeedbackCount > 0 ||
+                      automaticUnsupportedGradeCount > 0 ? (
                         <>
-                          DB 미등록 L4/L5 가맹점명 {" "}
-                          <b>{automaticAliasFeedbackCount}건</b>은 제보 목록에
-                          자동으로 포함됐습니다. {" "}
+                          {automaticAliasFeedbackCount > 0 ? (
+                            <>
+                              DB 미등록 특별적립(L4·L5·C2·C3) 가맹점명 {" "}
+                              <b>{automaticAliasFeedbackCount}건</b>
+                            </>
+                          ) : null}
+                          {automaticAliasFeedbackCount > 0 &&
+                          automaticUnsupportedGradeCount > 0
+                            ? "과 "
+                            : null}
+                          {automaticUnsupportedGradeCount > 0 ? (
+                            <>
+                              지원하지 않는 적립 등급 {" "}
+                              <b>{automaticUnsupportedGradeCount}건</b>
+                            </>
+                          ) : null}
+                          은 제보 목록에 자동으로 포함됐습니다. {" "}
                         </>
                       ) : null}
                       제보 목록의 총 <b>{judgmentCount}건</b>을 익명으로

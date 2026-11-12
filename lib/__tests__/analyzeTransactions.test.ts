@@ -639,6 +639,8 @@ describe("summarizeResults", () => {
       canceledCount: 1,
       includedCount: 3,
       totalExpectedAdditionalPoints: 2040 + (1049 - 210) - 420,
+      cardProfileCounts: { the_best: 5, the_classic: 0 },
+      unsupportedGradeCount: 0,
     });
   });
 

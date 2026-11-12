@@ -1,5 +1,20 @@
 import type { MerchantRule } from "@/types/transaction";
 
+// User-confirmed points purchase descriptor, approved 2026-10-16.
+// Marriott terms 2.9 treat co-brand card points purchases as everyday purchases:
+// https://www.marriott.com/loyalty/terms/default.mi
+// Shinhan distinguishes participating hotels from general overseas purchases:
+// https://www.shinhancard.com/pconts/html/card/apply/premium/1200288_2205.html
+// Only this full descriptor is approved; never exclude POINTS or MARRIOTT broadly.
+export const hotelAccrualExclusionRules = [
+  {
+    pattern: "MARRIOTT BY POINTS",
+    match: "exact",
+    reasonCode: "points_purchase",
+    reason: "포인트 구매 거래 — 호텔 특별적립 검사 제외",
+  },
+] as const;
+
 /**
  * Exact overseas operator descriptors that cannot identify one property.
  * Property-specific statement names belong in the property alias database.

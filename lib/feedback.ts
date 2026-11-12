@@ -1,4 +1,5 @@
 import type { AnalysisResult, UserFeedbackAction } from "@/types/transaction";
+import { isHotelAccrualLocked } from "@/lib/analyzeTransactions";
 
 const SESSION_ID_STORAGE_KEY = "bonvoy-l5-checker-session-id";
 
@@ -21,13 +22,29 @@ export function isAutomaticAliasFeedbackCandidate(
   return (
     result.analysisStatus === "ok_l5" &&
     result.gradeConfirmedMarriott === true &&
+    !result.classification.hotelAccrualExclusion &&
     !result.classification.isLikelyMarriott
   );
 }
 
 /**
- * Preselect only transactions whose L4/L5 statement grade confirms Marriott
- * special accrual while the merchant-name database still has no match. This
+ * A Marriott-like row whose grade code no supported card defines. Reporting it
+ * flags a new statement grade; its merchant name is sent only on submission.
+ */
+export function isAutomaticUnsupportedGradeCandidate(
+  result: AnalysisResult
+): boolean {
+  return (
+    result.analysisStatus === "needs_review" &&
+    result.unsupportedGrade === true &&
+    !result.classification.hotelAccrualExclusion
+  );
+}
+
+/**
+ * Preselects transactions whose statement grade (L4/L5 or C2/C3) confirms
+ * Marriott special accrual while the merchant-name database still has no
+ * match, and Marriott-like rows with an unsupported grade as "unsure". This
  * changes local UI state only; submitJudgments remains the sole network path.
  */
 export function buildAutomaticAliasFeedback(
@@ -38,6 +55,8 @@ export function buildAutomaticAliasFeedback(
   for (const result of results) {
     if (isAutomaticAliasFeedbackCandidate(result)) {
       feedbackById[result.id] = "include";
+    } else if (isAutomaticUnsupportedGradeCandidate(result)) {
+      feedbackById[result.id] = "unsure";
     }
   }
 
@@ -96,13 +115,15 @@ export interface Judgment {
  * dispatched, false on network failure or when the collector is disabled.
  */
 export async function submitJudgments(items: Judgment[]): Promise<boolean> {
-  if (!getEndpoint() || typeof window === "undefined" || items.length === 0) {
+  // Points purchases and top-up bonus lines (C4) are not hotel judgments.
+  const eligibleItems = items.filter(({ result }) => !isHotelAccrualLocked(result));
+  if (!getEndpoint() || typeof window === "undefined" || eligibleItems.length === 0) {
     return false;
   }
   const sessionId = getAnonymousSessionId();
   try {
     await Promise.all(
-      items.map(({ result, action }) =>
+      eligibleItems.map(({ result, action }) =>
         post({
           type: "feedback",
           merchant_raw_name: result.merchantName,

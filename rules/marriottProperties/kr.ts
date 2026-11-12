@@ -191,6 +191,9 @@ export const koreaMarriottProperties: MarriottPropertySeed[] = [
     contains("COURTYARD BY MARRIOTT SEOUL PANGYO"),
     contains("코트야드메리어트판교"),
     contains("코트야드서울판교"),
+    // Business name verified in Marriott's Korean legal footer (2026-10-14).
+    // https://www.marriott.com/ko/hotels/selpn-courtyard-seoul-pangyo/overview/
+    exact("판교테크노밸리호텔"),
   ]),
   korea("kr-gravity-josun-seoul-pangyo", "GRAVITY JOSUN Seoul Pangyo, Autograph Collection", "Autograph Collection", [
     contains("GRAVITY JOSUN SEOUL PANGYO"),
