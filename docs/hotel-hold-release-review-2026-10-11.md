@@ -68,4 +68,4 @@ BNACR은 HMC 안내의 갱신 관계를 확인하고, HGHFU와 IXMRT는 상태 �
 - 승인 snapshot·보류·소스 예외·코드 메타데이터·국가 seed·판정 코드·패키지/CSP 등 보호 대상 **16개 파일의 전후 SHA-256이 모두 동일**합니다.
 - 전체 테스트·lint·build·웹앱 E2E는 이번 읽기 전용 조사에서 재실행하지 않았습니다. 기존 앱 코드나 DB를 수정하지 않았습니다.
 - 새 검토 문서와 비공개 근거 JSON만 작성했습니다. 커밋·push·배포는 하지 않았습니다.
-- [호텔별 근거·공식 목록·검증 JSON](/Users/wonsikjung/Desktop/shinhan-bonvoy-l5-checker/docs/_local/marriott-hold-release-recheck-2026-10-11.json). 비공개 로컬 파일이며 커밋 대상이 아닙니다.
+- 호텔별 근거·공식 목록·검증 JSON은 gitignore된 로컬 폴더(`docs/_local/`)에 보관한 비공개 로컬 파일이며 커밋 대상이 아닙니다.

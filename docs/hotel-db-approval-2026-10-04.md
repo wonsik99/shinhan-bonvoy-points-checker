@@ -20,7 +20,7 @@
 | 적용 가능 | 공식 코드 수집 결과, 호텔별 근거·확인 날짜·접근 실패·검토 우선순위 기록, 승인 큐와 회귀 테스트 | 이번 로컬 검토 자료에 반영 |
 | 승인 후 준비할 보호 변경 | HGHHA / SZXLP / SHAFO를 자동 누락 의심에서 분리하는 ‘확인 필요’ 보호 | 아직 미적용; 아래 결정 기준 먼저 확인 |
 | 확인 필요 | 신규 45개 등록, 보류 7개 해제, 개장·전환일, 실시간 객실 재고 | 모두 승인 전 대기 |
-| 별도 보안 후속 | 공식 권고 재조회, 실제 배포의 서버/이미지 처리 경로 확인, 호환 패키지 업데이트안 | 버전 변경·배포 미실행 |
+| 별도 후속 | 의존성 점검은 이 호텔 DB 검토와 분리해 관리 | 이 검토에서 패키지·배포 변경 없음 |
 
 ‘release_candidate’는 해제 검토 우선순위이지 승인 완료라는 뜻이 아닙니다. 실제 개장 발표가 확인된 경우에도 카드 특별적립을 보장하지 않습니다.
 
@@ -140,19 +140,9 @@
 
 10월 3일 대비 propertyCode / slug / source 투영값은 동일했습니다. approved 7월 snapshot은 덮어쓰지 않았고 SHA-256은 기존 값과 같습니다.
 
-## 5. 보안 경고 영향 — 배포 승인 아님
+## 5. 의존성 점검
 
-10월 3일 저장한 npm audit에는 패키지 경고 16개(critical 1 / high 11 / moderate 4)가 있습니다. 오늘 설치 버전과 실제 사용 경로를 대조했으나 **오늘 새로운 네트워크 npm audit를 실행한 결과는 아닙니다**. 16개는 독립 앱 취약점 16건이라는 의미가 아닙니다.
-
-- 로컬 빌드에서 Server Actions·middleware·rewrites·dynamic routes는 비어 있습니다.
-- next/og는 고정 JSX만 사용하고 업로드 Excel이나 요청 값이 들어가는 경로가 확인되지 않았습니다.
-- Excel 파싱은 브라우저 내부 SheetJS 경로입니다. 개발·검사 도구의 glob / YAML / CSS / mock 입력을 Excel 내용과 연결하는 경로가 확인되지 않았습니다.
-- 다만 next start 실행 경로가 남아 있고 output:export 설정은 없습니다. 정적 prerender 결과만으로 실제 Vercel의 함수·이미지 최적화·캐시 처리까지 없다고 단정할 수 없습니다.
-- 따라서 Next·이미지 처리·캐시 경고는 실제 배포 경로 확인과 호환되는 업데이트 검토가 필요합니다. **테스트 통과나 도달 경로 미발견이 취약 패키지 수정 완료를 뜻하지 않습니다.**
-- 파일 미전송 근거는 로컬 파서와 명시적 제보 payload 필드 제한을 함께 확인해야 합니다. CSP만으로 전송 내용까지 제한한다고 설명하면 부정확합니다.
-- 일반 제보 응답은 no-cors 때문에 불투명합니다. 요청 전송 성공과 시트 저장 성공은 구분해야 합니다.
-
-이번 보안 검토는 의존성 경고에 한정된 부분 검토입니다. 병렬 검토자의 최종 결과가 사용량 한도로 중단돼 전체 독립 보안감사를 완료했다고 주장하지 않습니다. 실제 배포 점검·최신 권고 조회·패키지 업데이트는 남아 있습니다. 패키지/lockfile은 변경하지 않았습니다.
+의존성 점검은 이 호텔 DB 검토와 별도로 다루며, 세부 기록은 비공개 로컬 문서로 분리했습니다. 이 검토는 배포 승인이 아니며 패키지/lockfile은 변경하지 않았습니다.
 
 ## 6. 검토 파일과 테스트
 
@@ -165,9 +155,3 @@
 새 테스트는 호텔 코드 누락/중복, 이전 근거 날짜 보존, 45개 조회 성공·실패 합계, 승인 전 등록·해제·삭제 금지, 3개와 제휴 종료 구분, approved snapshot 보존을 검사합니다.
 
 최종 검증: 16개 테스트 파일 / 593개 테스트 통과, lint 통과, build 통과(정적 prerender). 커버리지는 Statements 98.72% / Branches 93.34% / Functions 100% / Lines 98.89%로 기준을 충족했습니다. UI/판정 경로 변경은 없으며 이번 검토에서 브라우저 E2E는 재실행하지 않았습니다.
-
-보안 도구의 정식 보고서는 [부분 보안 검토 보고서](/Users/wonsikjung/.codex/state/plugins/codex-security/scans/shinhan-bonvoy-l5-checker/7971de99202ccf63cc11f16f4d33db58df0adb68_20261004T234407Z_oymeh7ix/report.md)에 저장됐습니다. [Coverage](/Users/wonsikjung/.codex/state/plugins/codex-security/scans/shinhan-bonvoy-l5-checker/7971de99202ccf63cc11f16f4d33db58df0adb68_20261004T234407Z_oymeh7ix/coverage.json)와 [manifest](/Users/wonsikjung/.codex/state/plugins/codex-security/scans/shinhan-bonvoy-l5-checker/7971de99202ccf63cc11f16f4d33db58df0adb68_20261004T234407Z_oymeh7ix/scan-manifest.json)는 범위·제약을 보존합니다.
-
-점검 중 새 호텔 검토 자료와 테스트가 추가되어 도구는 ‘작업 트리가 변경됐으며 시작 시점 snapshot에 대한 결과로 저장됨’ 경고를 반환했습니다. 의존성·앱 소스는 이 검토에서 편집하지 않았지만, 이 보고서를 최종 전체 패치에 대한 보안 인증으로 사용하면 안 됩니다.
-
-사용량: 도구가 반환한 codex_rollout 11개 대화 합산 값은 totalTokens 19,156,212 / inputTokens 19,060,856 / outputTokens 95,356 / cachedInputTokens 18,048,128입니다. 이 값은 이번 보안 작업만의 사용량이나 청구 비용을 뜻하지 않습니다. coverage 필드의 usage ‘complete’는 사용량 집계 범위이며 보안 소스 검토 completeness는 ‘partial’입니다.
