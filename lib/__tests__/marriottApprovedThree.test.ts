@@ -14,6 +14,7 @@ import { approvedMerchantAliasChanges } from "./helpers/merchantAliasApproval";
 import { approvedPointsPurchaseChanges } from "./helpers/pointsPurchaseApproval";
 import { approvedApostropheNormalizationChanges } from "./helpers/apostropheNormalizationApproval";
 import { approvedClassicCardChanges } from "./helpers/classicCardApproval";
+import { approvedFrameworkSecurityUpdateChanges } from "./helpers/frameworkSecurityUpdateApproval";
 
 const selectedCodes = ["BLRXR", "IXKRS", "UTPMA"];
 const selected = marriottProperties.filter((p) => selectedCodes.includes(p.propertyCode));
@@ -162,6 +163,13 @@ describe("Human-approved local registration of three October candidates", () => 
       if (classicChange) {
         expect(classicChange.beforeSha256, path).toBe(expectedHash);
         expectedHash = classicChange.afterSha256;
+      }
+      const frameworkSecurityChange = approvedFrameworkSecurityUpdateChanges.find(
+        (change) => change.path === path
+      );
+      if (frameworkSecurityChange) {
+        expect(frameworkSecurityChange.beforeSha256, path).toBe(expectedHash);
+        expectedHash = frameworkSecurityChange.afterSha256;
       }
       expect(createHash("sha256").update(readFileSync(path)).digest("hex"), path).toBe(expectedHash);
     }

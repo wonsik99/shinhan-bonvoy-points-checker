@@ -4,6 +4,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { describe, expect, it, vi } from "vitest";
 import { blockCrossSiteDEV } from "next/dist/server/lib/router-utils/block-cross-site-dev";
 import { approvedFrameworkDependencyChanges } from "./helpers/frameworkDependencyApproval";
+import { approvedFrameworkSecurityUpdateChanges } from "./helpers/frameworkSecurityUpdateApproval";
 
 // Exercise the installed framework's guard, not a duplicate implementation.
 // The framework is pinned; review this boundary again when upgrading it.
@@ -25,14 +26,18 @@ const protectedMcpUrls = [
   "/_next/mcp?probe=%2F_next%2Fimage",
 ];
 
-it("limits the approved manifest change to Next.js and its ESLint configuration", () => {
+it("limits each approved manifest change to Next.js and its ESLint configuration", () => {
   const manifest = JSON.parse(readFileSync("package.json", "utf8"));
-  expect(manifest.dependencies.next).toBe("16.3.8");
-  expect(manifest.devDependencies["eslint-config-next"]).toBe("16.3.8");
-  manifest.dependencies.next = "16.2.10";
-  manifest.devDependencies["eslint-config-next"] = "16.2.10";
-  expect(createHash("sha256").update(JSON.stringify(manifest, null, 2) + "\n").digest("hex"))
-    .toBe(approvedFrameworkDependencyChanges[0].beforeSha256);
+  expect(manifest.dependencies.next).toBe("16.4.3");
+  expect(manifest.devDependencies["eslint-config-next"]).toBe("16.4.3");
+  const hashWithFramework = (version: string) => {
+    manifest.dependencies.next = version;
+    manifest.devDependencies["eslint-config-next"] = version;
+    return createHash("sha256").update(JSON.stringify(manifest, null, 2) + "\n").digest("hex");
+  };
+  // Walk the approved updates back: 16.4.3 (2026-11-12) -> 16.3.8 (2026-10-12) -> 16.2.10.
+  expect(hashWithFramework("16.3.8")).toBe(approvedFrameworkSecurityUpdateChanges[0].beforeSha256);
+  expect(hashWithFramework("16.2.10")).toBe(approvedFrameworkDependencyChanges[0].beforeSha256);
 });
 
 describe("framework development origin boundary", () => {
