@@ -13,14 +13,17 @@
 
 - Marriott `sitemap-index.xml`에서 발견한 영어권 HWS property XML shard
 - Ritz-Carlton `sitemap-index.xml`에서 발견한 별도 HWS property XML shard
-- Bvlgari Hotels 공식 sitemap의 도시 루트와 각 페이지의 예약용 `hotelCode`
+- Bvlgari Hotels 공식 sitemap의 도시 루트와 각 페이지가 가리키는 호텔의 예약 코드(`code`)
 
 Marriott와 Ritz-Carlton은 언어별 XML이 같은 호텔을 반복하므로 canonical 영어
-shard 하나만 사용합니다. Bvlgari sitemap의 `/en_US/{slug}` 루트에는 운영 호텔뿐
-아니라 향후 개장, 예약, 식음료, 안내 페이지도 섞여 있습니다. 따라서 URL이 있다는
-이유만으로 호텔을 등록하지 않고 페이지에 공식 `hotelCode`가 있는 경우만 운영
-호텔 후보로 봅니다. 연락처·예약·식음료 등 알려진 비호텔 루트는 공유 예약 위젯에
-코드가 있어도 제외합니다. 코드가 없는 도시 페이지는 참고 목록으로만 보고합니다.
+shard 하나만 사용합니다. Bvlgari sitemap의 `/en-US/{slug}` 루트에는 운영 호텔뿐
+아니라 향후 개장, 예약, 식음료, 안내 페이지도 섞여 있습니다. 2026년 11월 사이트
+개편 이후에는 모든 페이지가 전체 호텔 목록과 모든 예약 코드를 함께 싣기 때문에,
+페이지에 코드가 보인다는 이유만으로 그 페이지의 호텔로 보지 않습니다. 해당 루트의
+페이지 노드가 호텔 홈 템플릿(`hotelHomePage`)이고 호텔 노드 하나를 가리키며, 그
+호텔 노드에 property code 형식의 `code`가 하나만 있을 때만 운영 호텔 후보로
+봅니다. 연락처·뉴스레터·식음료 등 알려진 비호텔 루트는 가져오지 않습니다. 코드를
+확인하지 못한 페이지는 추정 코드 없이 사유와 함께 참고 목록으로만 보고합니다.
 
 공식 XML에는 이미 제휴가 끝난 호텔의 HWS 경로가 한동안 남을 수 있습니다.
 따라서 URL과 상세 경로 존재 여부만으로 현재 제휴를 단정하지 않습니다. Marriott가
@@ -196,8 +199,9 @@ CI는 `contents: read`를 유지하며 모니터 기준 자동 갱신·커밋·p
 
 The repository includes a read-only monitor for three official property-code
 sources: Marriott HWS XML, the separate Ritz-Carlton HWS XML bundle, and the
-Bvlgari Hotels sitemap plus each active destination page's reservation
-`hotelCode`. It never edits or merges the property database, curated aliases,
+Bvlgari Hotels sitemap plus the reservation `code` of the hotel node that each
+destination page itself references (every page also lists all other hotels'
+codes). It never edits or merges the property database, curated aliases,
 or approved baseline automatically.
 
 `MarriottProperty.id` is the app's stable identity, while

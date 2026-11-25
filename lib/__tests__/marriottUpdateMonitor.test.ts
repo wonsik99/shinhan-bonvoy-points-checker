@@ -19,9 +19,9 @@ import {
   loadPropertyReviewHolds,
   loadPropertySourceExceptions,
   normalizedHotelName,
-  propertyCodeFromBvlgariHtml,
   propertyCodeFromHotelUrl,
   renderMarriottUpdateReport,
+  resolveBvlgariHotelCode,
   validateOfficialSnapshot,
   validatePropertyReviewHolds,
   validatePropertySourceExceptions,
@@ -60,6 +60,50 @@ function collection(properties: ReturnType<typeof officialProperty>[]) {
     },
     pagesWithoutHotelCode: [],
   };
+}
+
+const BVLGARI_PAGES: Record<string, { template: string; hotel?: string }> = {
+  milan: { template: "hotelHomePage", hotel: "hotel-milan" },
+  tokyo: { template: "hotelHomePage", hotel: "hotel-tokyo" },
+  ranfushi: { template: "hotelHomePage", hotel: "hotel-ranfushi" },
+  ginza: { template: "hotelHomePage", hotel: "hotel-ginza" },
+  "gift-cards": { template: "standardPage" },
+};
+const BVLGARI_HOTELS = [
+  { "@name": "Milan", "@path": "/Milan", "@id": "hotel-milan", "@nodeType": "bhr:hotel", isBookable: true, code: "MILBG" },
+  { "@name": "Tokyo", "@path": "/Tokyo", "@id": "hotel-tokyo", "@nodeType": "bhr:hotel", isBookable: true, code: "TYOBT" },
+  { "@name": "Ranfushi", "@path": "/Ranfushi", "@id": "hotel-ranfushi", "@nodeType": "bhr:hotel", isBookable: false },
+  { "@name": "Ginza", "@path": "/Ginza", "@id": "hotel-ginza", "@nodeType": "bhr:hotel", isBookable: false, code: "tokyo-ginza" },
+];
+
+function bvlgariPageNode(route: string, overrides: object = {}) {
+  const { template, hotel } = BVLGARI_PAGES[route];
+  return {
+    "@name": route, "@path": `/bhr/${route}`, "@id": `page-${route}`, "@nodeType": "mgnl:page",
+    "mgnl:template": `bhr-v3-module:pages/${template}`, ...(hotel ? { hotel } : {}), ...overrides, "@nodes": [],
+  };
+}
+
+/**
+ * Tiny synthetic stand-in for a 2026-11 bulgarihotels.com page: Next.js flight
+ * chunks carrying the shared navigation tree, the shared list of every hotel
+ * code, and the requested route's own page node.
+ */
+function bvlgariPageHtml(
+  route: string,
+  { page = {}, navigation = {}, extraHotels = [] }: { page?: object; navigation?: object; extraHotels?: object[] } = {}
+) {
+  const tree = {
+    "@name": "bhr", "@path": "/bhr", "@id": "root", "@nodeType": "mgnl:page", "mgnl:template": "bhr-v3-module:pages/homePage",
+    ...Object.fromEntries(Object.keys(BVLGARI_PAGES).map((name) =>
+      [name, bvlgariPageNode(name, name === route ? navigation : {})]
+    )),
+  };
+  const payload = `1:${JSON.stringify({ navigation: tree, hotels: [...BVLGARI_HOTELS, ...extraHotels], page: bvlgariPageNode(route, page) })}\n`;
+  const middle = Math.floor(payload.length / 2);
+  return [payload.slice(0, middle), payload.slice(middle)]
+    .map((chunk) => `<script>self.__next_f.push([1,${JSON.stringify(chunk)}])</script>`)
+    .join("");
 }
 
 function baseline(properties: ReturnType<typeof officialProperty>[]) {
@@ -132,29 +176,66 @@ describe("Marriott hotel DB update monitor", () => {
     ]);
   });
 
-  it("treats a Bvlgari city as active only when its page exposes hotelCode", () => {
-    const xml = `
-      <urlset>
-        <url><loc>https://www.bulgarihotels.com/en_US/tokyo</loc></url>
-        <url><loc>https://www.bulgarihotels.com/en_US/tokyo/whats-on</loc></url>
-      </urlset>`;
+  it("reads Bvlgari destinations from the en-US root routes only", () => {
+    const routes = [
+      "en-US/tokyo", "en-US/tokyo/whats-on", "en-US/Tokyo", "en_US/rome",
+      "it-IT/milan", "en-US/ranfushi", "en-US/contact-us", "en-US/Newsletter",
+      "en-US/Bvlgari-Hotel-Milano-Calendar", "en-US/tokyo-ginza-bar-cafe",
+    ];
+    const xml = `<urlset>${routes.map((route) =>
+      `<url><loc>https://www.bulgarihotels.com/${route}</loc><lastmod>2026-11-09T10:14:15.722+01:00</lastmod></url>`
+    ).join("")}<url><loc>https://example.com/en-US/paris</loc></url></urlset>`;
 
     expect(extractBvlgariDestinationEntries(xml)).toEqual([
       {
+        city: "ranfushi",
+        officialUrl: "https://www.bulgarihotels.com/en-US/ranfushi",
+        lastmod: "2026-11-09T10:14:15.722+01:00",
+      },
+      {
         city: "tokyo",
-        officialUrl: "https://www.bulgarihotels.com/en_US/tokyo",
-        lastmod: null,
+        officialUrl: "https://www.bulgarihotels.com/en-US/tokyo",
+        lastmod: "2026-11-09T10:14:15.722+01:00",
       },
     ]);
-    expect(propertyCodeFromBvlgariHtml('{"hotelCode":"TYOBT"}')).toBe(
-      "TYOBT"
+  });
+
+  it("reads a Bvlgari page's own code although every page lists all hotel codes", () => {
+    expect(resolveBvlgariHotelCode(bvlgariPageHtml("milan"), "milan")).toEqual({
+      propertyCode: "MILBG", reason: null,
+    });
+    expect(resolveBvlgariHotelCode(bvlgariPageHtml("tokyo"), "tokyo")).toEqual({
+      propertyCode: "TYOBT", reason: null,
+    });
+    // Same shared hotel list, but a utility template: never borrow a listed code.
+    expect(resolveBvlgariHotelCode(bvlgariPageHtml("gift-cards"), "gift-cards")).toEqual({
+      propertyCode: null, reason: expect.stringContaining("standardPage"),
+    });
+    // The old booking-widget key is no longer evidence on its own.
+    expect(resolveBvlgariHotelCode('{"hotelCode":"TYOBT"}', "tokyo").propertyCode).toBeNull();
+  });
+
+  it("reports Bvlgari hotel pages without a reliable code instead of guessing", () => {
+    const expectGap = (html: string, route: string, reason: string) =>
+      expect(resolveBvlgariHotelCode(html, route)).toEqual({
+        propertyCode: null, reason: expect.stringContaining(reason),
+      });
+
+    expectGap(bvlgariPageHtml("ranfushi"), "ranfushi", "isBookable=false");
+    expectGap(bvlgariPageHtml("ginza"), "ginza", "tokyo-ginza");
+    expectGap(bvlgariPageHtml("milan"), "future-destination", "페이지 노드를 찾지 못했습니다");
+    expectGap(
+      bvlgariPageHtml("milan", { page: { hotel: "hotel-tokyo" } }),
+      "milan", "서로 다른 템플릿이나 호텔"
     );
-    expect(propertyCodeFromBvlgariHtml("future hotel page")).toBeNull();
-    expect(
-      propertyCodeFromBvlgariHtml(
-        '{"hotelCode":"TYOBT"}{"hotelCode":"DXBBG"}'
-      )
-    ).toBeNull();
+    expectGap(
+      bvlgariPageHtml("milan", { page: { hotel: "hotel-unlisted" }, navigation: { hotel: "hotel-unlisted" } }),
+      "milan", "호텔 노드를 읽지 못했습니다"
+    );
+    expectGap(
+      bvlgariPageHtml("milan", { extraHotels: [{ ...BVLGARI_HOTELS[0], code: "ROMBG" }] }),
+      "milan", "서로 다른 코드"
+    );
   });
 
   it("quarantines obvious test codes and reports real cross-source conflicts", () => {
@@ -175,34 +256,45 @@ describe("Marriott hotel DB update monitor", () => {
     ]);
   });
 
-  it("ignores Bvlgari utility roots even when a shared widget exposes a hotel code", () => {
+  it("ignores Bvlgari utility roots even when a shared hotel list exposes every code", () => {
     const utilityRoutes = [
-      "bvlgari-tokyo-ginza-bar-cafe", "contact-us",
-      "il-ristorante-niko-romito-reservation", "meta", "reservation",
-      "reservation-the-bulgari-bar-and-bulgari-lounge",
-      "the-bulgari-lounge-london-reservation",
+      "about-bvlgari", "accessibility", "Bvlgari-Hotel-Milano-Calendar",
+      "contact-us", "le-donne-del-vino", "Newsletter", "next-openings",
+      "press-office", "press-offices", "subscribe-newsletter",
+      "sustainaibility", "tokyo-ginza-bar-cafe",
     ];
-    const routes = [...utilityRoutes, "CONTACT-US/", "dubai", "future-destination"];
+    const routes = [...utilityRoutes, "CONTACT-US/", "milan", "gift-cards", "ranfushi"];
     const xml = `<urlset>${routes.map((route) =>
-      `<url><loc>https://www.bulgarihotels.com/en_US/${route}</loc></url>`
+      `<url><loc>https://www.bulgarihotels.com/en-US/${route}</loc></url>`
     ).join("")}</urlset>`;
     const destinations = extractBvlgariDestinationEntries(xml);
     expect(destinations.map((entry: { city: string }) => entry.city)).toEqual([
-      "dubai", "future-destination",
+      "gift-cards", "milan", "ranfushi",
     ]);
-    // The contact page's single shared DXBBG widget must never win deduplication.
-    const htmlByCity: Record<string, string> = {
-      "contact-us": '{"hotelCode":"DXBBG"}',
-      dubai: '{"hotelCode":"DXBBG"}',
-      "future-destination": "Opening soon",
-    };
-    const properties = destinations.flatMap((entry: { city: string; officialUrl: string }) => {
-      const code = propertyCodeFromBvlgariHtml(htmlByCity[entry.city]);
-      return code ? [{ ...officialProperty(code, `bvlgari-${entry.city}`, "bvlgari"), officialUrl: entry.officialUrl }] : [];
-    });
+    // Every page lists MILBG and TYOBT; only the page's own hotel may count.
+    const resolved = destinations.map((entry: { city: string; officialUrl: string }) => ({
+      entry, ...resolveBvlgariHotelCode(bvlgariPageHtml(entry.city), entry.city),
+    }));
+    const properties = resolved.flatMap(({ entry, propertyCode }) =>
+      propertyCode
+        ? [{ ...officialProperty(propertyCode, `bvlgari-${entry.city}`, "bvlgari"), officialUrl: entry.officialUrl }]
+        : []
+    );
     expect(deduplicateOfficialProperties(properties).properties).toMatchObject([
-      { propertyCode: "DXBBG", officialUrl: "https://www.bulgarihotels.com/en_US/dubai" },
+      { propertyCode: "MILBG", officialUrl: "https://www.bulgarihotels.com/en-US/milan" },
     ]);
+    const gaps = resolved.flatMap(({ entry, propertyCode, reason }) =>
+      propertyCode ? [] : [{ ...entry, reason }]
+    );
+    expect(gaps.map((entry) => entry.city)).toEqual(["gift-cards", "ranfushi"]);
+
+    const report = renderMarriottUpdateReport(compareMarriottCatalogs(
+      [], { ...collection([]), pagesWithoutHotelCode: gaps }, baseline([]),
+      { minimumMarriottPropertyCount: 0, minimumRitzPropertyCount: 0, minimumBvlgariPropertyCount: 0 }
+    ));
+    expect(report).toContain(
+      "| ranfushi | 공식 호텔 노드에 예약 코드가 없습니다(isBookable=false). 개장 전 여부 확인 필요. | [열기](https://www.bulgarihotels.com/en-US/ranfushi) |"
+    );
   });
 
   it("keeps inconclusive hotel evidence in review without claiming the hotel is closed", () => {
