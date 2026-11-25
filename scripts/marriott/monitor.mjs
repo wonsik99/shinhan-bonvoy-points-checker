@@ -16,17 +16,39 @@ const PROPERTY_REVIEW_HOLD_STATUSES = new Set([
   "reservations_unavailable",
   "verification_required",
 ]);
-// Shared booking widgets on these non-hotel roots may expose a hotel's code.
-// Exclude the routes, not a fixed city allowlist, so new destinations still surface.
+// Every Bvlgari page embeds the full hotel list (all codes), so a code found
+// anywhere on a page says nothing about that page. Known non-hotel routes are
+// skipped before fetching; the hotel template check below still keeps any new
+// non-hotel route out of the hotel count. Exclude routes, not a fixed city
+// allowlist, so new destinations still surface. Compared in lower case.
 const BVLGARI_NON_HOTEL_ROUTES = new Set([
+  "about-bvlgari",
+  "accessibility",
+  "bvlgari-hotel-milano-calendar",
   "bvlgari-tokyo-ginza-bar-cafe",
   "contact-us",
   "il-ristorante-niko-romito-reservation",
+  "le-donne-del-vino",
   "meta",
+  "newsletter",
+  "next-openings",
+  "press-office",
+  "press-offices",
   "reservation",
   "reservation-the-bulgari-bar-and-bulgari-lounge",
+  "subscribe-newsletter",
+  "sustainaibility",
   "the-bulgari-lounge-london-reservation",
+  // A bar-café that uses the hotel home template with a non-reservation code.
+  "tokyo-ginza-bar-cafe",
 ]);
+const BVLGARI_LOCALE_SEGMENT = "en-US";
+const BVLGARI_HOTEL_TEMPLATE_PATTERN = /:pages\/hotelHomePage$/;
+// Magnolia CMS nodes in the page's Next.js flight data start with these keys.
+const BVLGARI_NODE_START_PATTERN =
+  /\{"@name":"(?:[^"\\]|\\.)*","@path":"((?:[^"\\]|\\.)*)","@id":"((?:[^"\\]|\\.)*)","@nodeType":"((?:[^"\\]|\\.)*)"/g;
+const NEXT_FLIGHT_CHUNK_PATTERN =
+  /self\.__next_f\.push\(\[1,("(?:[^"\\]|\\.)*")\]\)/g;
 const PROPERTY_SOURCE_EXCEPTION_STATUSES = new Set([
   "verified_active_source_gap",
 ]);
@@ -181,7 +203,7 @@ export function extractHwsProperties(xml, source, sourceUrl) {
 }
 
 export function extractBvlgariDestinationEntries(xml) {
-  const entries = [];
+  const byCity = new Map();
   for (const entry of extractXmlUrlEntries(xml)) {
     let url;
     try {
@@ -191,29 +213,186 @@ export function extractBvlgariDestinationEntries(xml) {
     }
     const segments = url.pathname.split("/").filter(Boolean);
     if (
-      url.hostname !== "www.bulgarihotels.com" ||
+      url.hostname !== SOURCE_HOSTS.bvlgari ||
       segments.length !== 2 ||
-      segments[0] !== "en_US" ||
+      segments[0] !== BVLGARI_LOCALE_SEGMENT ||
       BVLGARI_NON_HOTEL_ROUTES.has(segments[1].toLowerCase())
     ) {
       continue;
     }
-    entries.push({
-      city: segments[1].toLowerCase(),
-      officialUrl: url.toString(),
-      lastmod: entry.lastmod,
-    });
+    const city = segments[1].toLowerCase();
+    if (!byCity.has(city)) {
+      byCity.set(city, {
+        city,
+        officialUrl: url.toString(),
+        lastmod: entry.lastmod,
+      });
+    }
   }
-  return entries.sort((left, right) => left.city.localeCompare(right.city, "en"));
+  return [...byCity.values()].sort((left, right) =>
+    left.city.localeCompare(right.city, "en")
+  );
 }
 
-export function propertyCodeFromBvlgariHtml(html) {
-  const codes = new Set(
-    [...html.matchAll(
-      /hotelCode(?:&quot;|")?\s*:\s*(?:&quot;|")([A-Z0-9]{4,8})/gi
-    )].map((match) => match[1].toUpperCase())
+function bvlgariFlightPayload(html) {
+  const chunks = [];
+  for (const [, literal] of html.matchAll(NEXT_FLIGHT_CHUNK_PATTERN)) {
+    try {
+      chunks.push(JSON.parse(literal));
+    } catch {
+      // A malformed chunk can only hide nodes; resolution then reports a gap.
+    }
+  }
+  return chunks.length > 0 ? chunks.join("") : html;
+}
+
+function jsonObjectEnd(text, start) {
+  let depth = 0;
+  let inString = false;
+  for (let index = start; index < text.length; index += 1) {
+    const character = text[index];
+    if (inString) {
+      if (character === "\\") {
+        index += 1;
+      } else if (character === '"') {
+        inString = false;
+      }
+    } else if (character === '"') {
+      inString = true;
+    } else if (character === "{") {
+      depth += 1;
+    } else if (character === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        return index + 1;
+      }
+    }
+  }
+  return -1;
+}
+
+function bvlgariNodes(payload, accept) {
+  const nodes = [];
+  for (const match of payload.matchAll(BVLGARI_NODE_START_PATTERN)) {
+    let header;
+    try {
+      header = {
+        path: JSON.parse(`"${match[1]}"`),
+        id: JSON.parse(`"${match[2]}"`),
+        nodeType: JSON.parse(`"${match[3]}"`),
+      };
+    } catch {
+      continue;
+    }
+    if (!accept(header)) {
+      continue;
+    }
+    const end = jsonObjectEnd(payload, match.index);
+    try {
+      nodes.push(end < 0 ? null : JSON.parse(payload.slice(match.index, end)));
+    } catch {
+      nodes.push(null);
+    }
+  }
+  return nodes;
+}
+
+function bvlgariPageRoute(nodePath) {
+  const segments = nodePath.split("/");
+  return segments.length === 3 && segments[0] === "" && segments[1]
+    ? segments[2].toLowerCase()
+    : null;
+}
+
+/**
+ * Resolves the reservation code of the hotel that owns this Bvlgari page.
+ *
+ * Every page carries the whole hotel list, so the code is read only through
+ * the page's own CMS node: the route's page node must use the hotel home
+ * template and reference exactly one hotel node, and that hotel node must
+ * carry exactly one property-code-shaped `code`. Anything else returns
+ * `propertyCode: null` with a reason, never a guessed code.
+ */
+export function resolveBvlgariHotelCode(html, city) {
+  const route = city.toLowerCase();
+  const payload = bvlgariFlightPayload(html);
+  const pages = bvlgariNodes(
+    payload,
+    ({ path: nodePath, nodeType }) =>
+      nodeType === "mgnl:page" && bvlgariPageRoute(nodePath) === route
   );
-  return codes.size === 1 ? [...codes][0] : null;
+  if (pages.length === 0) {
+    return {
+      propertyCode: null,
+      reason: "페이지 데이터에서 이 루트의 페이지 노드를 찾지 못했습니다. 사이트 구조 확인 필요.",
+    };
+  }
+  if (pages.includes(null)) {
+    return {
+      propertyCode: null,
+      reason: "이 루트의 페이지 노드를 읽지 못했습니다. 사이트 구조 확인 필요.",
+    };
+  }
+
+  const templates = new Set(pages.map((page) => page["mgnl:template"] ?? null));
+  const hotelIds = new Set(pages.map((page) => page.hotel ?? null));
+  if (templates.size !== 1 || hotelIds.size !== 1) {
+    return {
+      propertyCode: null,
+      reason: "이 루트의 페이지 노드가 서로 다른 템플릿이나 호텔을 가리킵니다. 확인 필요.",
+    };
+  }
+  const [template] = templates;
+  if (typeof template !== "string" || !BVLGARI_HOTEL_TEMPLATE_PATTERN.test(template)) {
+    return {
+      propertyCode: null,
+      reason: `호텔 홈 템플릿이 아닌 페이지입니다(${template ?? "템플릿 없음"}). 비호텔 루트인지 확인 필요.`,
+    };
+  }
+  const [hotelId] = hotelIds;
+  if (typeof hotelId !== "string" || !hotelId) {
+    return {
+      propertyCode: null,
+      reason: "호텔 홈 페이지에 연결된 호텔 노드가 없습니다. 확인 필요.",
+    };
+  }
+
+  const hotels = bvlgariNodes(
+    payload,
+    ({ id, nodeType }) => nodeType === "bhr:hotel" && id === hotelId
+  );
+  if (hotels.length === 0 || hotels.includes(null)) {
+    return {
+      propertyCode: null,
+      reason: "페이지가 가리키는 호텔 노드를 읽지 못했습니다. 확인 필요.",
+    };
+  }
+  const codes = new Set(hotels.map((hotel) => hotel.code ?? null));
+  if (codes.size !== 1) {
+    return {
+      propertyCode: null,
+      reason: "같은 호텔 노드에 서로 다른 코드가 있습니다. 확인 필요.",
+    };
+  }
+  const [code] = codes;
+  if (code === null || code === "") {
+    const bookable = new Set(hotels.map((hotel) => hotel.isBookable));
+    const bookableNote =
+      bookable.size === 1 && typeof [...bookable][0] === "boolean"
+        ? `(isBookable=${[...bookable][0]})`
+        : "";
+    return {
+      propertyCode: null,
+      reason: `공식 호텔 노드에 예약 코드가 없습니다${bookableNote}. 개장 전 여부 확인 필요.`,
+    };
+  }
+  if (typeof code !== "string" || !PROPERTY_CODE_PATTERN.test(code)) {
+    return {
+      propertyCode: null,
+      reason: `공식 호텔 노드의 코드(${String(code)})가 property code 형식이 아닙니다. 확인 필요.`,
+    };
+  }
+  return { propertyCode: code, reason: null };
 }
 
 export function isSuspiciousOfficialProperty(property) {
@@ -414,9 +593,12 @@ async function collectBvlgariSource(options) {
     await mapWithConcurrency(destinations, options.concurrency, async (destination) => {
       try {
         const response = await fetchText(destination.officialUrl, options);
-        const propertyCode = propertyCodeFromBvlgariHtml(response.text);
+        const { propertyCode, reason } = resolveBvlgariHotelCode(
+          response.text,
+          destination.city
+        );
         if (!propertyCode) {
-          pagesWithoutHotelCode.push(destination);
+          pagesWithoutHotelCode.push({ ...destination, reason });
           return null;
         }
         return {
@@ -1135,12 +1317,13 @@ export function renderMarriottUpdateReport(result) {
         SOURCE_LABELS[item.source] ?? item.source,
       ])
     ),
-    "## Bvlgari hotelCode 없는 루트 페이지",
+    "## Bvlgari 예약 코드를 확인하지 못한 루트 페이지(호텔 수 제외)",
     "",
     markdownTable(
-      ["Page", "공식 페이지"],
+      ["Page", "사유", "공식 페이지"],
       result.pagesWithoutHotelCode.map((item) => [
         item.city,
+        item.reason ?? "-",
         `[열기](${item.officialUrl})`,
       ])
     )
